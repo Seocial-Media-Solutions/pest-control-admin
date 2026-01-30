@@ -1,0 +1,172 @@
+@import "tailwindcss";
+
+/* Green Pest Control Theme - Global Styles */
+
+:root {
+  --color-primary: #4caf50;
+  --color-accent: #8bc34a;
+  --color-blue: #2196f3;
+  --color-bg: #0a2e1a;
+  --color-surface: #0f3d24;
+  --color-border: #1a5f3a;
+}
+
+/* Dark Mode (Default) */
+body {
+  background-color: #0a2e1a;
+  color: #ffffff;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Light Mode */
+.light body {
+  background-color: #f1f8e9;
+  color: #1b5e20;
+}
+
+/* Green Gradient Utilities */
+.gradient-primary {
+  background: linear-gradient(135deg, #4caf50 0%, #8bc34a 100%);
+}
+
+.gradient-primary-hover {
+  background: linear-gradient(135deg, #43a047 0%, #7cb342 100%);
+}
+
+.gradient-dark {
+  background: linear-gradient(180deg, #0a2e1a 0%, #1b5e20 100%);
+}
+
+.gradient-light {
+  background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
+}
+
+.gradient-accent {
+  background: linear-gradient(135deg, #8bc34a 0%, #aed581 100%);
+}
+
+/* Text Gradient */
+.text-gradient {
+  background: linear-gradient(135deg, #4caf50 0%, #8bc34a 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Green Glow Effects */
+.glow-green {
+  box-shadow: 0 0 20px rgba(76, 175, 80, 0.3);
+}
+
+.glow-green-lg {
+  box-shadow: 0 0 30px rgba(76, 175, 80, 0.4);
+}
+
+.glow-lime {
+  box-shadow: 0 0 20px rgba(139, 195, 74, 0.3);
+}
+
+/* Custom Scrollbar - Green Theme */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background-color: #0a2e1a;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: #388e3c;
+  border-radius: 0.5rem;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: #43a047;
+}
+
+/* Selection Color */
+::selection {
+  background-color: #4caf50;
+  color: #ffffff;
+}
+
+::-moz-selection {
+  background-color: #4caf50;
+  color: #ffffff;
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateX(-100%);
+  }
+
+  to {
+    transform: translateX(0);
+  }
+}
+
+@keyframes pulse-green {
+
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.5;
+  }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.25s ease-out;
+}
+
+.animate-slide-in {
+  animation: slideIn 0.35s ease-out;
+}
+
+.animate-pulse-green {
+  animation: pulse-green 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* Backdrop Blur */
+.backdrop-blur-green {
+  backdrop-filter: blur(8px);
+  background-color: rgba(10, 46, 26, 0.8);
+}
+
+/* Green Overlay */
+.overlay-green {
+  position: relative;
+}
+
+.overlay-green::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(76, 175, 80, 0.1) 0%, rgba(139, 195, 74, 0.1) 100%);
+  pointer-events: none;
+}
+
+/* Green Border Gradient */
+.border-gradient-green {
+  border: 2px solid transparent;
+  background-image: linear-gradient(#0f3d24, #0f3d24), linear-gradient(135deg, #4caf50, #8bc34a);
+  background-origin: border-box;
+  background-clip: padding-box, border-box;
+}

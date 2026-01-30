@@ -12,7 +12,7 @@ import Services from './pages/Services';
 import AddService from './pages/AddService';
 import Bookings from './pages/Bookings';
 import CreateBooking from './pages/CreateBooking';
-import Technicians from './pages/technician/technicianList';
+import Technicians from './pages/technician/TechnicianList';
 import Tracking from './pages/Tracking';
 import Assignments from './pages/Assignments';
 import CreateAssignment from './pages/CreateAssignment';
@@ -32,7 +32,7 @@ import {
 import EditTechnician from './pages/technician/EditTechnician';
 import AddTechnician from './pages/technician/AddTechnician';
 import { Toaster } from 'react-hot-toast';
-import Attendance from './pages/technician/attendance';
+import Attendance from './pages/technician/Attendance';
 
 // Create a QueryClient instance
 const queryClient = new QueryClient({

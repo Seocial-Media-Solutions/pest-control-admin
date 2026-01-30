@@ -2,7 +2,7 @@ import axios from 'axios';
 
 // Create axios instance with default config
 const api = axios.create({
-    baseURL: import.meta.env.VITE_API_URL || 'http://localhost:3000/api',
+    baseURL: import.meta.env.VITE_API_URL || 'http://37.27.112.213:3014/api',
     timeout: 10000,
     // Headers will be auto-set by axios (application/json for objects, multipart/form-data for FormData)
 });

@@ -85,7 +85,7 @@ export default function TechnicianList() {
             onClick={async () => {
               try {
                 const res = await fetch(
-                  `http://localhost:3000/api/technicians/${id}`,
+                  `http://37.27.112.213:3014/api/technicians/${id}`,
                   { method: "DELETE" }
                 );
                 const result = await res.json();

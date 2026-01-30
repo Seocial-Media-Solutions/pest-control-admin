@@ -49,7 +49,7 @@ function Tracking() {
 
     // Initialize WebSocket connection
     useEffect(() => {
-        const newSocket = io('http://localhost:3000');
+        const newSocket = io('http://37.27.112.213:3014');
 
         newSocket.on('connect', () => {
             console.log('🔌 WebSocket connected');
@@ -168,7 +168,7 @@ function Tracking() {
     // Fetch WebSocket statistics
     const fetchWsStats = async () => {
         try {
-            const response = await fetch('http://localhost:3000/api/tracking/ws/stats');
+            const response = await fetch('http://37.27.112.213:3014/api/tracking/ws/stats');
             const data = await response.json();
             setWsStats(data.data);
         } catch (error) {

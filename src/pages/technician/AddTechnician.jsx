@@ -1,13 +1,13 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import TechnicianForm from "../../components/TechniciansForm"  ;
+import TechnicianForm from "../../components/TechniciansForm";
 import toast from "react-hot-toast";
 
 export default function AddTechnician() {
   const navigate = useNavigate();
 
   const handleSubmit = async (data) => {
-    const res = await fetch("http://localhost:3000/api/technicians", {
+    const res = await fetch("http://37.27.112.213:3014/api/technicians", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(data),

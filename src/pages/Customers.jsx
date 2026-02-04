@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import {
     Users,
     Plus,
-    Search,
+
     Filter,
     Edit2,
     Trash2,
@@ -16,12 +16,14 @@ import {
 } from 'lucide-react';
 import customerService from '../services/customerService';
 import { toast } from 'react-hot-toast';
+import { useSearch } from '../context/SearchContext';
 
 const Customers = () => {
     const navigate = useNavigate();
+    const { searchQuery, setSearchQuery } = useSearch();
     const [customers, setCustomers] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [searchTerm, setSearchTerm] = useState('');
+    // Removed local searchTerm
     const [statusFilter, setStatusFilter] = useState('');
     const [showFilters, setShowFilters] = useState(false);
 
@@ -30,7 +32,7 @@ const Customers = () => {
         try {
             setLoading(true);
             const params = {};
-            if (searchTerm) params.search = searchTerm;
+            if (searchQuery) params.search = searchQuery;
             if (statusFilter) params.status = statusFilter;
 
             const response = await customerService.getAllCustomers(params);
@@ -45,7 +47,7 @@ const Customers = () => {
 
     useEffect(() => {
         fetchCustomers();
-    }, [searchTerm, statusFilter]);
+    }, [searchQuery, statusFilter]);
 
     // Delete customer
     const handleDeleteCustomer = async (id, name) => {
@@ -98,19 +100,28 @@ const Customers = () => {
     return (
         <div className="space-y-6 animate-fade-in">
             {/* Page Header */}
-            <div className="flex items-center justify-between">
+            <div className="flex flex-wrap items-center justify-between">
                 <div>
                     <h1 className="text-3xl font-bold text-dark-text mb-2">Customers</h1>
                     <p className="text-dark-text-secondary">
                         Manage your customer database and relationships
                     </p>
                 </div>
-                <div className="flex items-center gap-3">
+                <div className="flex flex-wrap items-center gap-3">
+                    <button
+                        onClick={() => setShowFilters(!showFilters)}
+                        className={`flex items-center gap-2 px-4 py-2 bg-dark-surface border border-dark-border rounded-lg hover:border-primary-500 transition-all duration-300 text-dark-text ${showFilters ? 'border-primary-500 ring-2 ring-primary-500/20' : ''
+                            }`}
+                    >
+                        <Filter className="w-4 h-4" />
+                        Filters
+                    </button>
                     <button
                         onClick={fetchCustomers}
                         className="flex items-center gap-2 px-4 py-2 bg-dark-surface border border-dark-border rounded-lg hover:border-primary-500 transition-all duration-300 text-dark-text"
+                        disabled={loading}
                     >
-                        <RefreshCw className="w-4 h-4" />
+                        <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
                         Refresh
                     </button>
                     <button
@@ -124,50 +135,28 @@ const Customers = () => {
             </div>
 
             {/* Filters */}
-            <div className="bg-dark-surface border border-dark-border rounded-2xl p-6">
-                <div className="flex flex-col sm:flex-row gap-4">
-                    <div className="relative flex-1">
-                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-dark-text-tertiary" />
-                        <input
-                            type="text"
-                            placeholder="Search by name, email, or mobile..."
-                            value={searchTerm}
-                            onChange={(e) => setSearchTerm(e.target.value)}
-                            className="w-full pl-10 pr-4 py-2.5 bg-dark-bg border border-dark-border rounded-lg text-sm text-dark-text placeholder:text-dark-text-tertiary focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all duration-200"
-                        />
-                    </div>
-                    <button
-                        onClick={() => setShowFilters(!showFilters)}
-                        className="flex items-center gap-2 px-4 py-2.5 bg-dark-bg border border-dark-border rounded-lg text-sm font-medium text-dark-text hover:bg-dark-surface-hover hover:border-primary-500 transition-all duration-200"
-                    >
-                        <Filter className="w-4 h-4" />
-                        Filters
-                    </button>
-                </div>
-
-                {/* Filter Options */}
-                {showFilters && (
-                    <div className="mt-4 pt-4 border-t border-dark-border">
-                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                            <div>
-                                <label className="block text-sm font-medium text-dark-text mb-2">
-                                    Status
-                                </label>
-                                <select
-                                    value={statusFilter}
-                                    onChange={(e) => setStatusFilter(e.target.value)}
-                                    className="w-full px-3 py-2 bg-dark-bg border border-dark-border rounded-lg text-sm text-dark-text focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20"
-                                >
-                                    <option value="">All Status</option>
-                                    <option value="regular">Regular</option>
-                                    <option value="temporary">Temporary</option>
-                                    <option value="other">Other</option>
-                                </select>
-                            </div>
+            {/* Filter Options */}
+            {showFilters && (
+                <div className="bg-dark-surface border border-dark-border rounded-2xl p-6 animate-fade-in">
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                        <div>
+                            <label className="block text-sm font-medium text-dark-text mb-2">
+                                Status
+                            </label>
+                            <select
+                                value={statusFilter}
+                                onChange={(e) => setStatusFilter(e.target.value)}
+                                className="w-full px-3 py-2 bg-dark-bg border border-dark-border rounded-lg text-sm text-dark-text focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20"
+                            >
+                                <option value="">All Status</option>
+                                <option value="regular">Regular</option>
+                                <option value="temporary">Temporary</option>
+                                <option value="other">Other</option>
+                            </select>
                         </div>
                     </div>
-                )}
-            </div>
+                </div>
+            )}
 
             {/* Customers Table */}
             <div className="bg-dark-surface border border-dark-border rounded-2xl overflow-hidden">

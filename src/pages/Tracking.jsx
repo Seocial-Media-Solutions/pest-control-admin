@@ -4,7 +4,22 @@ import { io } from 'socket.io-client';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
 import toast from 'react-hot-toast';
+import {
+    MapPin,
+    Navigation,
+    Activity,
+    Users,
+    Search as SearchIcon,
+    Wifi,
+    WifiOff,
+    Smartphone,
+    Mail,
+    Clock
+} from 'lucide-react';
 import { getAllTechnicians } from '../services/technicianService';
+import { useSearch } from '../context/SearchContext';
+import { useTheme } from '../context/ThemeContext';
+import { SOCKET_URL, API_URL } from '../utils';
 
 // Fix for Broken Marker Icons in React
 delete L.Icon.Default.prototype._getIconUrl;
@@ -22,6 +37,7 @@ function ChangeView({ center }) {
 }
 
 function Tracking() {
+    const { isDark } = useTheme();
     // Map state
     const [lat, setLat] = useState(26.9124);
     const [lng, setLng] = useState(75.7873);
@@ -36,20 +52,16 @@ function Tracking() {
     const [connected, setConnected] = useState(false);
     const [realtimeLocations, setRealtimeLocations] = useState([]);
     const [wsStats, setWsStats] = useState(null);
-
-    // Real-time tracking state
-
+    const { searchQuery } = useSearch();
 
     // Technician selection state
     const [technicians, setTechnicians] = useState([]);
     const [selectedTechnician, setSelectedTechnician] = useState(null);
     const [loadingTechnicians, setLoadingTechnicians] = useState(false);
 
-
-
     // Initialize WebSocket connection
     useEffect(() => {
-        const newSocket = io('http://37.27.112.213:3014');
+        const newSocket = io(SOCKET_URL);
 
         newSocket.on('connect', () => {
             console.log('🔌 WebSocket connected');
@@ -76,11 +88,11 @@ function Tracking() {
             // Only update map position and show toast if this is the selected technician
             setSelectedTechnician(current => {
                 if (current && current._id === data.technicianId) {
-                    toast.success(`Location updated: ${data.technicianName}`);
+                    toast.success(`Location updated: ${data.technicianName}`, { id: 'loc-update' }); // Prevent toast spam
                     setPosition([data.latitude, data.longitude]);
                     setLat(data.latitude);
                     setLng(data.longitude);
-                    setAddress(data.address || '');
+                    setAddress(data.address || ''); // Ensure address is updated
                 }
                 return current;
             });
@@ -116,7 +128,7 @@ function Tracking() {
                 const response = await getAllTechnicians();
                 if (response.success && response.data) {
                     setTechnicians(response.data);
-                    toast.success(`Loaded ${response.data.length} technicians`);
+                    // toast.success(`Loaded ${response.data.length} technicians`);
                 }
             } catch (error) {
                 console.error('Error fetching technicians:', error);
@@ -168,7 +180,7 @@ function Tracking() {
     // Fetch WebSocket statistics
     const fetchWsStats = async () => {
         try {
-            const response = await fetch('http://37.27.112.213:3014/api/tracking/ws/stats');
+            const response = await fetch(`${API_URL}/tracking/ws/stats`);
             const data = await response.json();
             setWsStats(data.data);
         } catch (error) {
@@ -222,10 +234,6 @@ function Tracking() {
         }
     };
 
-
-
-
-
     const handleTrack = (e) => {
         e.preventDefault();
         const latitude = parseFloat(lat);
@@ -240,433 +248,203 @@ function Tracking() {
     };
 
     return (
-        <div style={{ padding: '20px', fontFamily: 'Arial, sans-serif' }}>
+        <div className="space-y-6 animate-fade-in p-4 md:p-6 pb-24 md:pb-6">
             {/* Header */}
-            <div style={{ marginBottom: '20px' }}>
-                <h1 style={{ color: '#333', marginBottom: '10px', display: 'flex', alignItems: 'center', gap: '10px' }}>
-                    🗺️ Real-Time Location Tracker
-                    <span style={{
-                        fontSize: '14px',
-                        padding: '4px 12px',
-                        borderRadius: '20px',
-                        background: connected ? 'linear-gradient(135deg, #00b4db 0%, #0083b0 100%)' : '#ccc',
-                        color: 'white',
-                        fontWeight: 'normal'
-                    }}>
-                        {connected ? '🟢 Connected' : '🔴 Disconnected'}
-                    </span>
-                </h1>
-                <p style={{ color: '#666', marginBottom: '10px' }}>
-                    Select a technician from the sidebar to track their real-time location
-                </p>
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div>
+                    <h1 className="text-2xl md:text-3xl font-bold text-dark-text flex items-center gap-3">
+                        <MapPin className="w-8 h-8 text-primary-500" />
+                        Live Tracking
+                    </h1>
+                    <p className="text-dark-text-secondary mt-1">
+                        Monitor technician locations in real-time
+                    </p>
+                </div>
+                <div className={`flex items-center gap-2 px-4 py-2 rounded-full border ${connected
+                    ? 'bg-green-500/10 border-green-500/20 text-green-500'
+                    : 'bg-red-500/10 border-red-500/20 text-red-500'
+                    }`}>
+                    {connected ? <Wifi className="w-4 h-4" /> : <WifiOff className="w-4 h-4" />}
+                    <span className="text-sm font-medium">{connected ? 'Connected' : 'Disconnected'}</span>
+                </div>
             </div>
 
             {/* Main Layout: Sidebar + Content */}
-            <div style={{ display: 'flex', gap: '20px', alignItems: 'flex-start' }}>
+            <div className="flex flex-col lg:flex-row gap-6 h-full min-h-[calc(100vh-120px)]">
+
                 {/* Sidebar - Technicians List */}
-                <div style={{
-                    width: '320px',
-                    flexShrink: 0,
-                    background: 'linear-gradient(135deg, #667eea15 0%, #764ba215 100%)',
-                    border: '2px solid #667eea',
-                    borderRadius: '12px',
-                    padding: '20px',
-                    maxHeight: '80vh',
-                    overflowY: 'auto',
-                    position: 'sticky',
-                    top: '20px'
-                }}>
-                    <div style={{ marginBottom: '15px' }}>
-                        <h2 style={{
-                            color: '#667eea',
-                            fontSize: '18px',
-                            margin: '0 0 8px 0',
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: '8px'
-                        }}>
-                            👨‍🔧 Technicians
-                            <span style={{
-                                fontSize: '12px',
-                                padding: '2px 8px',
-                                background: '#667eea',
-                                color: 'white',
-                                borderRadius: '12px',
-                                fontWeight: 'normal'
-                            }}>
+                <div className="w-full lg:w-80 flex-shrink-0 order-2 lg:order-1 flex flex-col gap-4">
+                    <div className="bg-dark-surface border border-dark-border rounded-2xl p-4 flex flex-col h-[500px] lg:h-full">
+                        <div className="flex items-center justify-between mb-4">
+                            <h2 className="text-lg font-bold text-dark-text flex items-center gap-2">
+                                <Users className="w-5 h-5 text-primary-400" />
+                                Technicians
+                            </h2>
+                            <span className="bg-primary-500 text-white text-xs font-bold px-2 py-1 rounded-lg">
                                 {technicians.length}
                             </span>
-                        </h2>
-                        <p style={{ fontSize: '12px', color: '#666', margin: 0 }}>
-                            Click to track a technician
-                        </p>
-                    </div>
-
-                    {loadingTechnicians ? (
-                        <div style={{
-                            textAlign: 'center',
-                            padding: '40px 20px',
-                            color: '#667eea'
-                        }}>
-                            <div style={{ fontSize: '32px', marginBottom: '10px' }}>⏳</div>
-                            <div>Loading technicians...</div>
                         </div>
-                    ) : technicians.length === 0 ? (
-                        <div style={{
-                            textAlign: 'center',
-                            padding: '40px 20px',
-                            color: '#999'
-                        }}>
-                            <div style={{ fontSize: '32px', marginBottom: '10px' }}>👤</div>
-                            <div>No technicians found</div>
-                        </div>
-                    ) : (
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                            {technicians.map((tech) => {
-                                const isSelected = selectedTechnician && selectedTechnician._id === tech._id;
-                                const techLocation = realtimeLocations.find(loc => loc.technicianId === tech._id);
 
-                                return (
-                                    <div
-                                        key={tech._id}
-                                        onClick={() => handleTechnicianSelect(tech._id)}
-                                        style={{
-                                            padding: '12px',
-                                            background: isSelected
-                                                ? 'linear-gradient(135deg, #11998e 0%, #38ef7d 100%)'
-                                                : 'white',
-                                            borderRadius: '8px',
-                                            cursor: 'pointer',
-                                            border: isSelected ? '2px solid #11998e' : '1px solid #ddd',
-                                            transition: 'all 0.3s ease',
-                                            boxShadow: isSelected ? '0 4px 12px rgba(17, 153, 142, 0.3)' : '0 2px 4px rgba(0,0,0,0.05)',
-                                            transform: isSelected ? 'translateY(-2px)' : 'none'
-                                        }}
-                                        onMouseEnter={(e) => {
-                                            if (!isSelected) {
-                                                e.currentTarget.style.boxShadow = '0 4px 8px rgba(0,0,0,0.1)';
-                                                e.currentTarget.style.transform = 'translateY(-2px)';
-                                            }
-                                        }}
-                                        onMouseLeave={(e) => {
-                                            if (!isSelected) {
-                                                e.currentTarget.style.boxShadow = '0 2px 4px rgba(0,0,0,0.05)';
-                                                e.currentTarget.style.transform = 'none';
-                                            }
-                                        }}
-                                    >
-                                        <div style={{
-                                            display: 'flex',
-                                            justifyContent: 'space-between',
-                                            alignItems: 'flex-start',
-                                            marginBottom: '6px'
-                                        }}>
-                                            <div style={{
-                                                fontWeight: 'bold',
-                                                color: isSelected ? 'white' : '#333',
-                                                fontSize: '14px',
-                                                flex: 1
-                                            }}>
-                                                {tech.fullName}
-                                            </div>
-                                            {isSelected && (
-                                                <span style={{
-                                                    fontSize: '10px',
-                                                    padding: '2px 6px',
-                                                    background: 'rgba(255,255,255,0.3)',
-                                                    color: 'white',
-                                                    borderRadius: '8px',
-                                                    fontWeight: 'bold'
-                                                }}>
-                                                    TRACKING
-                                                </span>
-                                            )}
-                                            {!isSelected && techLocation && (
-                                                <span style={{
-                                                    fontSize: '16px',
-                                                    animation: 'pulse 2s infinite'
-                                                }}>
-                                                    🟢
-                                                </span>
-                                            )}
-                                        </div>
-                                        <div style={{
-                                            fontSize: '12px',
-                                            color: isSelected ? 'rgba(255,255,255,0.9)' : '#666',
-                                            marginBottom: '4px'
-                                        }}>
-                                            📧 {tech.email}
-                                        </div>
-                                        <div style={{
-                                            fontSize: '12px',
-                                            color: isSelected ? 'rgba(255,255,255,0.9)' : '#666'
-                                        }}>
-                                            📱 {tech.contactNumber
-                                                || 'N/A'}
-                                        </div>
-                                        {techLocation && (
-                                            <div style={{
-                                                marginTop: '8px',
-                                                paddingTop: '8px',
-                                                borderTop: isSelected
-                                                    ? '1px solid rgba(255,255,255,0.3)'
-                                                    : '1px solid #eee',
-                                                fontSize: '11px',
-                                                color: isSelected ? 'rgba(255,255,255,0.8)' : '#999'
-                                            }}>
-                                                📍 Last seen: {new Date(techLocation.timestamp || Date.now()).toLocaleString()}
-                                            </div>
-                                        )}
-                                    </div>
-                                );
-                            })}
-                        </div>
-                    )}
-                </div>
-
-                {/* Main Content Area */}
-                <div style={{ flex: 1, minWidth: 0 }}>
-
-                    {/* WebSocket Stats */}
-                    {wsStats && (
-                        <div style={{
-                            padding: '15px',
-                            background: 'linear-gradient(135deg, #667eea15 0%, #764ba215 100%)',
-                            border: '2px solid #667eea',
-                            borderRadius: '8px',
-                            marginBottom: '20px'
-                        }}>
-                            <strong style={{ color: '#667eea', fontSize: '16px' }}>📊 WebSocket Stats:</strong>
-                            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '10px', marginTop: '10px' }}>
-                                <div>
-                                    <span style={{ color: '#666', fontSize: '14px' }}>Total Connections:</span>
-                                    <strong style={{ color: '#333', fontSize: '18px', marginLeft: '8px' }}>{wsStats.totalConnections}</strong>
-                                </div>
-                                <div>
-                                    <span style={{ color: '#666', fontSize: '14px' }}>All Subscribers:</span>
-                                    <strong style={{ color: '#333', fontSize: '18px', marginLeft: '8px' }}>{wsStats.allSubscribers}</strong>
-                                </div>
-                                <div>
-                                    <span style={{ color: '#666', fontSize: '14px' }}>Technician Subscriptions:</span>
-                                    <strong style={{ color: '#333', fontSize: '18px', marginLeft: '8px' }}>{wsStats.technicianSubscriptions}</strong>
-                                </div>
+                        {loadingTechnicians ? (
+                            <div className="flex-1 flex flex-col items-center justify-center text-primary-400 gap-2">
+                                <Activity className="w-8 h-8 animate-spin" />
+                                <span className="text-sm">Loading technicians...</span>
                             </div>
-                        </div>
-                    )}
-
-
-
-                    {/* Input Form */}
-                    <form onSubmit={handleTrack} style={{ marginBottom: '20px', display: 'flex', flexDirection: 'column', gap: '15px' }}>
-                        <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
-                            <input
-                                type="number"
-                                step="any"
-                                placeholder="Latitude (e.g., 28.6139)"
-                                value={lat}
-                                onChange={(e) => setLat(e.target.value)}
-                                style={{ padding: '10px', width: '180px', border: '2px solid #ddd', borderRadius: '6px', fontSize: '14px' }}
-                                required
-                            />
-                            <input
-                                type="number"
-                                step="any"
-                                placeholder="Longitude (e.g., 77.2090)"
-                                value={lng}
-                                onChange={(e) => setLng(e.target.value)}
-                                style={{ padding: '10px', width: '180px', border: '2px solid #ddd', borderRadius: '6px', fontSize: '14px' }}
-                                required
-                            />
-                        </div>
-
-                        <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
-                            <button
-                                type="submit"
-                                style={{
-                                    padding: '10px 20px',
-                                    background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                                    color: '#fff',
-                                    border: 'none',
-                                    cursor: 'pointer',
-                                    borderRadius: '6px',
-                                    fontWeight: 'bold',
-                                    fontSize: '14px',
-                                    boxShadow: '0 4px 6px rgba(0,0,0,0.1)'
-                                }}
-                            >
-                                📍 Update Map
-                            </button>
-
-                            <button
-                                type="button"
-                                onClick={fetchLocationFromCoordinates}
-                                disabled={fetchingLocation}
-                                style={{
-                                    padding: '10px 20px',
-                                    background: fetchingLocation ? '#ccc' : 'linear-gradient(135deg, #00b4db 0%, #0083b0 100%)',
-                                    color: '#fff',
-                                    border: 'none',
-                                    cursor: fetchingLocation ? 'not-allowed' : 'pointer',
-                                    borderRadius: '6px',
-                                    fontWeight: 'bold',
-                                    fontSize: '14px',
-                                    boxShadow: '0 4px 6px rgba(0,0,0,0.1)'
-                                }}
-                            >
-                                {fetchingLocation ? '⏳ Fetching...' : '🔍 Fetch Address'}
-                            </button>
-
-
-                        </div>
-                    </form>
-
-                    {/* Address Display */}
-                    {
-                        address && (
-                            <div style={{
-                                maxWidth: '100%',
-                                margin: '0 0 20px',
-                                padding: '15px',
-                                background: 'linear-gradient(135deg, #667eea15 0%, #764ba215 100%)',
-                                border: '2px solid #667eea',
-                                borderRadius: '8px',
-                                textAlign: 'left'
-                            }}>
-                                <strong style={{ color: '#667eea', fontSize: '16px' }}>📍 Address:</strong>
-                                <p style={{ margin: '8px 0 0 0', color: '#333', fontSize: '14px' }}>{address}</p>
+                        ) : technicians.length === 0 ? (
+                            <div className="flex-1 flex flex-col items-center justify-center text-dark-text-tertiary gap-2">
+                                <Users className="w-10 h-10 opacity-50" />
+                                <span className="text-sm">No technicians found</span>
                             </div>
-                        )
-                    }
+                        ) : (
+                            <div className="flex-1 overflow-y-auto space-y-3 pr-2 scrollbar-thin">
+                                {technicians.filter(t =>
+                                    t.fullName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                                    t.email?.toLowerCase().includes(searchQuery.toLowerCase())
+                                ).map((tech) => {
+                                    const isSelected = selectedTechnician && selectedTechnician._id === tech._id;
+                                    const techLocation = realtimeLocations.find(loc => loc.technicianId === tech._id);
 
-                    {/* Real-time Locations */}
-                    {
-                        realtimeLocations.length > 0 && (
-                            <div style={{
-                                marginBottom: '20px',
-                                padding: '15px',
-                                background: 'linear-gradient(135deg, #00b4db15 0%, #0083b015 100%)',
-                                border: '2px solid #00b4db',
-                                borderRadius: '8px'
-                            }}>
-                                <strong style={{ color: '#00b4db', fontSize: '16px' }}>🔴 Real-time Updates ({realtimeLocations.length}):</strong>
-                                <div style={{ marginTop: '10px', display: 'grid', gap: '10px' }}>
-                                    {realtimeLocations.map((loc, idx) => {
-                                        const isSelected = selectedTechnician && loc.technicianId === selectedTechnician._id;
-                                        return (
-                                            <div key={idx} style={{
-                                                padding: '10px',
-                                                background: isSelected ? 'linear-gradient(135deg, #11998e15 0%, #38ef7d15 100%)' : 'white',
-                                                borderRadius: '6px',
-                                                border: isSelected ? '2px solid #11998e' : '1px solid #ddd',
-                                                boxShadow: isSelected ? '0 2px 8px rgba(17, 153, 142, 0.2)' : 'none'
-                                            }}>
-                                                <div style={{
-                                                    fontWeight: 'bold',
-                                                    color: '#333',
-                                                    display: 'flex',
-                                                    alignItems: 'center',
-                                                    gap: '8px'
-                                                }}>
-                                                    {loc.technicianName}
-                                                    {isSelected && (
-                                                        <span style={{
-                                                            fontSize: '10px',
-                                                            padding: '2px 8px',
-                                                            background: '#11998e',
-                                                            color: 'white',
-                                                            borderRadius: '10px'
-                                                        }}>
-                                                            TRACKING
-                                                        </span>
-                                                    )}
-                                                </div>
-                                                <div style={{ fontSize: '12px', color: '#666' }}>
-                                                    📍 {loc.latitude?.toFixed(6) || 'N/A'}, {loc.longitude?.toFixed(6) || 'N/A'}
-                                                </div>
-                                                <div style={{ fontSize: '12px', color: '#666' }}>
-                                                    Status: <span style={{ color: loc.status === 'Active' ? '#00b4db' : '#999' }}>{loc.status}</span>
-                                                </div>
-                                                {loc.address && (
-                                                    <div style={{ fontSize: '12px', color: '#666', marginTop: '4px' }}>
-                                                        {loc.address}
-                                                    </div>
+                                    // Use tech.contactNumber or tech.mobileNo depending on data structure. 
+                                    // Based on previous file, it used tech.contactNumber || 'N/A'
+                                    const contact = tech.contactNumber || tech.mobileNo || 'N/A';
+
+                                    return (
+                                        <div
+                                            key={tech._id}
+                                            onClick={() => handleTechnicianSelect(tech._id)}
+                                            className={`p-3 rounded-xl border transition-all duration-200 cursor-pointer ${isSelected
+                                                ? 'bg-gradient-to-br from-primary-500 to-accent-500 border-transparent shadow-lg shadow-primary-500/20 text-white'
+                                                : 'bg-dark-bg border-dark-border hover:border-primary-500/50 text-dark-text hover:bg-dark-surface-hover'
+                                                }`}
+                                        >
+                                            <div className="flex justify-between items-start mb-2">
+                                                <span className={`font-semibold text-sm ${isSelected ? 'text-white' : 'text-dark-text'}`}>
+                                                    {tech.fullName}
+                                                </span>
+                                                {isSelected && (
+                                                    <span className="text-[10px] bg-white/20 px-2 py-0.5 rounded-full font-bold text-white uppercase tracking-wider">
+                                                        Tracking
+                                                    </span>
+                                                )}
+                                                {!isSelected && techLocation && (
+                                                    <span className="w-2.5 h-2.5 bg-green-500 rounded-full animate-pulse shadow-[0_0_8px_rgba(34,197,94,0.6)]"></span>
                                                 )}
                                             </div>
-                                        );
-                                    })}
-                                </div>
+
+                                            <div className="space-y-1">
+                                                <div className={`flex items-center gap-1.5 text-xs ${isSelected ? 'text-white/80' : 'text-dark-text-secondary'}`}>
+                                                    <Mail className="w-3 h-3" />
+                                                    <span className="truncate">{tech.email}</span>
+                                                </div>
+                                                <div className={`flex items-center gap-1.5 text-xs ${isSelected ? 'text-white/80' : 'text-dark-text-secondary'}`}>
+                                                    <Smartphone className="w-3 h-3" />
+                                                    <span>{contact}</span>
+                                                </div>
+                                            </div>
+
+                                            {techLocation && (
+                                                <div className={`mt-2 pt-2 border-t text-[10px] flex items-center gap-1.5 ${isSelected ? 'border-white/20 text-white/90' : 'border-dark-border text-dark-text-tertiary'
+                                                    }`}>
+                                                    <Clock className="w-3 h-3" />
+                                                    Last seen: {new Date(techLocation.timestamp || Date.now()).toLocaleTimeString()}
+                                                </div>
+                                            )}
+                                        </div>
+                                    );
+                                })}
                             </div>
-                        )
-                    }
+                        )}
+                    </div>
+                </div>
+
+                {/* Main Content Area - Map & Stats */}
+                <div className="flex-1 min-w-0 order-1 lg:order-2 space-y-6">
 
                     {/* Map Container */}
-                    <div style={{ height: '500px', width: '100%', border: '2px solid #ddd', borderRadius: '8px', overflow: 'hidden' }}>
+                    <div className="bg-dark-surface border border-dark-border rounded-2xl p-1 overflow-hidden h-[400px] lg:h-[600px] shadow-lg relative z-0">
                         <MapContainer
                             center={position}
                             zoom={13}
                             scrollWheelZoom={true}
-                            style={{ height: '100%', width: '100%' }}
+                            style={{ height: '100%', width: '100%', borderRadius: '12px', zIndex: 0 }}
                         >
                             <TileLayer
                                 attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-                                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                                url={isDark
+                                    ? "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
+                                    : "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                                }
                             />
-
-
 
                             {/* Show all real-time locations on map */}
                             {realtimeLocations.map((loc, idx) => {
                                 if (loc.latitude == null || loc.longitude == null) return null;
                                 return (
                                     <Marker key={idx} position={[loc.latitude, loc.longitude]}>
-                                        <Popup>
-                                            <strong>{loc.technicianName}</strong><br />
-                                            Status: {loc.status}<br />
-                                            {loc.address && <>{loc.address}<br /></>}
-                                            <small style={{ color: '#666' }}>
-                                                🕒 {new Date(loc.timestamp).toLocaleString()}
-                                            </small>
+                                        <Popup className="custom-popup">
+                                            <div className="p-1">
+                                                <strong className="block text-sm font-bold text-gray-800 mb-1">{loc.technicianName}</strong>
+                                                <div className="text-xs text-gray-600 space-y-1">
+                                                    <p>Status: <span className="text-primary-600 font-medium">{loc.status}</span></p>
+                                                    {loc.address && <p className="truncate max-w-[200px]">{loc.address}</p>}
+                                                    <p className="text-gray-400">{new Date(loc.timestamp).toLocaleTimeString()}</p>
+                                                </div>
+                                            </div>
                                         </Popup>
                                     </Marker>
                                 );
                             })}
-
                             <ChangeView center={position} />
                         </MapContainer>
                     </div>
 
-                    {/* Instructions */}
-                    <div style={{
-                        marginTop: '20px',
-                        padding: '15px',
-                        background: '#f8f9fa',
-                        borderRadius: '8px',
-                        border: '1px solid #ddd'
-                    }}>
-                        <h3 style={{ margin: '0 0 10px 0', color: '#333' }}>🧪 How to Use Live Tracking:</h3>
-                        <ol style={{ margin: 0, paddingLeft: '20px', color: '#666' }}>
-                            <li><strong>Step 1 - Select a Technician:</strong>
-                                <ul style={{ marginTop: '5px' }}>
-                                    <li>Choose a technician from the sidebar on the left</li>
-                                    <li>The system will automatically subscribe to their location updates</li>
-                                    <li>You'll see "TRACKING" badge on the selected technician card</li>
-                                </ul>
-                            </li>
-                            <li><strong>Step 2 - View Real-time Location:</strong>
-                                <ul style={{ marginTop: '5px' }}>
-                                    <li>When the selected technician sends location updates, the map will auto-update</li>
-                                    <li>The selected technician's card will be highlighted in the "Real-time Updates" section</li>
-                                    <li>Location coordinates and address will be displayed</li>
-                                </ul>
-                            </li>
+                    {/* Stats & Controls */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        {/* WebSocket Stats */}
+                        {wsStats && (
+                            <div className="bg-dark-surface border border-dark-border rounded-2xl p-5">
+                                <h3 className="text-sm font-bold text-dark-text mb-4 uppercase tracking-wider text-primary-400">System Status</h3>
+                                <div className="space-y-4">
+                                    <div className="flex justify-between items-center pb-3 border-b border-dark-border/50">
+                                        <span className="text-sm text-dark-text-secondary">Active Connections</span>
+                                        <span className="text-lg font-bold text-dark-text">{wsStats.totalConnections}</span>
+                                    </div>
+                                    <div className="flex justify-between items-center pb-3 border-b border-dark-border/50">
+                                        <span className="text-sm text-dark-text-secondary">Subscribers</span>
+                                        <span className="text-lg font-bold text-dark-text">{wsStats.allSubscribers}</span>
+                                    </div>
+                                    <div className="flex justify-between items-center">
+                                        <span className="text-sm text-dark-text-secondary">Technician Tracks</span>
+                                        <span className="text-lg font-bold text-dark-text">{wsStats.technicianSubscriptions}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
 
-                            <li>All technician locations appear on the map with markers</li>
-                            <li>Open multiple browser tabs to test real-time synchronization</li>
-                        </ol>
-                        <p style={{ margin: '10px 0 0 0', fontSize: '12px', color: '#999' }}>
-                            💡 Tip: Make sure WebSocket is connected (green badge) before selecting a technician
-                        </p>
+                        {/* Manual Controls */}
                     </div>
+
+                    {/* Active Sessions List (if any) */}
+                    {realtimeLocations.length > 0 && (
+                        <div className="bg-dark-surface border border-dark-border rounded-2xl p-5">
+                            <h3 className="text-sm font-bold text-dark-text mb-4 uppercase tracking-wider text-primary-400">Live Updates</h3>
+                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                                {realtimeLocations.map((loc, idx) => (
+                                    <div key={idx} className="bg-dark-bg border border-dark-border rounded-xl p-3 flex items-start gap-3">
+                                        <div className="w-8 h-8 rounded-full bg-primary-500/20 flex items-center justify-center text-primary-400">
+                                            <Navigation className="w-4 h-4" />
+                                        </div>
+                                        <div className="min-w-0">
+                                            <p className="text-sm font-bold text-dark-text truncate">{loc.technicianName}</p>
+                                            <p className="text-xs text-dark-text-secondary truncate">
+                                                {loc.latitude?.toFixed(4)}, {loc.longitude?.toFixed(4)}
+                                            </p>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    )}
                 </div>
             </div>
         </div>

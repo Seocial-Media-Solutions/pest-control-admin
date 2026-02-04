@@ -29,8 +29,10 @@ import {
     Legend,
 } from 'recharts';
 import dashboardService from '../services/dashboardService';
+import { useSearch } from '../context/SearchContext';
 
 const Dashboard = () => {
+    const { searchQuery } = useSearch();
     const [loading, setLoading] = useState(true);
     const [refreshing, setRefreshing] = useState(false);
     const [dashboardData, setDashboardData] = useState(null);
@@ -363,7 +365,10 @@ const Dashboard = () => {
                 <div className="bg-dark-surface border border-dark-border rounded-2xl p-6 hover:border-primary-500 transition-all duration-300">
                     <h3 className="text-lg font-bold text-dark-text mb-6">Recent Assignments</h3>
                     <div className="space-y-4">
-                        {recentActivity.assignments?.slice(0, 5).map((assignment) => (
+                        {recentActivity.assignments?.filter(assignment =>
+                            assignment.customer?.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                            assignment.serviceTitle?.toLowerCase().includes(searchQuery.toLowerCase())
+                        ).slice(0, 5).map((assignment) => (
                             <div
                                 key={assignment._id}
                                 className="flex items-center justify-between p-4 bg-dark-bg rounded-xl hover:bg-dark-surface-hover transition-colors duration-200"

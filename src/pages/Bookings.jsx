@@ -20,18 +20,21 @@ import {
 import bookingService from '../services/bookingService';
 import { toast } from 'react-hot-toast';
 
+import { useSearch } from '../context/SearchContext';
+
 const Bookings = () => {
     const navigate = useNavigate();
+    const { searchQuery, setSearchQuery } = useSearch();
     const [bookings, setBookings] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [searchTerm, setSearchTerm] = useState('');
+    // Removed local searchTerm
 
     // Fetch bookings
     const fetchBookings = async () => {
         try {
             setLoading(true);
             const params = {};
-            if (searchTerm) params.search = searchTerm;
+            if (searchQuery) params.search = searchQuery;
 
             const response = await bookingService.getAllBookings(params);
             setBookings(response.data.bookings || []);
@@ -45,7 +48,7 @@ const Bookings = () => {
 
     useEffect(() => {
         fetchBookings();
-    }, [searchTerm]);
+    }, [searchQuery]);
 
     // Reject booking
     const handleRejectBooking = async (id) => {
@@ -139,19 +142,6 @@ const Bookings = () => {
                 </div>
             </div>
 
-            {/* Search */}
-            <div className="bg-dark-surface border border-dark-border rounded-2xl p-6">
-                <div className="relative">
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-dark-text-tertiary" />
-                    <input
-                        type="text"
-                        placeholder="Search by customer name, email, or service..."
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
-                        className="w-full pl-10 pr-4 py-2.5 bg-dark-bg border border-dark-border rounded-lg text-sm text-dark-text placeholder:text-dark-text-tertiary focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all duration-200"
-                    />
-                </div>
-            </div>
 
             {/* Bookings List Card View */}
             <div className="space-y-4">
@@ -227,7 +217,7 @@ const Bookings = () => {
                                 </div>
 
                                 {/* Customer & Address (Col 5-8) */}
-                                <div className="lg:col-span-4 border-l border-dark-border pl-6 space-y-3">
+                                <div className="lg:col-span-4 border-t pt-6 lg:border-t-0 lg:pt-0 lg:border-l border-dark-border lg:pl-6 space-y-3">
                                     <div className="flex items-start gap-3">
                                         <User className="w-5 h-5 text-primary-400 mt-0.5" />
                                         <div>
@@ -253,7 +243,7 @@ const Bookings = () => {
                                 </div>
 
                                 {/* Dates & Actions (Col 9-12) */}
-                                <div className="lg:col-span-4 border-l border-dark-border pl-6 flex flex-col justify-between">
+                                <div className="lg:col-span-4 border-t pt-6 lg:border-t-0 lg:pt-0 lg:border-l border-dark-border lg:pl-6 flex flex-col justify-between">
                                     <div className="space-y-2 mb-4">
                                         <div className="flex items-center justify-between text-sm">
                                             <span className="text-dark-text-tertiary flex items-center gap-2">

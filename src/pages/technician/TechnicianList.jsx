@@ -19,6 +19,7 @@ import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import { getAllTechnicians, markAttendance } from '../../services/technicianService';
 import Toggle from '../../components/Toggle';
+import { API_URL } from "../../utils";
 
 export default function TechnicianList() {
   const queryClient = useQueryClient();
@@ -84,8 +85,7 @@ export default function TechnicianList() {
           <button
             onClick={async () => {
               try {
-                const res = await fetch(
-                  `http://37.27.112.213:3014/api/technicians/${id}`,
+                const res = await fetch(`${API_URL}/technicians/${id}`,
                   { method: "DELETE" }
                 );
                 const result = await res.json();
@@ -150,7 +150,7 @@ export default function TechnicianList() {
   return (
     <div className="min-h-screen max-w-full mx-auto">
       {/* Header */}
-      <div className="bg-card rounded-lg shadow-lg p-6 mb-6 flex justify-between items-center">
+      <div className="bg-card  rounded-lg shadow-lg p-6 mb-6 flex flex-wrap justify-between items-center">
         <div className="flex items-center gap-3">
           <div className="p-3 rounded-lg bg-black">
             <Users className="text-white" size={28} />

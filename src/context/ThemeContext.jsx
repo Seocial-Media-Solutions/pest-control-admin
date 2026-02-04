@@ -11,32 +11,70 @@ export const useTheme = () => {
 };
 
 export const ThemeProvider = ({ children }) => {
-    const [isDark, setIsDark] = useState(() => {
-        // Check localStorage for saved theme preference
-        const savedTheme = localStorage.getItem('theme');
-        return savedTheme === 'dark' || savedTheme === null; // Default to dark
+    const [themePreference, setThemePreference] = useState(() => {
+        // null means 'system'
+        return localStorage.getItem('theme');
     });
 
-    useEffect(() => {
-        // Update localStorage when theme changes
-        localStorage.setItem('theme', isDark ? 'dark' : 'light');
+    const [systemTheme, setSystemTheme] = useState(() => {
+        // Initial system check
+        if (typeof window !== 'undefined') {
+            return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+        }
+        return 'light';
+    });
 
-        // Update document class for theme
-        if (isDark) {
-            document.documentElement.classList.add('dark');
-            document.documentElement.classList.remove('light');
+    // Listen to system changes
+    useEffect(() => {
+        const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+        const handleChange = (e) => {
+            setSystemTheme(e.matches ? 'dark' : 'light');
+        };
+
+        mediaQuery.addEventListener('change', handleChange);
+        return () => mediaQuery.removeEventListener('change', handleChange);
+    }, []);
+
+    // Persist preference
+    useEffect(() => {
+        if (themePreference) {
+            localStorage.setItem('theme', themePreference);
         } else {
-            document.documentElement.classList.add('light');
-            document.documentElement.classList.remove('dark');
+            localStorage.removeItem('theme');
+        }
+    }, [themePreference]);
+
+    // Derive effective theme
+    const isDark = themePreference === 'dark' || (themePreference === null && systemTheme === 'dark');
+
+    // Apply to document
+    useEffect(() => {
+        const root = document.documentElement;
+        if (isDark) {
+            root.classList.add('dark');
+            root.classList.remove('light');
+        } else {
+            root.classList.add('light');
+            root.classList.remove('dark');
         }
     }, [isDark]);
 
     const toggleTheme = () => {
-        setIsDark(!isDark);
+        // If currently dark, switch to light. If light, switch to dark.
+        // This sets an explicit preference.
+        if (isDark) {
+            setThemePreference('light');
+        } else {
+            setThemePreference('dark');
+        }
+    };
+
+    const resetToSystem = () => {
+        setThemePreference(null); // Clear manual override
     };
 
     return (
-        <ThemeContext.Provider value={{ isDark, toggleTheme }}>
+        <ThemeContext.Provider value={{ isDark, toggleTheme, resetToSystem, themePreference }}>
             {children}
         </ThemeContext.Provider>
     );

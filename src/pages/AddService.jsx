@@ -1,11 +1,12 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, Bug, Upload, X } from 'lucide-react';
-import { createService } from '../services/serviceService';
+import { useServices } from '../context/ServiceContext';
 import { toast } from 'react-hot-toast';
 
 const AddService = () => {
     const navigate = useNavigate();
+    const { createService } = useServices();
     const [loading, setLoading] = useState(false);
     const [imageFile, setImageFile] = useState(null);
     const [imagePreview, setImagePreview] = useState(null);
@@ -31,6 +32,7 @@ const AddService = () => {
         setImagePreview(null);
     };
 
+    // update handleSubmit to use context createService
     const handleSubmit = async (e) => {
         e.preventDefault();
         setLoading(true);
@@ -49,11 +51,13 @@ const AddService = () => {
             }
 
             await createService(data);
-            toast.success('Service created successfully');
+            // toast is handled in context, but adding navigation here
             navigate('/services');
         } catch (error) {
+            // error toast handled in context usually, but catching here just in case specific logic needed
+            // Context handles toast.error, but we might want to ensure we don't navigate if error.
+            // createService throws on error, so we land here.
             console.error('Error creating service:', error);
-            toast.error(error.response?.data?.message || 'Failed to create service');
         } finally {
             setLoading(false);
         }

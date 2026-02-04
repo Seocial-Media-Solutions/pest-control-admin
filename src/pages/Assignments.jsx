@@ -34,14 +34,16 @@ import {
     deletePaymentCollection,
 } from '../services/assignmentService';
 import { getAllTechnicians } from '../services/technicianService';
+import { useSearch } from '../context/SearchContext';
 import toast from 'react-hot-toast';
 
 const Assignments = () => {
     const navigate = useNavigate();
+    const { searchQuery, setSearchQuery } = useSearch();
     const [assignments, setAssignments] = useState([]);
     const [technicians, setTechnicians] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [searchTerm, setSearchTerm] = useState('');
+    // Removed local searchTerm
     const [showDetailsModal, setShowDetailsModal] = useState(false);
     const [selectedAssignment, setSelectedAssignment] = useState(null);
 
@@ -224,9 +226,9 @@ const Assignments = () => {
         const customerPhone = customer?.mobileNumber || '';
 
         return (
-            customerName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            customerEmail.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            customerPhone.includes(searchTerm)
+            customerName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            customerEmail.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            customerPhone.includes(searchQuery)
         );
     });
 
@@ -264,8 +266,8 @@ const Assignments = () => {
                     <input
                         type="text"
                         placeholder="Search by customer name, email, or phone..."
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
                         className="w-full pl-10 pr-4 py-2.5 bg-dark-bg border border-dark-border rounded-lg text-sm text-dark-text placeholder:text-dark-text-tertiary focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all duration-200"
                     />
                 </div>
@@ -473,9 +475,9 @@ const Assignments = () => {
                         No assignments found
                     </h3>
                     <p className="text-dark-text-secondary mb-6">
-                        {searchTerm ? 'Try adjusting your search' : 'Get started by creating your first assignment'}
+                        {searchQuery ? 'Try adjusting your search' : 'Get started by creating your first assignment'}
                     </p>
-                    {!searchTerm && (
+                    {!searchQuery && (
                         <button
                             onClick={() => navigate('/assignments/create')}
                             className="flex items-center gap-2 px-6 py-3 gradient-primary text-white rounded-xl font-semibold hover:shadow-lg hover:shadow-primary-500/30 transition-all duration-200"

@@ -33,14 +33,14 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
             {/* Mobile Overlay */}
             {isOpen && (
                 <div
-                    className="fixed inset-0 bg-black/50 z-40 md:hidden animate-fade-in"
+                    className="fixed inset-0 bg-transparent backdrop-blur-sm  lg:bg-black/50 z-40 md:hidden animate-fade-in"
                     onClick={toggleSidebar}
                 />
             )}
 
             {/* Sidebar */}
             <aside
-                className={`fixed left-0 top-0 h-screen w-72 bg-dark-surface border-r border-dark-border flex flex-col z-50 transition-transform duration-300 ${isOpen ? 'translate-x-0' : '-translate-x-full'
+                className={`fixed left-0 top-0 h-screen w-72 bg-dark-surface lg:bg-dark-surface/90 lg:backdrop-blur-xl border-r border-dark-border flex flex-col z-50 transition-transform duration-300 ${isOpen ? 'translate-x-0' : '-translate-x-full'
                     } md:translate-x-0`}
             >
                 {/* Header */}

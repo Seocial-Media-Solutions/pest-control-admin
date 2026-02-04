@@ -1,37 +1,40 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
     Bug,
     Plus,
     Search,
-    Filter,
-    MoreVertical,
     Edit,
     Trash2,
-    Eye,
     Loader2,
     ChevronDown,
     ChevronUp,
     DollarSign,
+    Image as ImageIcon
 } from 'lucide-react';
-import {
-    getAllServices,
-    createService,
-    updateService,
-    deleteService,
-    addSubService,
-    updateSubService,
-    deleteSubService,
-} from '../services/serviceService';
+import { useServices } from '../context/ServiceContext';
+import { useSearch } from '../context/SearchContext';
 
 const Services = () => {
     const navigate = useNavigate();
-    const [services, setServices] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
-    const [searchTerm, setSearchTerm] = useState('');
+    const {
+        services,
+        loading,
+        error: contextError,
+        createService,
+        updateService,
+        deleteService,
+        addSubService,
+        updateSubService,
+        deleteSubService
+    } = useServices();
+
+    const { searchQuery, setSearchQuery } = useSearch();
     const [showModal, setShowModal] = useState(false);
     const [selectedService, setSelectedService] = useState(null);
+    const [localError, setLocalError] = useState(null);
+
+    // Form States
     const [formData, setFormData] = useState({
         title: '',
         description: '',
@@ -52,33 +55,16 @@ const Services = () => {
         title: '',
         description: '',
         startingPrice: '',
+        image: '',
         metaTitle: '',
         metaDescription: '',
         metaKeywords: '',
         metaImage: '',
     });
 
-    // Fetch services on component mount
-    useEffect(() => {
-        fetchServices();
-    }, []);
-
-    const fetchServices = async () => {
-        try {
-            setLoading(true);
-            const data = await getAllServices();
-            setServices(data.data || []);
-            setError(null);
-        } catch (err) {
-            setError(err.response?.data?.message || 'Failed to fetch services');
-            console.error('Error fetching services:', err);
-        } finally {
-            setLoading(false);
-        }
-    };
-
     const handleCreateService = async (e) => {
         e.preventDefault();
+        setLocalError(null);
         try {
             const data = new FormData();
             data.append('title', formData.title);
@@ -91,7 +77,6 @@ const Services = () => {
             if (imageFile) {
                 data.append('image', imageFile);
             } else if (formData.image) {
-                // If editing and no new file, keep existing URL text if backend supports it or just don't send 'image' field if it's not changing
                 data.append('image', formData.image);
             }
 
@@ -102,10 +87,8 @@ const Services = () => {
             }
             setShowModal(false);
             resetForm();
-            fetchServices();
         } catch (err) {
-            setError(err.response?.data?.message || 'Failed to save service');
-            console.error('Error saving service:', err);
+            setLocalError(err.response?.data?.message || 'Failed to save service');
         }
     };
 
@@ -113,10 +96,8 @@ const Services = () => {
         if (window.confirm('Are you sure you want to delete this service?')) {
             try {
                 await deleteService(id);
-                fetchServices();
             } catch (err) {
-                setError(err.response?.data?.message || 'Failed to delete service');
-                console.error('Error deleting service:', err);
+                setLocalError('Failed to delete service');
             }
         }
     };
@@ -133,6 +114,7 @@ const Services = () => {
         });
         setImageFile(null);
         setSelectedService(null);
+        setLocalError(null);
     };
 
     const openEditModal = (service) => {
@@ -163,21 +145,6 @@ const Services = () => {
             title: '',
             description: '',
             startingPrice: '',
-            image: '', // Add image field
-            metaTitle: '',
-            metaDescription: '',
-            metaKeywords: '',
-            metaImage: '',
-        });
-        setImageFile(null);
-        setSelectedSubService(null);
-    };
-
-    const openAddSubServiceModal = (serviceId) => {
-        setSubServiceFormData({
-            title: '',
-            description: '',
-            startingPrice: '',
             image: '',
             metaTitle: '',
             metaDescription: '',
@@ -186,6 +153,11 @@ const Services = () => {
         });
         setImageFile(null);
         setSelectedSubService(null);
+        setLocalError(null);
+    };
+
+    const openAddSubServiceModal = (serviceId) => {
+        resetSubServiceForm();
         setParentServiceId(serviceId);
         setShowSubServiceModal(true);
     };
@@ -209,6 +181,7 @@ const Services = () => {
 
     const handleSubServiceSubmit = async (e) => {
         e.preventDefault();
+        setLocalError(null);
         try {
             const data = new FormData();
             data.append('title', subServiceFormData.title);
@@ -232,11 +205,8 @@ const Services = () => {
             }
             setShowSubServiceModal(false);
             resetSubServiceForm();
-            setImageFile(null); // Clear image file
-            fetchServices();
         } catch (err) {
-            setError(err.response?.data?.message || 'Failed to save sub-service');
-            console.error('Error saving sub-service:', err);
+            setLocalError(err.response?.data?.message || 'Failed to save sub-service');
         }
     };
 
@@ -244,20 +214,18 @@ const Services = () => {
         if (window.confirm('Are you sure you want to delete this sub-service?')) {
             try {
                 await deleteSubService(serviceId, subServiceId);
-                fetchServices();
             } catch (err) {
-                setError(err.response?.data?.message || 'Failed to delete sub-service');
-                console.error('Error deleting sub-service:', err);
+                setLocalError('Failed to delete sub-service');
             }
         }
     };
 
     const filteredServices = services.filter((service) =>
-        service.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        service.description?.toLowerCase().includes(searchTerm.toLowerCase())
+        service.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        service.description?.toLowerCase().includes(searchQuery.toLowerCase())
     );
 
-    if (loading) {
+    if (loading && services.length === 0) {
         return (
             <div className="flex items-center justify-center min-h-[60vh]">
                 <Loader2 className="w-12 h-12 text-primary-500 animate-spin" />
@@ -265,19 +233,21 @@ const Services = () => {
         );
     }
 
+    const error = contextError || localError;
+
     return (
-        <div className="space-y-6 animate-fade-in">
+        <div className="space-y-6 animate-fade-in p-4 md:p-6 pb-24 md:pb-6">
             {/* Page Header */}
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div>
-                    <h1 className="text-3xl font-bold text-dark-text mb-2">Services</h1>
-                    <p className="text-dark-text-secondary">
+                    <h1 className="text-2xl md:text-3xl font-bold text-dark-text mb-2">Services</h1>
+                    <p className="text-dark-text-secondary text-sm md:text-base">
                         Manage your pest control services and packages
                     </p>
                 </div>
                 <button
                     onClick={() => navigate('/services/create')}
-                    className="flex items-center gap-2 px-6 py-3 gradient-primary text-white rounded-xl font-semibold hover:shadow-lg hover:shadow-primary-500/30 hover:-translate-y-0.5 transition-all duration-200"
+                    className="flex items-center justify-center gap-2 px-6 py-3 gradient-primary text-white rounded-xl font-semibold hover:shadow-lg hover:shadow-primary-500/30 hover:-translate-y-0.5 transition-all duration-200 w-full md:w-auto"
                 >
                     <Plus className="w-5 h-5" />
                     Add Service
@@ -286,193 +256,151 @@ const Services = () => {
 
             {/* Error Message */}
             {error && (
-                <div className="bg-red-500/10 border border-red-500/20 rounded-xl p-4 text-red-400">
+                <div className="bg-red-500/10 border border-red-500/20 rounded-xl p-4 text-red-400 text-sm">
                     {error}
                 </div>
             )}
 
             {/* Search Bar */}
-            <div className="bg-dark-surface border border-dark-border rounded-2xl p-6">
-                <div className="flex flex-col sm:flex-row gap-4">
-                    <div className="relative flex-1">
-                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-dark-text-tertiary" />
-                        <input
-                            type="text"
-                            placeholder="Search services..."
-                            value={searchTerm}
-                            onChange={(e) => setSearchTerm(e.target.value)}
-                            className="w-full pl-10 pr-4 py-2.5 bg-dark-bg border border-dark-border rounded-lg text-sm text-dark-text placeholder:text-dark-text-tertiary focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all duration-200"
-                        />
-                    </div>
+            <div className="bg-dark-surface border border-dark-border rounded-2xl p-4 md:p-6">
+                <div className="relative">
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-dark-text-tertiary" />
+                    <input
+                        type="text"
+                        placeholder="Search services..."
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        className="w-full pl-10 pr-4 py-2.5 bg-dark-bg border border-dark-border rounded-lg text-sm text-dark-text placeholder:text-dark-text-tertiary focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all duration-200"
+                    />
                 </div>
             </div>
 
             {/* Services Grid */}
-            <div className="grid grid-cols-1 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {filteredServices.map((service) => (
                     <div
                         key={service._id}
-                        className="bg-dark-surface border border-dark-border rounded-2xl overflow-hidden hover:border-primary-500 transition-all duration-300 hover:shadow-lg hover:shadow-primary-500/10"
+                        className="bg-dark-surface border border-dark-border rounded-2xl overflow-hidden hover:border-primary-500 transition-all duration-300 hover:shadow-lg hover:shadow-primary-500/10 flex flex-col"
                     >
                         {/* Service Header */}
-                        <div className="flex items-start gap-4 p-6">
-                            {/* Service Image */}
-                            <div className="w-24 h-24 rounded-xl bg-gradient-to-br from-primary-500/20 to-accent-500/20 flex items-center justify-center overflow-hidden flex-shrink-0">
-                                {service.image ? (
-                                    <img
-                                        src={service.image}
-                                        alt={service.title}
-                                        className="w-full h-full object-cover"
-                                    />
-                                ) : (
-                                    <Bug className="w-12 h-12 text-primary-400" />
-                                )}
-                            </div>
-
-                            {/* Service Info */}
-                            <div className="flex-1 min-w-0">
-                                <h3 className="text-2xl font-bold text-dark-text mb-2 capitalize">
-                                    {service.title}
-                                </h3>
-                                <p className="text-sm text-dark-text-secondary mb-3">
-                                    {service.description}
-                                </p>
-
-                                {/* Meta Info */}
-                                <div className="flex flex-wrap gap-4 text-xs text-dark-text-tertiary mb-4">
-                                    <span className="flex items-center gap-1">
-                                        <Bug className="w-3 h-3" />
-                                        {service.services?.length || 0} Sub-services
-                                    </span>
+                        <div className="p-6 flex-1 flex flex-col">
+                            <div className="flex items-start justify-between mb-4">
+                                <div className="w-16 h-16 rounded-xl bg-gradient-to-br from-primary-500/20 to-accent-500/20 flex items-center justify-center overflow-hidden flex-shrink-0">
+                                    {service.image ? (
+                                        <img
+                                            src={service.image}
+                                            alt={service.title}
+                                            className="w-full h-full object-cover"
+                                        />
+                                    ) : (
+                                        <Bug className="w-8 h-8 text-primary-400" />
+                                    )}
                                 </div>
-
-                                {/* Actions */}
-                                <div className="flex gap-2">
-                                    <button
-                                        onClick={() => toggleServiceExpand(service._id)}
-                                        className="flex items-center gap-2 px-4 py-2 bg-accent-500/10 text-accent-400 rounded-lg hover:bg-accent-500/20 transition-colors duration-200"
-                                    >
-                                        {expandedServices[service._id] ? (
-                                            <>
-                                                <ChevronUp className="w-4 h-4" />
-                                                Hide Sub-services
-                                            </>
-                                        ) : (
-                                            <>
-                                                <ChevronDown className="w-4 h-4" />
-                                                View Sub-services
-                                            </>
-                                        )}
-                                    </button>
-                                    <button
-                                        onClick={() => openAddSubServiceModal(service._id)}
-                                        className="flex items-center gap-2 px-4 py-2 bg-green-500/10 text-green-400 rounded-lg hover:bg-green-500/20 transition-colors duration-200"
-                                    >
-                                        <Plus className="w-4 h-4" />
-                                        Add Sub-service
-                                    </button>
+                                <div className="flex items-center gap-1">
                                     <button
                                         onClick={() => openEditModal(service)}
-                                        className="flex items-center gap-2 px-4 py-2 bg-primary-500/10 text-primary-400 rounded-lg hover:bg-primary-500/20 transition-colors duration-200"
+                                        className="p-2 hover:bg-primary-500/10 text-primary-400 rounded-lg transition-colors"
+                                        title="Edit"
                                     >
                                         <Edit className="w-4 h-4" />
-                                        Edit
                                     </button>
                                     <button
                                         onClick={() => handleDeleteService(service._id)}
-                                        className="flex items-center gap-2 px-4 py-2 bg-red-500/10 text-red-400 rounded-lg hover:bg-red-500/20 transition-colors duration-200"
+                                        className="p-2 hover:bg-red-500/10 text-red-400 rounded-lg transition-colors"
+                                        title="Delete"
                                     >
                                         <Trash2 className="w-4 h-4" />
-                                        Delete
                                     </button>
                                 </div>
+                            </div>
+
+                            <h3 className="text-xl font-bold text-dark-text mb-2 capitalize line-clamp-1">
+                                {service.title}
+                            </h3>
+                            <p className="text-sm text-dark-text-secondary mb-4 line-clamp-3 flex-1">
+                                {service.description}
+                            </p>
+
+                            <div className="flex items-center justify-between mt-auto pt-4 border-t border-dark-border">
+                                <span className="text-xs text-dark-text-tertiary flex items-center gap-1">
+                                    <Bug className="w-3 h-3" />
+                                    {service.services?.length || 0} Sub-services
+                                </span>
+                                <button
+                                    onClick={() => toggleServiceExpand(service._id)}
+                                    className="text-xs font-medium text-primary-400 hover:text-primary-300 flex items-center gap-1 transition-colors"
+                                >
+                                    {expandedServices[service._id] ? (
+                                        <>Hide <ChevronUp className="w-3 h-3" /></>
+                                    ) : (
+                                        <>View All <ChevronDown className="w-3 h-3" /></>
+                                    )}
+                                </button>
                             </div>
                         </div>
 
                         {/* Expandable Sub-services Section */}
                         {expandedServices[service._id] && (
-                            <div className="border-t border-dark-border bg-dark-bg/50 p-6">
-                                <h4 className="text-lg font-bold text-dark-text mb-4">
-                                    Sub-services ({service.services?.length || 0})
-                                </h4>
+                            <div className="border-t border-dark-border bg-dark-bg/50 p-4">
+                                <div className="flex items-center justify-between mb-4">
+                                    <h4 className="text-sm font-bold text-dark-text">Sub-services</h4>
+                                    <button
+                                        onClick={() => openAddSubServiceModal(service._id)}
+                                        className="text-xs flex items-center gap-1 px-3 py-1.5 bg-green-500/10 text-green-400 rounded-lg hover:bg-green-500/20 transition-colors"
+                                    >
+                                        <Plus className="w-3 h-3" /> Add
+                                    </button>
+                                </div>
 
-                                {service.services && service.services.length > 0 ? (
-                                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                                        {service.services.map((subService) => (
+                                <div className="space-y-3 max-h-64 overflow-y-auto pr-1">
+                                    {service.services && service.services.length > 0 ? (
+                                        service.services.map((subService) => (
                                             <div
                                                 key={subService._id}
-                                                className="bg-dark-surface border border-dark-border rounded-xl p-4 hover:border-primary-500/50 transition-all duration-200"
+                                                className="bg-dark-surface border border-dark-border rounded-xl p-3 hover:border-primary-500/30 transition-all"
                                             >
-                                                <div className="flex items-start justify-between mb-3">
-                                                    <div className="flex items-center gap-3">
-                                                        {subService.image && (
-                                                            <div className="w-12 h-12 rounded-lg bg-dark-bg border border-dark-border overflow-hidden flex-shrink-0">
-                                                                <img src={subService.image} alt={subService.title} className="w-full h-full object-cover" />
-                                                            </div>
-                                                        )}
-                                                        <h5 className="text-base font-semibold text-dark-text capitalize">
-                                                            {subService.title}
-                                                        </h5>
-                                                    </div>
-                                                    <div className="flex items-center gap-1 bg-primary-500/10 text-primary-400 px-2 py-1 rounded-lg text-xs font-semibold">
-                                                        <DollarSign className="w-3 h-3" />
-                                                        {subService.startingPrice}
+                                                <div className="flex items-start gap-3">
+                                                    {subService.image && (
+                                                        <div className="w-10 h-10 rounded-lg bg-dark-bg overflow-hidden flex-shrink-0">
+                                                            <img src={subService.image} alt={subService.title} className="w-full h-full object-cover" />
+                                                        </div>
+                                                    )}
+                                                    <div className="flex-1 min-w-0">
+                                                        <div className="flex justify-between items-start">
+                                                            <h5 className="text-sm font-semibold text-dark-text truncate">
+                                                                {subService.title}
+                                                            </h5>
+                                                            <span className="text-xs font-medium text-primary-400 bg-primary-500/10 px-1.5 py-0.5 rounded whitespace-nowrap ml-2">
+                                                                ${subService.startingPrice}
+                                                            </span>
+                                                        </div>
+                                                        <p className="text-xs text-dark-text-secondary truncate mt-0.5">
+                                                            {subService.description}
+                                                        </p>
                                                     </div>
                                                 </div>
-
-                                                <p className="text-xs text-dark-text-secondary mb-4 line-clamp-2">
-                                                    {subService.description}
-                                                </p>
-
-                                                {/* Sub-service Meta */}
-                                                {subService.metaTitle && (
-                                                    <div className="mb-3 pb-3 border-b border-dark-border">
-                                                        <p className="text-xs text-dark-text-tertiary mb-1">
-                                                            <span className="font-semibold">SEO Title:</span> {subService.metaTitle}
-                                                        </p>
-                                                        {subService.metaDescription && (
-                                                            <p className="text-xs text-dark-text-tertiary line-clamp-1">
-                                                                <span className="font-semibold">Description:</span> {subService.metaDescription}
-                                                            </p>
-                                                        )}
-                                                    </div>
-                                                )}
-
-                                                {/* Sub-service Actions */}
-                                                <div className="flex gap-2">
+                                                <div className="flex justify-end gap-2 mt-2 pt-2 border-t border-dark-border/50">
                                                     <button
                                                         onClick={() => openEditSubServiceModal(service._id, subService)}
-                                                        className="flex-1 flex items-center justify-center gap-1 px-3 py-1.5 bg-primary-500/10 text-primary-400 rounded-lg hover:bg-primary-500/20 transition-colors duration-200 text-xs"
+                                                        className="text-xs text-primary-400 hover:text-primary-300"
                                                     >
-                                                        <Edit className="w-3 h-3" />
                                                         Edit
                                                     </button>
                                                     <button
                                                         onClick={() => handleDeleteSubService(service._id, subService._id)}
-                                                        className="flex-1 flex items-center justify-center gap-1 px-3 py-1.5 bg-red-500/10 text-red-400 rounded-lg hover:bg-red-500/20 transition-colors duration-200 text-xs"
+                                                        className="text-xs text-red-400 hover:text-red-300"
                                                     >
-                                                        <Trash2 className="w-3 h-3" />
                                                         Delete
                                                     </button>
                                                 </div>
                                             </div>
-                                        ))}
-                                    </div>
-                                ) : (
-                                    <div className="text-center py-8">
-                                        <Bug className="w-12 h-12 text-dark-text-tertiary mx-auto mb-3" />
-                                        <p className="text-dark-text-secondary mb-4">
-                                            No sub-services yet
+                                        ))
+                                    ) : (
+                                        <p className="text-center text-xs text-dark-text-tertiary py-4">
+                                            No sub-services yet.
                                         </p>
-                                        <button
-                                            onClick={() => openAddSubServiceModal(service._id)}
-                                            className="inline-flex items-center gap-2 px-4 py-2 gradient-primary text-white rounded-lg font-semibold hover:shadow-lg hover:shadow-primary-500/30 transition-all duration-200"
-                                        >
-                                            <Plus className="w-4 h-4" />
-                                            Add First Sub-service
-                                        </button>
-                                    </div>
-                                )}
+                                    )}
+                                </div>
                             </div>
                         )}
                     </div>
@@ -481,13 +409,13 @@ const Services = () => {
 
             {/* Empty State */}
             {filteredServices.length === 0 && !loading && (
-                <div className="flex flex-col items-center justify-center min-h-[40vh] text-center">
+                <div className="flex flex-col items-center justify-center min-h-[40vh] text-center p-6">
                     <Bug className="w-16 h-16 text-dark-text-tertiary mb-4" />
                     <h3 className="text-xl font-bold text-dark-text mb-2">
                         No services found
                     </h3>
                     <p className="text-dark-text-secondary mb-6">
-                        {searchTerm
+                        {searchQuery
                             ? 'Try adjusting your search terms'
                             : 'Get started by creating your first service'}
                     </p>
@@ -501,43 +429,47 @@ const Services = () => {
                 </div>
             )}
 
-            {/* Modal */}
+            {/* Main Service Modal */}
             {showModal && (
-                <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-fade-in">
-                    <div className="bg-dark-surface border border-dark-border rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-                        <div className="p-6 border-b border-dark-border">
-                            <h2 className="text-2xl font-bold text-dark-text">
+                <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-end md:items-center justify-center p-0 md:p-4 animate-fade-in">
+                    <div className="bg-dark-surface border-t md:border border-dark-border rounded-t-3xl md:rounded-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto flex flex-col">
+                        <div className="p-6 border-b border-dark-border flex items-center justify-between sticky top-0 bg-dark-surface z-10">
+                            <h2 className="text-xl font-bold text-dark-text">
                                 {selectedService ? 'Edit Service' : 'Add New Service'}
                             </h2>
+                            <button
+                                onClick={() => { setShowModal(false); resetForm(); }}
+                                className="p-2 hover:bg-dark-bg rounded-lg text-dark-text-secondary transition-colors"
+                            >
+                                <plus className="w-6 h-6 rotate-45" /> {/* Close icon using Plus rotated, or just import X */}
+                                <span className="sr-only">Close</span>
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                            </button>
                         </div>
 
                         <form onSubmit={handleCreateService} className="p-6 space-y-4">
                             <div>
                                 <label className="block text-sm font-medium text-dark-text mb-2">
-                                    Title
+                                    Title <span className="text-red-500">*</span>
                                 </label>
                                 <input
                                     type="text"
                                     value={formData.title}
-                                    onChange={(e) =>
-                                        setFormData({ ...formData, title: e.target.value })
-                                    }
-                                    className="w-full px-4 py-2.5 bg-dark-bg border border-dark-border rounded-lg text-dark-text focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all duration-200"
+                                    onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                                    className="w-full px-4 py-2.5 bg-dark-bg border border-dark-border rounded-lg text-dark-text focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20"
                                     required
                                 />
                             </div>
 
                             <div>
                                 <label className="block text-sm font-medium text-dark-text mb-2">
-                                    Description
+                                    Description <span className="text-red-500">*</span>
                                 </label>
                                 <textarea
                                     value={formData.description}
-                                    onChange={(e) =>
-                                        setFormData({ ...formData, description: e.target.value })
-                                    }
+                                    onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                                     rows={3}
-                                    className="w-full px-4 py-2.5 bg-dark-bg border border-dark-border rounded-lg text-dark-text focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all duration-200"
+                                    className="w-full px-4 py-2.5 bg-dark-bg border border-dark-border rounded-lg text-dark-text focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20"
                                     required
                                 />
                             </div>
@@ -546,9 +478,9 @@ const Services = () => {
                                 <label className="block text-sm font-medium text-dark-text mb-2">
                                     Service Image
                                 </label>
-                                <div className="space-y-2">
+                                <div className="space-y-3">
                                     {(imageFile || formData.image) && (
-                                        <div className="w-full h-40 bg-dark-bg border border-dark-border rounded-lg overflow-hidden flex items-center justify-center">
+                                        <div className="w-full h-40 bg-dark-bg border border-dark-border rounded-lg overflow-hidden flex items-center justify-center relative group">
                                             <img
                                                 src={imageFile ? URL.createObjectURL(imageFile) : formData.image}
                                                 alt="Preview"
@@ -556,97 +488,55 @@ const Services = () => {
                                             />
                                         </div>
                                     )}
-                                    <input
-                                        type="file"
-                                        accept="image/*"
-                                        onChange={(e) => setImageFile(e.target.files[0])}
-                                        className="w-full px-4 py-2.5 bg-dark-bg border border-dark-border rounded-lg text-dark-text focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all duration-200 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-primary-500/10 file:text-primary-400 hover:file:bg-primary-500/20"
-                                    />
-                                    <p className="text-xs text-dark-text-tertiary">Allowed formats: JPG, PNG, WEBP. Max size: 5MB.</p>
+                                    <div className="flex items-center gap-2">
+                                        <label className="flex-1 cursor-pointer flex items-center justify-center gap-2 px-4 py-2 bg-dark-bg border border-dark-border rounded-lg hover:bg-dark-surface-hover transition-colors">
+                                            <ImageIcon className="w-5 h-5 text-dark-text-secondary" />
+                                            <span className="text-sm text-dark-text">Choose Image</span>
+                                            <input
+                                                type="file"
+                                                accept="image/*"
+                                                onChange={(e) => setImageFile(e.target.files[0])}
+                                                className="hidden"
+                                            />
+                                        </label>
+                                    </div>
                                 </div>
                             </div>
 
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <div>
-                                    <label className="block text-sm font-medium text-dark-text mb-2">
-                                        Meta Title
-                                    </label>
+                            {/* SEO Section Toggle or just inline */}
+                            <div className="border-t border-dark-border pt-4 mt-4">
+                                <h3 className="text-sm font-bold text-dark-text mb-3">SEO Configuration</h3>
+                                <div className="space-y-3">
                                     <input
                                         type="text"
+                                        placeholder="Meta Title"
                                         value={formData.metaTitle}
-                                        onChange={(e) =>
-                                            setFormData({ ...formData, metaTitle: e.target.value })
-                                        }
-                                        className="w-full px-4 py-2.5 bg-dark-bg border border-dark-border rounded-lg text-dark-text focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all duration-200"
-                                        required
+                                        onChange={(e) => setFormData({ ...formData, metaTitle: e.target.value })}
+                                        className="w-full px-4 py-2.5 bg-dark-bg border border-dark-border rounded-lg text-dark-text text-sm focus:outline-none focus:border-primary-500"
                                     />
-                                </div>
-
-                                <div>
-                                    <label className="block text-sm font-medium text-dark-text mb-2">
-                                        Meta Image URL
-                                    </label>
-                                    <input
-                                        type="text"
-                                        value={formData.metaImage}
-                                        onChange={(e) =>
-                                            setFormData({ ...formData, metaImage: e.target.value })
-                                        }
-                                        className="w-full px-4 py-2.5 bg-dark-bg border border-dark-border rounded-lg text-dark-text focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all duration-200"
-                                        required
+                                    <textarea
+                                        placeholder="Meta Description"
+                                        value={formData.metaDescription}
+                                        onChange={(e) => setFormData({ ...formData, metaDescription: e.target.value })}
+                                        rows={2}
+                                        className="w-full px-4 py-2.5 bg-dark-bg border border-dark-border rounded-lg text-dark-text text-sm focus:outline-none focus:border-primary-500"
                                     />
                                 </div>
                             </div>
 
-                            <div>
-                                <label className="block text-sm font-medium text-dark-text mb-2">
-                                    Meta Description
-                                </label>
-                                <textarea
-                                    value={formData.metaDescription}
-                                    onChange={(e) =>
-                                        setFormData({
-                                            ...formData,
-                                            metaDescription: e.target.value,
-                                        })
-                                    }
-                                    rows={2}
-                                    className="w-full px-4 py-2.5 bg-dark-bg border border-dark-border rounded-lg text-dark-text focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all duration-200"
-                                    required
-                                />
-                            </div>
-
-                            <div>
-                                <label className="block text-sm font-medium text-dark-text mb-2">
-                                    Meta Keywords
-                                </label>
-                                <input
-                                    type="text"
-                                    value={formData.metaKeywords}
-                                    onChange={(e) =>
-                                        setFormData({ ...formData, metaKeywords: e.target.value })
-                                    }
-                                    className="w-full px-4 py-2.5 bg-dark-bg border border-dark-border rounded-lg text-dark-text focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all duration-200"
-                                    required
-                                />
-                            </div>
-
-                            <div className="flex gap-3 pt-4">
+                            <div className="flex gap-3 pt-4 sticky bottom-0 bg-dark-surface border-t border-dark-border -mx-6 -mb-6 p-6">
                                 <button
                                     type="button"
-                                    onClick={() => {
-                                        setShowModal(false);
-                                        resetForm();
-                                    }}
-                                    className="flex-1 px-6 py-3 bg-dark-bg border border-dark-border rounded-xl font-semibold text-dark-text hover:bg-dark-surface-hover transition-colors duration-200"
+                                    onClick={() => { setShowModal(false); resetForm(); }}
+                                    className="flex-1 px-6 py-3 bg-dark-bg border border-dark-border rounded-xl font-semibold text-dark-text hover:bg-dark-surface-hover"
                                 >
                                     Cancel
                                 </button>
                                 <button
                                     type="submit"
-                                    className="flex-1 px-6 py-3 gradient-primary text-white rounded-xl font-semibold hover:shadow-lg hover:shadow-primary-500/30 transition-all duration-200"
+                                    className="flex-1 px-6 py-3 gradient-primary text-white rounded-xl font-semibold hover:shadow-lg"
                                 >
-                                    {selectedService ? 'Update Service' : 'Create Service'}
+                                    {selectedService ? 'Update' : 'Create'}
                                 </button>
                             </div>
                         </form>
@@ -656,168 +546,98 @@ const Services = () => {
 
             {/* Sub-Service Modal */}
             {showSubServiceModal && (
-                <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-fade-in">
-                    <div className="bg-dark-surface border border-dark-border rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-                        <div className="p-6 border-b border-dark-border">
-                            <h2 className="text-2xl font-bold text-dark-text">
-                                {selectedSubService ? 'Edit Sub-Service' : 'Add New Sub-Service'}
+                <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-end md:items-center justify-center p-0 md:p-4 animate-fade-in">
+                    <div className="bg-dark-surface border-t md:border border-dark-border rounded-t-3xl md:rounded-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto flex flex-col">
+                        <div className="p-6 border-b border-dark-border flex items-center justify-between sticky top-0 bg-dark-surface z-10">
+                            <h2 className="text-xl font-bold text-dark-text">
+                                {selectedSubService ? 'Edit Sub-Service' : 'Add Sub-Service'}
                             </h2>
+                            <button
+                                onClick={() => { setShowSubServiceModal(false); resetSubServiceForm(); }}
+                                className="p-2 hover:bg-dark-bg rounded-lg text-dark-text-secondary transition-colors"
+                            >
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                            </button>
                         </div>
 
                         <form onSubmit={handleSubServiceSubmit} className="p-6 space-y-4">
                             <div>
                                 <label className="block text-sm font-medium text-dark-text mb-2">
-                                    Sub-Service Image
+                                    Title <span className="text-red-500">*</span>
                                 </label>
-                                <div className="space-y-2">
-                                    {(imageFile || subServiceFormData.image) && (
-                                        <div className="w-full h-40 bg-dark-bg border border-dark-border rounded-lg overflow-hidden flex items-center justify-center">
-                                            <img
-                                                src={imageFile ? URL.createObjectURL(imageFile) : subServiceFormData.image}
-                                                alt="Preview"
-                                                className="h-full object-contain"
-                                            />
-                                        </div>
-                                    )}
-                                    <input
-                                        type="file"
-                                        accept="image/*"
-                                        onChange={(e) => setImageFile(e.target.files[0])}
-                                        className="w-full px-4 py-2.5 bg-dark-bg border border-dark-border rounded-lg text-dark-text focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all duration-200 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-primary-500/10 file:text-primary-400 hover:file:bg-primary-500/20"
-                                    />
-                                </div>
-                            </div>
-
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <div>
-                                    <label className="block text-sm font-medium text-dark-text mb-2">
-                                        Title
-                                    </label>
-                                    <input
-                                        type="text"
-                                        value={subServiceFormData.title}
-                                        onChange={(e) =>
-                                            setSubServiceFormData({ ...subServiceFormData, title: e.target.value })
-                                        }
-                                        className="w-full px-4 py-2.5 bg-dark-bg border border-dark-border rounded-lg text-dark-text focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all duration-200"
-                                        required
-                                    />
-                                </div>
-
-                                <div>
-                                    <label className="block text-sm font-medium text-dark-text mb-2">
-                                        Starting Price ($)
-                                    </label>
-                                    <input
-                                        type="number"
-                                        value={subServiceFormData.startingPrice}
-                                        onChange={(e) =>
-                                            setSubServiceFormData({ ...subServiceFormData, startingPrice: e.target.value })
-                                        }
-                                        className="w-full px-4 py-2.5 bg-dark-bg border border-dark-border rounded-lg text-dark-text focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all duration-200"
-                                        required
-                                        min="0"
-                                    />
-                                </div>
-                            </div>
-
-                            <div>
-                                <label className="block text-sm font-medium text-dark-text mb-2">
-                                    Description
-                                </label>
-                                <textarea
-                                    value={subServiceFormData.description}
-                                    onChange={(e) =>
-                                        setSubServiceFormData({ ...subServiceFormData, description: e.target.value })
-                                    }
-                                    rows={3}
-                                    className="w-full px-4 py-2.5 bg-dark-bg border border-dark-border rounded-lg text-dark-text focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all duration-200"
+                                <input
+                                    type="text"
+                                    value={subServiceFormData.title}
+                                    onChange={(e) => setSubServiceFormData({ ...subServiceFormData, title: e.target.value })}
+                                    className="w-full px-4 py-2.5 bg-dark-bg border border-dark-border rounded-lg text-dark-text focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20"
                                     required
                                 />
                             </div>
 
-                            <div className="border-t border-dark-border pt-4">
-                                <h3 className="text-lg font-semibold text-dark-text mb-4">SEO Metadata</h3>
-
-                                <div className="space-y-4">
-                                    <div>
-                                        <label className="block text-sm font-medium text-dark-text mb-2">
-                                            Meta Title
-                                        </label>
+                            <div className="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label className="block text-sm font-medium text-dark-text mb-2">
+                                        Price ($) <span className="text-red-500">*</span>
+                                    </label>
+                                    <input
+                                        type="number"
+                                        value={subServiceFormData.startingPrice}
+                                        onChange={(e) => setSubServiceFormData({ ...subServiceFormData, startingPrice: e.target.value })}
+                                        className="w-full px-4 py-2.5 bg-dark-bg border border-dark-border rounded-lg text-dark-text focus:outline-none focus:border-primary-500"
+                                        required
+                                        min="0"
+                                    />
+                                </div>
+                                <div className="flex items-end">
+                                    <label className="w-full cursor-pointer flex items-center justify-center gap-2 px-4 py-2.5 bg-dark-bg border border-dark-border rounded-lg hover:bg-dark-surface-hover transition-colors h-[46px]">
+                                        <ImageIcon className="w-5 h-5 text-dark-text-secondary" />
+                                        <span className="text-sm text-dark-text truncate">{imageFile ? 'File Selected' : 'Image'}</span>
                                         <input
-                                            type="text"
-                                            value={subServiceFormData.metaTitle}
-                                            onChange={(e) =>
-                                                setSubServiceFormData({ ...subServiceFormData, metaTitle: e.target.value })
-                                            }
-                                            className="w-full px-4 py-2.5 bg-dark-bg border border-dark-border rounded-lg text-dark-text focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all duration-200"
+                                            type="file"
+                                            accept="image/*"
+                                            onChange={(e) => setImageFile(e.target.files[0])}
+                                            className="hidden"
                                         />
-                                    </div>
-
-                                    <div>
-                                        <label className="block text-sm font-medium text-dark-text mb-2">
-                                            Meta Description
-                                        </label>
-                                        <textarea
-                                            value={subServiceFormData.metaDescription}
-                                            onChange={(e) =>
-                                                setSubServiceFormData({
-                                                    ...subServiceFormData,
-                                                    metaDescription: e.target.value,
-                                                })
-                                            }
-                                            rows={2}
-                                            className="w-full px-4 py-2.5 bg-dark-bg border border-dark-border rounded-lg text-dark-text focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all duration-200"
-                                        />
-                                    </div>
-
-                                    <div>
-                                        <label className="block text-sm font-medium text-dark-text mb-2">
-                                            Meta Keywords
-                                        </label>
-                                        <input
-                                            type="text"
-                                            value={subServiceFormData.metaKeywords}
-                                            onChange={(e) =>
-                                                setSubServiceFormData({ ...subServiceFormData, metaKeywords: e.target.value })
-                                            }
-                                            className="w-full px-4 py-2.5 bg-dark-bg border border-dark-border rounded-lg text-dark-text focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all duration-200"
-                                        />
-                                    </div>
-
-                                    <div>
-                                        <label className="block text-sm font-medium text-dark-text mb-2">
-                                            Meta Image URL
-                                        </label>
-                                        <input
-                                            type="text"
-                                            value={subServiceFormData.metaImage}
-                                            onChange={(e) =>
-                                                setSubServiceFormData({ ...subServiceFormData, metaImage: e.target.value })
-                                            }
-                                            required
-                                            className="w-full px-4 py-2.5 bg-dark-bg border border-dark-border rounded-lg text-dark-text focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all duration-200"
-                                        />
-                                    </div>
+                                    </label>
                                 </div>
                             </div>
 
-                            <div className="flex gap-3 pt-4">
+                            {(imageFile || subServiceFormData.image) && (
+                                <div className="w-full h-32 bg-dark-bg border border-dark-border rounded-lg overflow-hidden flex items-center justify-center relative">
+                                    <img
+                                        src={imageFile ? URL.createObjectURL(imageFile) : subServiceFormData.image}
+                                        alt="Preview"
+                                        className="h-full object-contain"
+                                    />
+                                </div>
+                            )}
+
+                            <div>
+                                <label className="block text-sm font-medium text-dark-text mb-2">
+                                    Description <span className="text-red-500">*</span>
+                                </label>
+                                <textarea
+                                    value={subServiceFormData.description}
+                                    onChange={(e) => setSubServiceFormData({ ...subServiceFormData, description: e.target.value })}
+                                    rows={3}
+                                    className="w-full px-4 py-2.5 bg-dark-bg border border-dark-border rounded-lg text-dark-text focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20"
+                                    required
+                                />
+                            </div>
+
+                            <div className="flex gap-3 pt-4 sticky bottom-0 bg-dark-surface border-t border-dark-border -mx-6 -mb-6 p-6">
                                 <button
                                     type="button"
-                                    onClick={() => {
-                                        setShowSubServiceModal(false);
-                                        resetSubServiceForm();
-                                    }}
-                                    className="flex-1 px-6 py-3 bg-dark-bg border border-dark-border rounded-xl font-semibold text-dark-text hover:bg-dark-surface-hover transition-colors duration-200"
+                                    onClick={() => { setShowSubServiceModal(false); resetSubServiceForm(); }}
+                                    className="flex-1 px-6 py-3 bg-dark-bg border border-dark-border rounded-xl font-semibold text-dark-text hover:bg-dark-surface-hover"
                                 >
                                     Cancel
                                 </button>
                                 <button
                                     type="submit"
-                                    className="flex-1 px-6 py-3 gradient-primary text-white rounded-xl font-semibold hover:shadow-lg hover:shadow-primary-500/30 transition-all duration-200"
+                                    className="flex-1 px-6 py-3 gradient-primary text-white rounded-xl font-semibold hover:shadow-lg"
                                 >
-                                    {selectedSubService ? 'Update Sub-Service' : 'Create Sub-Service'}
+                                    {selectedSubService ? 'Update' : 'Add'}
                                 </button>
                             </div>
                         </form>

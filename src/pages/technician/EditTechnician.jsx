@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import TechnicianForm from "../../components/TechniciansForm";
 import toast from "react-hot-toast";
-
+import { API_URL } from "../../utils";
 export default function EditTechnician() {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -10,7 +10,7 @@ export default function EditTechnician() {
 
   useEffect(() => {
     const fetchData = async () => {
-      const res = await fetch(`http://37.27.112.213:3014/api/technicians/${id}`);
+      const res = await fetch(`${API_URL}/technicians/${id}`);
       const data = await res.json();
       if (data.success) setInitialData(data.data);
     };
@@ -18,7 +18,7 @@ export default function EditTechnician() {
   }, [id]);
 
   const handleSubmit = async (data) => {
-    const res = await fetch(`http://37.27.112.213:3014/api/technicians/${id}`, {
+    const res = await fetch(`${API_URL}/technicians/${id}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(data),

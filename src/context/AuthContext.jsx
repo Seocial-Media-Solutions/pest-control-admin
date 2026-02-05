@@ -1,4 +1,6 @@
 import { createContext, useContext, useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useQueryClient } from '@tanstack/react-query';
 import api from '../services/api';
 import { toast } from 'react-hot-toast';
 
@@ -15,6 +17,7 @@ export const useAuth = () => {
 export const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
+    const navigate = useNavigate();
 
     useEffect(() => {
         checkAuth();
@@ -79,7 +82,8 @@ export const AuthProvider = ({ children }) => {
         localStorage.removeItem('user');
         setUser(null);
         toast.success('Logged out successfully');
-        window.location.href = '/login';
+
+        navigate('/login');
     };
 
     return (

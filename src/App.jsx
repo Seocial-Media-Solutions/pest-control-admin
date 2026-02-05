@@ -49,8 +49,8 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <ThemeProvider>
-        <AuthProvider>
-          <Router>
+        <Router>
+          <AuthProvider>
             <Toaster position="top-right" />
             <ServiceProvider>
               <SearchProvider>
@@ -125,10 +125,10 @@ function App() {
                 </Routes>
               </SearchProvider>
             </ServiceProvider>
-          </Router>
-        </AuthProvider>
+          </AuthProvider>
+        </Router>
       </ThemeProvider>
-    </QueryClientProvider>
+    </QueryClientProvider >
   );
 }
 

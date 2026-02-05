@@ -1,5 +1,6 @@
 import { createContext, useContext, useState, useCallback, useEffect } from 'react';
 import { toast } from 'react-hot-toast';
+import { useAuth } from './AuthContext';
 import {
     getAllServices as fetchAllServices,
     createService as apiCreateService,
@@ -24,6 +25,7 @@ export const ServiceProvider = ({ children }) => {
     const [services, setServices] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const { isAuthenticated, loading: authLoading } = useAuth();
 
     const fetchServices = useCallback(async () => {
         setLoading(true);
@@ -42,8 +44,10 @@ export const ServiceProvider = ({ children }) => {
 
     // Initial fetch
     useEffect(() => {
-        fetchServices();
-    }, [fetchServices]);
+        if (!authLoading && isAuthenticated) {
+            fetchServices();
+        }
+    }, [fetchServices, isAuthenticated, authLoading]);
 
     const createService = async (serviceData) => {
         try {

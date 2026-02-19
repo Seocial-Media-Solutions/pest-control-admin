@@ -13,7 +13,10 @@ import {
     ClipboardList,
 } from 'lucide-react';
 
+import { useTheme } from '../context/ThemeContext';
+
 const Sidebar = ({ isOpen, toggleSidebar }) => {
+    const { isDark } = useTheme();
     const menuItems = [
         { icon: LayoutDashboard, label: 'Dashboard', path: '/' },
         { icon: Users, label: 'Customers', path: '/customers' },
@@ -22,10 +25,10 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
         { icon: ClipboardList, label: 'Assignments', path: '/assignments' },
         { icon: MapPin, label: 'Tracking', path: '/tracking' },
         { icon: Shield, label: 'Technicians', path: '/technicians' },
-        { icon: FileText, label: 'Reports', path: '/reports' },
-        { icon: BarChart3, label: 'Analytics', path: '/analytics' },
-        { icon: Bell, label: 'Notifications', path: '/notifications' },
-        { icon: Settings, label: 'Settings', path: '/settings' },
+        // { icon: FileText, label: 'Reports', path: '/reports' },
+        // { icon: BarChart3, label: 'Analytics', path: '/analytics' },
+        // { icon: Bell, label: 'Notifications', path: '/notifications' },
+        // { icon: Settings, label: 'Settings', path: '/settings' },
     ];
 
     return (
@@ -33,18 +36,21 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
             {/* Mobile Overlay */}
             {isOpen && (
                 <div
-                    className="fixed inset-0 bg-transparent backdrop-blur-sm  lg:bg-black/50 z-40 md:hidden animate-fade-in"
+                    className="fixed inset-0 bg-black/50 backdrop-blur-sm z-40 md:hidden animate-fade-in"
                     onClick={toggleSidebar}
                 />
             )}
 
             {/* Sidebar */}
             <aside
-                className={`fixed left-0 top-0 h-screen w-72 bg-dark-surface lg:bg-dark-surface/90 lg:backdrop-blur-xl border-r border-dark-border flex flex-col z-50 transition-transform duration-300 ${isOpen ? 'translate-x-0' : '-translate-x-full'
-                    } md:translate-x-0`}
+                className={`fixed left-0 top-0 h-[100dvh] w-72 border-r flex flex-col z-50 transition-all duration-300 ${isDark
+                    ? 'bg-dark-surface border-dark-border'
+                    : 'bg-white border-light-border'
+                    } ${isOpen ? 'translate-x-0' : '-translate-x-full'
+                    } md:translate-x-0 shadow-xl md:shadow-none`}
             >
                 {/* Header */}
-                <div className="p-6 border-b border-dark-border">
+                <div className={`p-6 border-b ${isDark ? 'border-dark-border' : 'border-light-border'}`}>
                     <div className="flex items-center gap-3">
                         <div className="w-10 h-10 gradient-primary rounded-lg flex items-center justify-center">
                             <Bug className="w-6 h-6 text-white" />
@@ -63,8 +69,8 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
                             to={item.path}
                             className={({ isActive }) =>
                                 `flex items-center gap-3 px-4 py-3 rounded-lg font-medium text-sm transition-all duration-200 relative overflow-hidden group ${isActive
-                                    ? 'bg-primary-500/10 text-primary-400 before:absolute before:left-0 before:top-0 before:w-1 before:h-full before:bg-gradient-to-b before:from-primary-500 before:to-accent-500'
-                                    : 'text-dark-text-secondary hover:bg-dark-surface-hover hover:text-dark-text'
+                                    ? 'bg-primary-500/10 text-primary-600 dark:text-primary-400 before:absolute before:left-0 before:top-0 before:w-1 before:h-full before:bg-gradient-to-b before:from-primary-500 before:to-accent-500'
+                                    : `text-light-text-secondary dark:text-dark-text-secondary ${isDark ? 'hover:bg-dark-surface-hover hover:text-dark-text' : 'hover:bg-light-surface-hover hover:text-light-text'}`
                                 }`
                             }
                             onClick={() => window.innerWidth < 768 && toggleSidebar()}
@@ -76,16 +82,19 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
                 </nav>
 
                 {/* Footer - User Profile */}
-                <div className="p-4 border-t border-dark-border">
-                    <div className="flex items-center gap-3 p-3 bg-dark-bg rounded-lg cursor-pointer hover:bg-dark-surface-hover transition-colors duration-200">
+                <div className={`p-4 border-t ${isDark ? 'border-dark-border' : 'border-light-border'}`}>
+                    <div className={`flex items-center gap-3 p-3 rounded-lg cursor-pointer transition-colors duration-200 ${isDark
+                        ? 'bg-dark-bg hover:bg-dark-surface-hover'
+                        : 'bg-light-bg hover:bg-light-surface-hover'
+                        }`}>
                         <div className="w-10 h-10 gradient-primary rounded-full flex items-center justify-center text-white font-bold text-sm">
                             AD
                         </div>
                         <div className="flex-1">
-                            <div className="text-sm font-semibold text-dark-text">
+                            <div className={`text-sm font-semibold ${isDark ? 'text-dark-text' : 'text-light-text'}`}>
                                 Admin User
                             </div>
-                            <div className="text-xs text-dark-text-tertiary">
+                            <div className={`text-xs ${isDark ? 'text-dark-text-tertiary' : 'text-light-text-tertiary'}`}>
                                 Administrator
                             </div>
                         </div>

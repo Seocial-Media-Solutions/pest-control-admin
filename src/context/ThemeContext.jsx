@@ -11,70 +11,29 @@ export const useTheme = () => {
 };
 
 export const ThemeProvider = ({ children }) => {
-    const [themePreference, setThemePreference] = useState(() => {
-        // null means 'system'
-        return localStorage.getItem('theme');
-    });
-
-    const [systemTheme, setSystemTheme] = useState(() => {
-        // Initial system check
-        if (typeof window !== 'undefined') {
-            return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-        }
-        return 'light';
-    });
-
-    // Listen to system changes
-    useEffect(() => {
-        const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
-        const handleChange = (e) => {
-            setSystemTheme(e.matches ? 'dark' : 'light');
-        };
-
-        mediaQuery.addEventListener('change', handleChange);
-        return () => mediaQuery.removeEventListener('change', handleChange);
-    }, []);
-
-    // Persist preference
-    useEffect(() => {
-        if (themePreference) {
-            localStorage.setItem('theme', themePreference);
-        } else {
-            localStorage.removeItem('theme');
-        }
-    }, [themePreference]);
-
-    // Derive effective theme
-    const isDark = themePreference === 'dark' || (themePreference === null && systemTheme === 'dark');
+    // Always false for light mode
+    const isDark = false;
 
     // Apply to document
     useEffect(() => {
         const root = document.documentElement;
-        if (isDark) {
-            root.classList.add('dark');
-            root.classList.remove('light');
-        } else {
-            root.classList.add('light');
-            root.classList.remove('dark');
-        }
-    }, [isDark]);
+        root.classList.remove('dark');
+        root.classList.add('light');
+        // Optional: Remove local storage item if it exists to clean up
+        localStorage.removeItem('theme');
+    }, []);
 
     const toggleTheme = () => {
-        // If currently dark, switch to light. If light, switch to dark.
-        // This sets an explicit preference.
-        if (isDark) {
-            setThemePreference('light');
-        } else {
-            setThemePreference('dark');
-        }
+        // No-op or log warning
+        console.warn('Theme toggling is disabled.');
     };
 
     const resetToSystem = () => {
-        setThemePreference(null); // Clear manual override
+        // No-op
     };
 
     return (
-        <ThemeContext.Provider value={{ isDark, toggleTheme, resetToSystem, themePreference }}>
+        <ThemeContext.Provider value={{ isDark, toggleTheme, resetToSystem, themePreference: 'light' }}>
             {children}
         </ThemeContext.Provider>
     );

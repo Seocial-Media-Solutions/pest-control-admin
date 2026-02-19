@@ -245,8 +245,8 @@ const Assignments = () => {
             {/* Page Header */}
             <div className="flex items-center justify-between">
                 <div>
-                    <h1 className="text-3xl font-bold text-dark-text mb-2">Assignments</h1>
-                    <p className="text-dark-text-secondary">
+                    <h1 className="text-3xl font-bold text-light-text dark:text-dark-text mb-2">Assignments</h1>
+                    <p className="text-light-text-secondary dark:text-dark-text-secondary">
                         Manage service assignments with 3-step workflow
                     </p>
                 </div>
@@ -260,15 +260,15 @@ const Assignments = () => {
             </div>
 
             {/* Search */}
-            <div className="bg-dark-surface border border-dark-border rounded-2xl p-6">
+            <div className="bg-white dark:bg-dark-surface border border-light-border dark:border-dark-border rounded-2xl p-6">
                 <div className="relative">
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-dark-text-tertiary" />
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-light-text-tertiary dark:text-dark-text-tertiary" />
                     <input
                         type="text"
                         placeholder="Search by customer name, email, or phone..."
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
-                        className="w-full pl-10 pr-4 py-2.5 bg-dark-bg border border-dark-border rounded-lg text-sm text-dark-text placeholder:text-dark-text-tertiary focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all duration-200"
+                        className="w-full pl-10 pr-4 py-2.5 bg-light-bg dark:bg-dark-bg border border-light-border dark:border-dark-border rounded-lg text-sm text-light-text dark:text-dark-text placeholder:text-light-text-tertiary dark:placeholder:text-dark-text-tertiary focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all duration-200"
                     />
                 </div>
             </div>
@@ -278,29 +278,29 @@ const Assignments = () => {
                 {filteredAssignments.map((assignment) => (
                     <div
                         key={assignment._id}
-                        className="bg-dark-surface border border-dark-border rounded-2xl overflow-hidden hover:border-primary-500 transition-all duration-300 hover:shadow-lg hover:shadow-primary-500/10"
+                        className="bg-white dark:bg-dark-surface border border-light-border dark:border-dark-border rounded-2xl overflow-hidden hover:border-primary-500 transition-all duration-300 hover:shadow-lg hover:shadow-primary-500/10"
                     >
                         <div className="p-6">
                             {/* Header */}
                             <div className="flex items-start justify-between mb-4">
                                 <div className="flex-1">
-                                    <h3 className="text-lg font-bold text-dark-text mb-1">
+                                    <h3 className="text-lg font-bold text-light-text dark:text-dark-text mb-1">
                                         Assignment #{assignment._id.slice(-6)}
                                     </h3>
-                                    <p className="text-xs text-dark-text-tertiary">
+                                    <p className="text-xs text-light-text-tertiary dark:text-dark-text-tertiary">
                                         {new Date(assignment.createdAt).toLocaleDateString()}
                                     </p>
                                 </div>
                                 <div className="flex gap-2">
                                     <button
                                         onClick={() => openDetailsModal(assignment)}
-                                        className="p-2 bg-primary-500/10 text-primary-400 rounded-lg hover:bg-primary-500/20 transition-colors duration-200"
+                                        className="p-2 bg-primary-500/10 text-primary-600 dark:text-primary-400 rounded-lg hover:bg-primary-500/20 transition-colors duration-200"
                                     >
                                         <Eye className="w-4 h-4" />
                                     </button>
                                     <button
                                         onClick={() => handleDeleteAssignment(assignment._id)}
-                                        className="p-2 bg-red-500/10 text-red-400 rounded-lg hover:bg-red-500/20 transition-colors duration-200"
+                                        className="p-2 bg-red-500/10 text-red-500 dark:text-red-400 rounded-lg hover:bg-red-500/20 transition-colors duration-200"
                                     >
                                         <Trash2 className="w-4 h-4" />
                                     </button>
@@ -311,19 +311,19 @@ const Assignments = () => {
 
                             {/* Customer Info */}
                             {assignment.bookingId?.customerId && (
-                                <div className="bg-dark-bg/50 rounded-lg p-4 mb-4">
-                                    <h4 className="text-xs font-semibold text-dark-text-tertiary mb-2">CUSTOMER</h4>
+                                <div className="bg-light-bg/50 dark:bg-dark-bg/50 rounded-lg p-4 mb-4">
+                                    <h4 className="text-xs font-semibold text-light-text-tertiary dark:text-dark-text-tertiary mb-2">CUSTOMER</h4>
                                     <div className="space-y-2">
-                                        <div className="flex items-center gap-2 text-sm text-dark-text">
-                                            <User className="w-4 h-4 text-dark-text-tertiary" />
+                                        <div className="flex items-center gap-2 text-sm text-light-text dark:text-dark-text">
+                                            <User className="w-4 h-4 text-light-text-tertiary dark:text-dark-text-tertiary" />
                                             {assignment.bookingId.customerId.fullName}
                                         </div>
-                                        <div className="flex items-center gap-2 text-sm text-dark-text">
-                                            <Phone className="w-4 h-4 text-dark-text-tertiary" />
+                                        <div className="flex items-center gap-2 text-sm text-light-text dark:text-dark-text">
+                                            <Phone className="w-4 h-4 text-light-text-tertiary dark:text-dark-text-tertiary" />
                                             {assignment.bookingId.customerId.mobileNumber}
                                         </div>
-                                        <div className="flex items-center gap-2 text-sm text-dark-text">
-                                            <Mail className="w-4 h-4 text-dark-text-tertiary" />
+                                        <div className="flex items-center gap-2 text-sm text-light-text dark:text-dark-text">
+                                            <Mail className="w-4 h-4 text-light-text-tertiary dark:text-dark-text-tertiary" />
                                             {assignment.bookingId.customerId.email}
                                         </div>
                                     </div>
@@ -332,8 +332,8 @@ const Assignments = () => {
 
                             {/* Booking Details */}
                             {assignment.bookingId && (
-                                <div className="bg-dark-bg/50 rounded-lg p-4 mb-4 border border-dark-border/50">
-                                    <h4 className="text-xs font-semibold text-dark-text-tertiary mb-2">BOOKING DETAILS</h4>
+                                <div className="bg-light-bg/50 dark:bg-dark-bg/50 rounded-lg p-4 mb-4 border border-light-border dark:border-dark-border/50">
+                                    <h4 className="text-xs font-semibold text-light-text-tertiary dark:text-dark-text-tertiary mb-2">BOOKING DETAILS</h4>
                                     <div className="space-y-3">
                                         {/* Services */}
                                         <div className="flex flex-col gap-2">
@@ -341,9 +341,9 @@ const Assignments = () => {
                                                 assignment.bookingId.subServiceIds.map((subItem, idx) => {
                                                     const service = subItem.serviceId || {};
                                                     return (
-                                                        <div key={idx} className="flex items-center gap-2 p-2 bg-dark-bg/80 border border-dark-border/50 rounded-lg justify-between">
+                                                        <div key={idx} className="flex items-center gap-2 p-2 bg-white/80 dark:bg-dark-bg/80 border border-light-border dark:border-dark-border/50 rounded-lg justify-between">
                                                             <div className="flex items-center gap-2">
-                                                                <div className="w-10 h-10 rounded overflow-hidden bg-dark-bg flex-shrink-0 border border-dark-border/30">
+                                                                <div className="w-10 h-10 rounded overflow-hidden bg-light-bg dark:bg-dark-bg flex-shrink-0 border border-light-border dark:border-dark-border/30">
                                                                     {service.metaImage ? (
                                                                         <img
                                                                             src={service.metaImage}
@@ -351,16 +351,16 @@ const Assignments = () => {
                                                                             className="w-full h-full object-cover"
                                                                         />
                                                                     ) : (
-                                                                        <div className="w-full h-full flex items-center justify-center bg-dark-surface">
-                                                                            <Beaker className="w-4 h-4 text-dark-text-tertiary" />
+                                                                        <div className="w-full h-full flex items-center justify-center bg-white dark:bg-dark-surface">
+                                                                            <Beaker className="w-4 h-4 text-light-text-tertiary dark:text-dark-text-tertiary" />
                                                                         </div>
                                                                     )}
                                                                 </div>
-                                                                <span className="text-sm font-medium text-dark-text">
+                                                                <span className="text-sm font-medium text-light-text dark:text-dark-text">
                                                                     {service.title || 'Service'}
                                                                 </span>
                                                             </div>
-                                                            <span className={`text-[10px] px-2 py-0.5 rounded capitalize ${subItem.status === 'completed' ? 'bg-green-500/10 text-green-400' : 'bg-yellow-500/10 text-yellow-400'
+                                                            <span className={`text-[10px] px-2 py-0.5 rounded capitalize ${subItem.status === 'completed' ? 'bg-green-500/10 text-green-500 dark:text-green-400' : 'bg-yellow-500/10 text-yellow-600 dark:text-yellow-400'
                                                                 }`}>
                                                                 {subItem.status || 'pending'}
                                                             </span>
@@ -368,31 +368,31 @@ const Assignments = () => {
                                                     )
                                                 })
                                             ) : (
-                                                <span className="text-xs text-dark-text-secondary">No services listed</span>
+                                                <span className="text-xs text-light-text-secondary dark:text-dark-text-secondary">No services listed</span>
                                             )}
                                         </div>
 
                                         <div className="grid grid-cols-2 gap-2">
                                             <div>
-                                                <p className="text-xs text-dark-text-tertiary flex items-center gap-1"><Calendar className="w-3 h-3" /> Date</p>
-                                                <p className="text-sm text-dark-text">{new Date(assignment.bookingId.bookingDate).toLocaleDateString()}</p>
+                                                <p className="text-xs text-light-text-tertiary dark:text-dark-text-tertiary flex items-center gap-1"><Calendar className="w-3 h-3" /> Date</p>
+                                                <p className="text-sm text-light-text dark:text-dark-text">{new Date(assignment.bookingId.bookingDate).toLocaleDateString()}</p>
                                             </div>
                                             <div>
-                                                <p className="text-xs text-dark-text-tertiary flex items-center gap-1"><Clock className="w-3 h-3" /> Time</p>
-                                                <p className="text-sm text-dark-text capitalize">{assignment.bookingId.preferredTimeSlot || 'Anytime'}</p>
+                                                <p className="text-xs text-light-text-tertiary dark:text-dark-text-tertiary flex items-center gap-1"><Clock className="w-3 h-3" /> Time</p>
+                                                <p className="text-sm text-light-text dark:text-dark-text capitalize">{assignment.bookingId.preferredTimeSlot || 'Anytime'}</p>
                                             </div>
                                         </div>
 
                                         <div>
-                                            <p className="text-xs text-dark-text-tertiary flex items-center gap-1"><MapPin className="w-3 h-3" /> Address</p>
-                                            <p className="text-sm text-dark-text line-clamp-2" title={assignment.bookingId.additionalAddress || assignment.bookingId.customerId?.address}>
+                                            <p className="text-xs text-light-text-tertiary dark:text-dark-text-tertiary flex items-center gap-1"><MapPin className="w-3 h-3" /> Address</p>
+                                            <p className="text-sm text-light-text dark:text-dark-text line-clamp-2" title={assignment.bookingId.additionalAddress || assignment.bookingId.customerId?.address}>
                                                 {assignment.bookingId.additionalAddress || assignment.bookingId.customerId?.address || 'N/A'}
                                             </p>
                                         </div>
 
-                                        <div className="pt-2 border-t border-dark-border/50 flex justify-between items-center">
-                                            <span className="text-xs text-dark-text-secondary">Total Amount</span>
-                                            <span className="text-sm font-bold text-green-400">₹{assignment.bookingId.totalAmount || 0}</span>
+                                        <div className="pt-2 border-t border-light-border dark:border-dark-border/50 flex justify-between items-center">
+                                            <span className="text-xs text-light-text-secondary dark:text-dark-text-secondary">Total Amount</span>
+                                            <span className="text-sm font-bold text-green-600 dark:text-green-400">₹{assignment.bookingId.totalAmount || 0}</span>
                                         </div>
                                     </div>
                                 </div>
@@ -401,7 +401,7 @@ const Assignments = () => {
                             {/* Technician */}
                             {assignment.technicianId ? (
                                 <div className="bg-accent-500/10 rounded-lg p-3 mb-4">
-                                    <div className="flex items-center gap-2 text-sm text-accent-400">
+                                    <div className="flex items-center gap-2 text-sm text-accent-600 dark:text-accent-400">
                                         <User className="w-4 h-4" />
                                         <span className="font-semibold">Assigned to:</span>
                                         {assignment.technicianId.fullName}
@@ -410,7 +410,7 @@ const Assignments = () => {
                             ) : (
                                 <select
                                     onChange={(e) => handleAssignTechnician(assignment._id, e.target.value)}
-                                    className="w-full px-3 py-2 mb-4 bg-dark-bg border border-dark-border rounded-lg text-xs text-dark-text focus:outline-none focus:border-primary-500 transition-all duration-200"
+                                    className="w-full px-3 py-2 mb-4 bg-light-bg dark:bg-dark-bg border border-light-border dark:border-dark-border rounded-lg text-xs text-light-text dark:text-dark-text focus:outline-none focus:border-primary-500 transition-all duration-200"
                                     defaultValue=""
                                 >
                                     <option value="" disabled>Assign Technician</option>
@@ -425,29 +425,29 @@ const Assignments = () => {
                             {/* Workflow Progress */}
                             <div className="space-y-2">
                                 <div className="flex items-center justify-between text-xs">
-                                    <span className="flex items-center gap-1 text-dark-text-secondary">
+                                    <span className="flex items-center gap-1 text-light-text-secondary dark:text-dark-text-secondary">
                                         <Beaker className="w-3 h-3" />
                                         Treatment Prep
                                     </span>
-                                    <span className="text-primary-400 font-semibold">
+                                    <span className="text-primary-600 dark:text-primary-400 font-semibold">
                                         {assignment.treatmentPreparation?.length || 0} items
                                     </span>
                                 </div>
                                 <div className="flex items-center justify-between text-xs">
-                                    <span className="flex items-center gap-1 text-dark-text-secondary">
+                                    <span className="flex items-center gap-1 text-light-text-secondary dark:text-dark-text-secondary">
                                         <Camera className="w-3 h-3" />
                                         Site Pictures
                                     </span>
-                                    <span className="text-primary-400 font-semibold">
+                                    <span className="text-primary-600 dark:text-primary-400 font-semibold">
                                         {assignment.applyTreatment?.sitePictures?.length || 0} photos
                                     </span>
                                 </div>
                                 <div className="flex items-center justify-between text-xs">
-                                    <span className="flex items-center gap-1 text-dark-text-secondary">
+                                    <span className="flex items-center gap-1 text-light-text-secondary dark:text-dark-text-secondary">
                                         <DollarSign className="w-3 h-3" />
                                         Payments
                                     </span>
-                                    <span className="text-green-400 font-semibold">
+                                    <span className="text-green-600 dark:text-green-400 font-semibold">
                                         {assignment.paymentCollection?.length || 0} records
                                     </span>
                                 </div>
@@ -457,7 +457,7 @@ const Assignments = () => {
                                     e.stopPropagation();
                                     navigate(`/assignments/${assignment._id}/workflow`);
                                 }}
-                                className="w-full mt-4 flex items-center justify-center gap-2 px-3 py-2 bg-dark-bg border border-dark-border rounded-lg text-xs font-semibold text-dark-text hover:bg-dark-surface-hover hover:border-primary-500 transition-all"
+                                className="w-full mt-4 flex items-center justify-center gap-2 px-3 py-2 bg-light-bg dark:bg-dark-bg border border-light-border dark:border-dark-border rounded-lg text-xs font-semibold text-light-text dark:text-dark-text hover:bg-light-surface-hover dark:hover:bg-dark-surface-hover hover:border-primary-500 transition-all"
                             >
                                 <ClipboardList className="w-3 h-3" />
                                 Test Workflow

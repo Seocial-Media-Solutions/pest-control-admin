@@ -110,7 +110,7 @@ const Dashboard = () => {
             <div className="flex items-center justify-center h-screen">
                 <div className="text-center">
                     <RefreshCw className="w-12 h-12 text-primary-500 animate-spin mx-auto mb-4" />
-                    <p className="text-dark-text-secondary">Loading dashboard...</p>
+                    <p className="text-light-text-secondary dark:text-dark-text-secondary">Loading dashboard...</p>
                 </div>
             </div>
         );
@@ -122,7 +122,7 @@ const Dashboard = () => {
             <div className="flex items-center justify-center h-screen">
                 <div className="text-center">
                     <AlertCircle className="w-12 h-12 text-red-500 mx-auto mb-4" />
-                    <p className="text-dark-text mb-4">{error}</p>
+                    <p className="text-light-text dark:text-dark-text mb-4">{error}</p>
                     <button
                         onClick={() => fetchDashboardData()}
                         className="px-6 py-2 bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-colors"
@@ -199,15 +199,15 @@ const Dashboard = () => {
             {/* Page Header */}
             <div className="flex items-center justify-between">
                 <div>
-                    <h1 className="text-3xl font-bold text-dark-text mb-2">Dashboard</h1>
-                    <p className="text-dark-text-secondary">
+                    <h1 className="text-3xl font-bold text-light-text dark:text-dark-text mb-2">Dashboard</h1>
+                    <p className="text-light-text-secondary dark:text-dark-text-secondary">
                         Welcome back! Here's what's happening with your pest control business.
                     </p>
                 </div>
                 <button
                     onClick={() => fetchDashboardData(true)}
                     disabled={refreshing}
-                    className="flex items-center gap-2 px-4 py-2 bg-dark-surface border border-dark-border rounded-lg hover:border-primary-500 transition-all duration-300 text-dark-text"
+                    className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-dark-surface border border-light-border dark:border-dark-border rounded-lg hover:border-primary-500 transition-all duration-300 text-light-text dark:text-dark-text"
                 >
                     <RefreshCw className={`w-4 h-4 ${refreshing ? 'animate-spin' : ''}`} />
                     {refreshing ? 'Refreshing...' : 'Refresh'}
@@ -219,7 +219,7 @@ const Dashboard = () => {
                 {stats.map((stat, index) => (
                     <div
                         key={index}
-                        className="bg-dark-surface border border-dark-border rounded-2xl p-6 hover:border-primary-500 transition-all duration-300 hover:shadow-lg hover:shadow-primary-500/10 hover:-translate-y-1 group"
+                        className="bg-white dark:bg-dark-surface border border-light-border dark:border-dark-border rounded-2xl p-6 hover:border-primary-500 transition-all duration-300 hover:shadow-lg hover:shadow-primary-500/10 hover:-translate-y-1 group"
                     >
                         <div className="flex items-start justify-between mb-4">
                             <div
@@ -228,7 +228,7 @@ const Dashboard = () => {
                                 <stat.icon className="w-6 h-6 text-white" />
                             </div>
                             <div
-                                className={`flex items-center gap-1 text-sm font-semibold ${stat.trend === 'up' ? 'text-green-400' : 'text-orange-400'
+                                className={`flex items-center gap-1 text-sm font-semibold ${stat.trend === 'up' ? 'text-green-500 dark:text-green-400' : 'text-orange-500 dark:text-orange-400'
                                     }`}
                             >
                                 {stat.trend === 'up' ? (
@@ -239,53 +239,53 @@ const Dashboard = () => {
                                 {stat.change}
                             </div>
                         </div>
-                        <div className="text-3xl font-bold text-dark-text mb-1">{stat.value}</div>
-                        <div className="text-sm text-dark-text-secondary mb-1">{stat.label}</div>
-                        <div className="text-xs text-dark-text-secondary/70">{stat.subtitle}</div>
+                        <div className="text-3xl font-bold text-light-text dark:text-dark-text mb-1">{stat.value}</div>
+                        <div className="text-sm text-light-text-secondary dark:text-dark-text-secondary mb-1">{stat.label}</div>
+                        <div className="text-xs text-light-text-secondary/70 dark:text-dark-text-secondary/70">{stat.subtitle}</div>
                     </div>
                 ))}
             </div>
 
             {/* Quick Stats Row */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                <div className="bg-dark-surface border border-dark-border rounded-xl p-4">
+                <div className="bg-white dark:bg-dark-surface border border-light-border dark:border-dark-border rounded-xl p-4">
                     <div className="flex items-center justify-between">
                         <div>
-                            <p className="text-sm text-dark-text-secondary">Today's Assignments</p>
-                            <p className="text-2xl font-bold text-dark-text">{assignments.today}</p>
+                            <p className="text-sm text-light-text-secondary dark:text-dark-text-secondary">Today's Assignments</p>
+                            <p className="text-2xl font-bold text-light-text dark:text-dark-text">{assignments.today}</p>
                         </div>
                         <Calendar className="w-8 h-8 text-primary-400" />
                     </div>
                 </div>
-                <div className="bg-dark-surface border border-dark-border rounded-xl p-4">
+                <div className="bg-white dark:bg-dark-surface border border-light-border dark:border-dark-border rounded-xl p-4">
                     <div className="flex items-center justify-between">
                         <div>
-                            <p className="text-sm text-dark-text-secondary">This Month</p>
-                            <p className="text-2xl font-bold text-dark-text">{assignments.thisMonth}</p>
+                            <p className="text-sm text-light-text-secondary dark:text-dark-text-secondary">This Month</p>
+                            <p className="text-2xl font-bold text-light-text dark:text-dark-text">{assignments.thisMonth}</p>
                         </div>
-                        <TrendingUp className="w-8 h-8 text-green-400" />
+                        <TrendingUp className="w-8 h-8 text-green-500 dark:text-green-400" />
                     </div>
                 </div>
-                <div className="bg-dark-surface border border-dark-border rounded-xl p-4">
+                <div className="bg-white dark:bg-dark-surface border border-light-border dark:border-dark-border rounded-xl p-4">
                     <div className="flex items-center justify-between">
                         <div>
-                            <p className="text-sm text-dark-text-secondary">Today's Revenue</p>
-                            <p className="text-2xl font-bold text-dark-text">
+                            <p className="text-sm text-light-text-secondary dark:text-dark-text-secondary">Today's Revenue</p>
+                            <p className="text-2xl font-bold text-light-text dark:text-dark-text">
                                 {formatCurrency(revenue.today)}
                             </p>
                         </div>
-                        <DollarSign className="w-8 h-8 text-accent-400" />
+                        <DollarSign className="w-8 h-8 text-accent-500 dark:text-accent-400" />
                     </div>
                 </div>
-                <div className="bg-dark-surface border border-dark-border rounded-xl p-4">
+                <div className="bg-white dark:bg-dark-surface border border-light-border dark:border-dark-border rounded-xl p-4">
                     <div className="flex items-center justify-between">
                         <div>
-                            <p className="text-sm text-dark-text-secondary">Month Revenue</p>
-                            <p className="text-2xl font-bold text-dark-text">
+                            <p className="text-sm text-light-text-secondary dark:text-dark-text-secondary">Month Revenue</p>
+                            <p className="text-2xl font-bold text-light-text dark:text-dark-text">
                                 {formatCurrency(revenue.thisMonth)}
                             </p>
                         </div>
-                        <DollarSign className="w-8 h-8 text-purple-400" />
+                        <DollarSign className="w-8 h-8 text-purple-500 dark:text-purple-400" />
                     </div>
                 </div>
             </div>
@@ -294,8 +294,8 @@ const Dashboard = () => {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 {/* Service Distribution */}
                 {serviceDistribution.length > 0 && (
-                    <div className="bg-dark-surface border border-dark-border rounded-2xl p-6 hover:border-primary-500 transition-all duration-300">
-                        <h3 className="text-lg font-bold text-dark-text mb-6">
+                    <div className="bg-white dark:bg-dark-surface border border-light-border dark:border-dark-border rounded-2xl p-6 hover:border-primary-500 transition-all duration-300">
+                        <h3 className="text-lg font-bold text-light-text dark:text-dark-text mb-6">
                             Popular Services
                         </h3>
                         <ResponsiveContainer width="100%" height={300}>
@@ -334,15 +334,15 @@ const Dashboard = () => {
 
                 {/* Technician Performance */}
                 {technicianPerformanceData.length > 0 && (
-                    <div className="bg-dark-surface border border-dark-border rounded-2xl p-6 hover:border-primary-500 transition-all duration-300">
-                        <h3 className="text-lg font-bold text-dark-text mb-6">
+                    <div className="bg-white dark:bg-dark-surface border border-light-border dark:border-dark-border rounded-2xl p-6 hover:border-primary-500 transition-all duration-300">
+                        <h3 className="text-lg font-bold text-light-text dark:text-dark-text mb-6">
                             Top Technician Performance
                         </h3>
                         <ResponsiveContainer width="100%" height={300}>
                             <BarChart data={technicianPerformanceData}>
-                                <CartesianGrid strokeDasharray="3 3" stroke="#2a2e3a" />
-                                <XAxis dataKey="name" stroke="#6b7280" />
-                                <YAxis stroke="#6b7280" />
+                                <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" className="dark:stroke-gray-700" />
+                                <XAxis dataKey="name" stroke="#9ca3af" />
+                                <YAxis stroke="#9ca3af" />
                                 <Tooltip
                                     contentStyle={{
                                         backgroundColor: '#1a1d26',
@@ -362,8 +362,8 @@ const Dashboard = () => {
             {/* Recent Activity & Payment Breakdown */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 {/* Recent Assignments */}
-                <div className="bg-dark-surface border border-dark-border rounded-2xl p-6 hover:border-primary-500 transition-all duration-300">
-                    <h3 className="text-lg font-bold text-dark-text mb-6">Recent Assignments</h3>
+                <div className="bg-white dark:bg-dark-surface border border-light-border dark:border-dark-border rounded-2xl p-6 hover:border-primary-500 transition-all duration-300">
+                    <h3 className="text-lg font-bold text-light-text dark:text-dark-text mb-6">Recent Assignments</h3>
                     <div className="space-y-4">
                         {recentActivity.assignments?.filter(assignment =>
                             assignment.customer?.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -371,11 +371,11 @@ const Dashboard = () => {
                         ).slice(0, 5).map((assignment) => (
                             <div
                                 key={assignment._id}
-                                className="flex items-center justify-between p-4 bg-dark-bg rounded-xl hover:bg-dark-surface-hover transition-colors duration-200"
+                                className="flex items-center justify-between p-4 bg-light-bg dark:bg-dark-bg rounded-xl hover:bg-light-surface-hover dark:hover:bg-dark-surface-hover transition-colors duration-200"
                             >
                                 <div className="flex-1">
                                     <div className="flex items-center gap-3 mb-2">
-                                        <span className="text-sm font-semibold text-dark-text">
+                                        <span className="text-sm font-semibold text-light-text dark:text-dark-text">
                                             {assignment.customer?.name || 'Unknown Customer'}
                                         </span>
                                         <span
@@ -386,7 +386,7 @@ const Dashboard = () => {
                                             {assignment.status?.replace('_', ' ') || 'Pending'}
                                         </span>
                                     </div>
-                                    <div className="flex items-center gap-4 text-xs text-dark-text-secondary">
+                                    <div className="flex items-center gap-4 text-xs text-light-text-secondary dark:text-dark-text-secondary">
                                         <span className="flex items-center gap-1">
                                             <Bug className="w-3 h-3" />
                                             {assignment.serviceTitle || 'General Service'}
@@ -398,7 +398,7 @@ const Dashboard = () => {
                                     </div>
                                 </div>
                                 <div className="text-right">
-                                    <div className="text-lg font-bold text-primary-400">
+                                    <div className="text-lg font-bold text-primary-600 dark:text-primary-400">
                                         {formatCurrency(assignment.paymentAmount || 0)}
                                     </div>
                                     <span
@@ -416,8 +416,8 @@ const Dashboard = () => {
 
                 {/* Payment Mode Breakdown */}
                 {performance.paymentBreakdown && performance.paymentBreakdown.length > 0 && (
-                    <div className="bg-dark-surface border border-dark-border rounded-2xl p-6 hover:border-primary-500 transition-all duration-300">
-                        <h3 className="text-lg font-bold text-dark-text mb-6">
+                    <div className="bg-white dark:bg-dark-surface border border-light-border dark:border-dark-border rounded-2xl p-6 hover:border-primary-500 transition-all duration-300">
+                        <h3 className="text-lg font-bold text-light-text dark:text-dark-text mb-6">
                             Payment Mode Distribution
                         </h3>
                         <div className="space-y-4">
@@ -429,31 +429,31 @@ const Dashboard = () => {
                                 return (
                                     <div
                                         key={index}
-                                        className="p-4 bg-dark-bg rounded-xl hover:bg-dark-surface-hover transition-colors duration-200"
+                                        className="p-4 bg-light-bg dark:bg-dark-bg rounded-xl hover:bg-light-surface-hover dark:hover:bg-dark-surface-hover transition-colors duration-200"
                                     >
                                         <div className="flex items-center justify-between mb-2">
-                                            <span className="text-sm font-semibold text-dark-text capitalize">
+                                            <span className="text-sm font-semibold text-light-text dark:text-dark-text capitalize">
                                                 {payment._id || 'Unknown Method'}
                                             </span>
-                                            <span className="text-sm text-dark-text-secondary">
+                                            <span className="text-sm text-light-text-secondary dark:text-dark-text-secondary">
                                                 {payment.count} transactions
                                             </span>
                                         </div>
                                         <div className="flex items-center justify-between mb-2">
-                                            <span className="text-xs text-dark-text-secondary">
+                                            <span className="text-xs text-light-text-secondary dark:text-dark-text-secondary">
                                                 Total: {formatCurrency(payment.totalAmount)}
                                             </span>
-                                            <span className="text-xs text-green-400">
+                                            <span className="text-xs text-green-500 dark:text-green-400">
                                                 Collected: {formatCurrency(payment.collectedAmount)}
                                             </span>
                                         </div>
-                                        <div className="w-full bg-dark-border rounded-full h-2">
+                                        <div className="w-full bg-light-border dark:bg-dark-border rounded-full h-2">
                                             <div
                                                 className="bg-gradient-to-r from-primary-500 to-accent-500 h-2 rounded-full transition-all duration-300"
                                                 style={{ width: `${collectionRate}%` }}
                                             />
                                         </div>
-                                        <div className="text-xs text-right text-dark-text-secondary mt-1">
+                                        <div className="text-xs text-right text-light-text-secondary dark:text-dark-text-secondary mt-1">
                                             {collectionRate}% collected
                                         </div>
                                     </div>

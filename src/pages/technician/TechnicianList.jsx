@@ -148,44 +148,46 @@ export default function TechnicianList() {
   }, [search]);
 
   return (
-    <div className="min-h-screen max-w-full mx-auto">
+    <div className="min-h-screen max-w-full mx-auto space-y-6 animate-fade-in">
       {/* Header */}
-      <div className="bg-card  rounded-lg shadow-lg p-6 mb-6 flex flex-wrap justify-between items-center">
-        <div className="flex items-center gap-3">
-          <div className="p-3 rounded-lg bg-black">
-            <Users className="text-white" size={28} />
+      <div className="bg-white dark:bg-dark-surface border border-light-border dark:border-dark-border rounded-2xl p-6 flex flex-wrap justify-between items-center gap-4">
+        <div className="flex items-center gap-4">
+          <div className="p-3 rounded-xl bg-primary-500/10 text-primary-600 dark:text-primary-400">
+            <Users className="w-8 h-8" />
           </div>
           <div>
-            <h1 className="text-3xl font-bold">Technician & Attendance Management</h1>
-            <p className="text-gray-500">Manage technicians and mark attendance</p>
+            <h1 className="text-2xl font-bold text-light-text dark:text-dark-text">Technician Management</h1>
+            <p className="text-light-text-secondary dark:text-dark-text-secondary">Manage technicians and track attendance</p>
           </div>
         </div>
         <button
           onClick={() => navigate("/technicians/addtechnician")}
-          className="flex items-center gap-2 px-6 py-3 rounded-lg shadow-md bg-black text-white hover:bg-gray-800 transition"
+          className="flex items-center gap-2 px-6 py-3 gradient-primary text-white rounded-xl font-semibold hover:shadow-lg hover:shadow-primary-500/30 hover:-translate-y-0.5 transition-all duration-200"
         >
           <UserPlus size={20} /> Add New Technician
         </button>
       </div>
 
       {/* Search */}
-      <div className="relative mb-6">
-        <Search className="absolute left-3 top-3 text-gray-400" size={18} />
-        <input
-          type="text"
-          placeholder="Search by name, username, or email"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          className="w-full pl-10 pr-4 py-2 border rounded-lg"
-        />
+      <div className="bg-white dark:bg-dark-surface border border-light-border dark:border-dark-border rounded-2xl p-6">
+        <div className="relative">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-light-text-tertiary dark:text-dark-text-tertiary" />
+          <input
+            type="text"
+            placeholder="Search by name, username, or email..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="w-full pl-10 pr-4 py-2.5 bg-light-bg dark:bg-dark-bg border border-light-border dark:border-dark-border rounded-lg text-sm text-light-text dark:text-dark-text placeholder:text-light-text-tertiary dark:placeholder:text-dark-text-tertiary focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all duration-200"
+          />
+        </div>
       </div>
 
       {/* Table */}
-      <div className=" rounded-xl shadow-lg overflow-hidden border border-gray-100">
+      <div className="bg-white dark:bg-dark-surface border border-light-border dark:border-dark-border rounded-2xl overflow-hidden shadow-sm">
         <div className="overflow-x-auto">
           <table className="w-full">
-            <thead className="bg-gradient-to-r from-gray-50 to-gray-100">
-              <tr className="border-b-2 border-gray-200">
+            <thead className="bg-light-bg dark:bg-dark-bg border-b border-light-border dark:border-dark-border">
+              <tr>
                 {[
                   "Full Name",
                   "Username",
@@ -196,25 +198,25 @@ export default function TechnicianList() {
                   "Mark Attendance",
                   "Actions",
                 ].map((head) => (
-                  <th key={head} className="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
+                  <th key={head} className="px-6 py-4 text-left text-xs font-semibold text-light-text-secondary dark:text-dark-text-secondary uppercase tracking-wider">
                     {head}
                   </th>
                 ))}
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-200">
+            <tbody className="divide-y divide-light-border dark:divide-dark-border">
               {loading ? (
                 <tr>
-                  <td colSpan="8" className="px-6 py-8 text-center">
-                    <Loader2 className="w-6 h-6 animate-spin mx-auto text-gray-400" />
-                    <p className="text-gray-500 mt-2">Loading technicians...</p>
+                  <td colSpan="8" className="px-6 py-12 text-center">
+                    <Loader2 className="w-8 h-8 animate-spin mx-auto text-primary-500 dark:text-primary-400 mb-2" />
+                    <p className="text-light-text-secondary dark:text-dark-text-secondary">Loading technicians...</p>
                   </td>
                 </tr>
               ) : paginatedTechnicians.length === 0 ? (
                 <tr>
                   <td
                     colSpan="8"
-                    className="px-6 py-8 text-center text-gray-500"
+                    className="px-6 py-12 text-center text-light-text-tertiary dark:text-dark-text-tertiary"
                   >
                     No technicians found
                   </td>
@@ -228,64 +230,64 @@ export default function TechnicianList() {
                   return (
                     <tr
                       key={exec._id}
-                      className="transition-all duration-200 border-b border-gray-100  hover:bg-gray-50 hover:shadow-sm"
+                      className="transition-colors duration-200 hover:bg-light-bg/50 dark:hover:bg-dark-bg/50"
                     >
                       <td
-                        className="px-6 py-4 text-sm font-semibold text-gray-900 cursor-pointer hover:text-blue-600 transition-colors"
+                        className="px-6 py-4 text-sm font-semibold text-light-text dark:text-dark-text cursor-pointer hover:text-primary-600 dark:hover:text-primary-400 transition-colors"
                         onClick={() => handleEdit(exec)}
                       >
                         {exec.fullName}
                       </td>
-                      <td className="px-6 py-4 text-sm text-gray-600">{exec.username}</td>
-                      <td className="px-6 py-4 text-sm text-gray-600">{exec.email}</td>
-                      <td className="px-6 py-4 text-sm text-gray-600">{exec.contactNumber}</td>
+                      <td className="px-6 py-4 text-sm text-light-text-secondary dark:text-dark-text-secondary">{exec.username}</td>
+                      <td className="px-6 py-4 text-sm text-light-text-secondary dark:text-dark-text-secondary">{exec.email}</td>
+                      <td className="px-6 py-4 text-sm text-light-text-secondary dark:text-dark-text-secondary">{exec.contactNumber}</td>
                       <td className="px-6 py-4 text-sm">
                         {exec.isActive ? (
-                          <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold bg-green-50 text-green-700 border border-green-200">
-                            <CheckCircle size={14} className="text-green-600" /> Active
+                          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-green-500/10 text-green-600 dark:text-green-400">
+                            <CheckCircle size={12} /> Active
                           </span>
                         ) : (
-                          <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold bg-red-50 text-red-700 border border-red-200">
-                            <XCircle size={14} className="text-red-600" /> Inactive
+                          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-red-500/10 text-red-600 dark:text-red-400">
+                            <XCircle size={12} /> Inactive
                           </span>
                         )}
                       </td>
                       <td className="px-6 py-4 text-sm">
-                        <div className="flex items-center justify-center gap-2">
+                        <div className="flex items-center gap-2">
                           {todayAttendance ? (
                             <>
-                              <span className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold border ${todayAttendance.status === 'Present'
-                                ? 'bg-green-50 text-green-700 border-green-200'
-                                : 'bg-red-50 text-red-700 border-red-200'
+                              <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium ${todayAttendance.status === 'Present'
+                                ? 'bg-green-500/10 text-green-600 dark:text-green-400'
+                                : 'bg-red-500/10 text-red-600 dark:text-red-400'
                                 }`}>
                                 {todayAttendance.status === 'Present' ? (
-                                  <CheckCircle size={14} className="text-green-600" />
+                                  <CheckCircle size={12} />
                                 ) : (
-                                  <XCircle size={14} className="text-red-600" />
+                                  <XCircle size={12} />
                                 )}
                                 {todayAttendance.status}
                               </span>
                               <button
                                 onClick={() => navigate('/attendance/' + exec._id)}
-                                className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-blue-600 hover:text-blue-700 hover:bg-blue-50 rounded-lg transition-colors border border-blue-200 hover:border-blue-300"
+                                className="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-medium text-primary-600 dark:text-primary-400 hover:bg-primary-500/10 rounded-lg transition-colors"
                                 title="View Full Record"
                               >
-                                <Calendar size={14} />
+                                <Calendar size={12} />
                                 Record
                               </button>
                             </>
                           ) : (
-                            <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold bg-gray-50 text-gray-600 border border-gray-200">
-                              <Clock size={14} className="text-gray-500" />
+                            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-light-bg dark:bg-dark-bg text-light-text-tertiary dark:text-dark-text-tertiary border border-light-border dark:border-dark-border">
+                              <Clock size={12} />
                               Not Marked
                             </span>
                           )}
                         </div>
                       </td>
                       <td className="px-6 py-4 text-sm">
-                        <div className="flex items-center justify-center">
+                        <div className="flex items-center">
                           {markingAttendanceFor === exec._id ? (
-                            <Loader2 className="w-5 h-5 animate-spin text-blue-500" />
+                            <Loader2 className="w-5 h-5 animate-spin text-primary-500" />
                           ) : (
                             <Toggle
                               checked={isTodayPresent}
@@ -297,16 +299,16 @@ export default function TechnicianList() {
                         </div>
                       </td>
                       <td className="px-6 py-4 text-sm">
-                        <div className="flex justify-center gap-2">
+                        <div className="flex items-center gap-2">
                           <button
                             onClick={(e) => {
                               e.stopPropagation();
                               handleDelete(exec._id);
                             }}
-                            className="p-2.5 text-red-600 hover:bg-red-50 rounded-lg transition-all hover:shadow-sm border border-transparent hover:border-red-200"
+                            className="p-2 text-red-500 hover:bg-red-500/10 rounded-lg transition-all duration-200"
                             title="Delete Technician"
                           >
-                            <Trash2 size={18} />
+                            <Trash2 size={16} />
                           </button>
                         </div>
                       </td>
@@ -319,9 +321,9 @@ export default function TechnicianList() {
         </div>
 
         {/* Pagination */}
-        <div className="px-2 sm:px-6 py-2 flex items-center justify-between border-t ">
-          <div className="text-sm text-gray-600">
-            Showing {startIndex + 1} to{" "}
+        <div className="px-6 py-4 border-t border-light-border dark:border-dark-border flex items-center justify-between bg-white dark:bg-dark-surface">
+          <div className="text-sm text-light-text-secondary dark:text-dark-text-secondary">
+            Showing {filteredTechnicians.length > 0 ? startIndex + 1 : 0} to{" "}
             {Math.min(endIndex, filteredTechnicians.length)} of{" "}
             {filteredTechnicians.length} results
           </div>
@@ -329,31 +331,31 @@ export default function TechnicianList() {
             <button
               onClick={() => goToPage(1)}
               disabled={currentPage === 1}
-              className="p-2 rounded-lg border transition-all disabled:opacity-30 hover:bg-gray-100"
+              className="p-2 rounded-lg border border-light-border dark:border-dark-border text-light-text dark:text-dark-text hover:bg-light-bg dark:hover:bg-dark-bg disabled:opacity-30 disabled:hover:bg-transparent transition-all"
             >
               <ChevronsLeft className="w-4 h-4" />
             </button>
             <button
               onClick={() => goToPage(currentPage - 1)}
               disabled={currentPage === 1}
-              className="p-2 rounded-lg border transition-all disabled:opacity-30 hover:bg-gray-100"
+              className="p-2 rounded-lg border border-light-border dark:border-dark-border text-light-text dark:text-dark-text hover:bg-light-bg dark:hover:bg-dark-bg disabled:opacity-30 disabled:hover:bg-transparent transition-all"
             >
               <ChevronLeft className="w-4 h-4" />
             </button>
-            <span className="px-4 py-2 text-sm font-medium">
+            <span className="px-4 py-2 text-sm font-medium text-light-text dark:text-dark-text">
               {currentPage} / {totalPages || 1}
             </span>
             <button
               onClick={() => goToPage(currentPage + 1)}
               disabled={currentPage === totalPages}
-              className="p-2 rounded-lg border transition-all disabled:opacity-30 hover:bg-gray-100"
+              className="p-2 rounded-lg border border-light-border dark:border-dark-border text-light-text dark:text-dark-text hover:bg-light-bg dark:hover:bg-dark-bg disabled:opacity-30 disabled:hover:bg-transparent transition-all"
             >
               <ChevronRight className="w-4 h-4" />
             </button>
             <button
               onClick={() => goToPage(totalPages)}
               disabled={currentPage === totalPages}
-              className="p-2 rounded-lg border transition-all disabled:opacity-30 hover:bg-gray-100"
+              className="p-2 rounded-lg border border-light-border dark:border-dark-border text-light-text dark:text-dark-text hover:bg-light-bg dark:hover:bg-dark-bg disabled:opacity-30 disabled:hover:bg-transparent transition-all"
             >
               <ChevronsRight className="w-4 h-4" />
             </button>

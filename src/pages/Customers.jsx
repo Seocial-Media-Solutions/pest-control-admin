@@ -102,15 +102,15 @@ const Customers = () => {
             {/* Page Header */}
             <div className="flex flex-wrap items-center justify-between">
                 <div>
-                    <h1 className="text-3xl font-bold text-dark-text mb-2">Customers</h1>
-                    <p className="text-dark-text-secondary">
+                    <h1 className="text-3xl font-bold text-light-text dark:text-dark-text mb-2">Customers</h1>
+                    <p className="text-light-text-secondary dark:text-dark-text-secondary">
                         Manage your customer database and relationships
                     </p>
                 </div>
                 <div className="flex flex-wrap items-center gap-3">
                     <button
                         onClick={() => setShowFilters(!showFilters)}
-                        className={`flex items-center gap-2 px-4 py-2 bg-dark-surface border border-dark-border rounded-lg hover:border-primary-500 transition-all duration-300 text-dark-text ${showFilters ? 'border-primary-500 ring-2 ring-primary-500/20' : ''
+                        className={`flex items-center gap-2 px-4 py-2 bg-white dark:bg-dark-surface border border-light-border dark:border-dark-border rounded-lg hover:border-primary-500 transition-all duration-300 text-light-text dark:text-dark-text ${showFilters ? 'border-primary-500 ring-2 ring-primary-500/20' : ''
                             }`}
                     >
                         <Filter className="w-4 h-4" />
@@ -118,7 +118,7 @@ const Customers = () => {
                     </button>
                     <button
                         onClick={fetchCustomers}
-                        className="flex items-center gap-2 px-4 py-2 bg-dark-surface border border-dark-border rounded-lg hover:border-primary-500 transition-all duration-300 text-dark-text"
+                        className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-dark-surface border border-light-border dark:border-dark-border rounded-lg hover:border-primary-500 transition-all duration-300 text-light-text dark:text-dark-text"
                         disabled={loading}
                     >
                         <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
@@ -137,16 +137,16 @@ const Customers = () => {
             {/* Filters */}
             {/* Filter Options */}
             {showFilters && (
-                <div className="bg-dark-surface border border-dark-border rounded-2xl p-6 animate-fade-in">
+                <div className="bg-white dark:bg-dark-surface border border-light-border dark:border-dark-border rounded-2xl p-6 animate-fade-in">
                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                         <div>
-                            <label className="block text-sm font-medium text-dark-text mb-2">
+                            <label className="block text-sm font-medium text-light-text dark:text-dark-text mb-2">
                                 Status
                             </label>
                             <select
                                 value={statusFilter}
                                 onChange={(e) => setStatusFilter(e.target.value)}
-                                className="w-full px-3 py-2 bg-dark-bg border border-dark-border rounded-lg text-sm text-dark-text focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20"
+                                className="w-full px-3 py-2 bg-light-bg dark:bg-dark-bg border border-light-border dark:border-dark-border rounded-lg text-sm text-light-text dark:text-dark-text focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20"
                             >
                                 <option value="">All Status</option>
                                 <option value="regular">Regular</option>
@@ -159,18 +159,18 @@ const Customers = () => {
             )}
 
             {/* Customers Table */}
-            <div className="bg-dark-surface border border-dark-border rounded-2xl overflow-hidden">
+            <div className="bg-white dark:bg-dark-surface border border-light-border dark:border-dark-border rounded-2xl overflow-hidden">
                 {loading ? (
                     <div className="flex items-center justify-center py-12">
                         <RefreshCw className="w-8 h-8 text-primary-500 animate-spin" />
                     </div>
                 ) : customers.length === 0 ? (
                     <div className="flex flex-col items-center justify-center py-12">
-                        <Users className="w-16 h-16 text-dark-text-tertiary mb-4" />
-                        <p className="text-dark-text-secondary">No customers found</p>
+                        <Users className="w-16 h-16 text-light-text-tertiary dark:text-dark-text-tertiary mb-4" />
+                        <p className="text-light-text-secondary dark:text-dark-text-secondary">No customers found</p>
                         <button
                             onClick={() => navigate('/customers/create')}
-                            className="mt-4 text-primary-400 hover:text-primary-300"
+                            className="mt-4 text-primary-500 dark:text-primary-400 hover:text-primary-600 dark:hover:text-primary-300"
                         >
                             Add your first customer
                         </button>
@@ -178,33 +178,33 @@ const Customers = () => {
                 ) : (
                     <div className="overflow-x-auto">
                         <table className="w-full">
-                            <thead className="bg-dark-bg border-b border-dark-border">
+                            <thead className="bg-light-bg dark:bg-dark-bg border-b border-light-border dark:border-dark-border">
                                 <tr>
-                                    <th className="px-6 py-4 text-left text-xs font-semibold text-dark-text-secondary uppercase tracking-wider">
+                                    <th className="px-6 py-4 text-left text-xs font-semibold text-light-text-secondary dark:text-dark-text-secondary uppercase tracking-wider">
                                         Customer
                                     </th>
-                                    <th className="px-6 py-4 text-left text-xs font-semibold text-dark-text-secondary uppercase tracking-wider">
+                                    <th className="px-6 py-4 text-left text-xs font-semibold text-light-text-secondary dark:text-dark-text-secondary uppercase tracking-wider">
                                         Contact
                                     </th>
-                                    <th className="px-6 py-4 text-left text-xs font-semibold text-dark-text-secondary uppercase tracking-wider">
+                                    <th className="px-6 py-4 text-left text-xs font-semibold text-light-text-secondary dark:text-dark-text-secondary uppercase tracking-wider">
                                         Address
                                     </th>
-                                    <th className="px-6 py-4 text-left text-xs font-semibold text-dark-text-secondary uppercase tracking-wider">
+                                    <th className="px-6 py-4 text-left text-xs font-semibold text-light-text-secondary dark:text-dark-text-secondary uppercase tracking-wider">
                                         Status
                                     </th>
-                                    <th className="px-6 py-4 text-left text-xs font-semibold text-dark-text-secondary uppercase tracking-wider">
+                                    <th className="px-6 py-4 text-left text-xs font-semibold text-light-text-secondary dark:text-dark-text-secondary uppercase tracking-wider">
                                         Stats
                                     </th>
-                                    <th className="px-6 py-4 text-left text-xs font-semibold text-dark-text-secondary uppercase tracking-wider">
+                                    <th className="px-6 py-4 text-left text-xs font-semibold text-light-text-secondary dark:text-dark-text-secondary uppercase tracking-wider">
                                         Actions
                                     </th>
                                 </tr>
                             </thead>
-                            <tbody className="divide-y divide-dark-border">
+                            <tbody className="divide-y divide-light-border dark:divide-dark-border">
                                 {customers.map((customer) => (
                                     <tr
                                         key={customer._id}
-                                        className="hover:bg-dark-surface-hover transition-colors duration-200"
+                                        className="hover:bg-light-surface-hover dark:hover:bg-dark-surface-hover transition-colors duration-200"
                                     >
                                         <td className="px-6 py-4 whitespace-nowrap">
                                             <div className="flex items-center gap-3">
@@ -216,10 +216,10 @@ const Customers = () => {
                                                         .toUpperCase()}
                                                 </div>
                                                 <div>
-                                                    <div className="text-sm font-semibold text-dark-text">
+                                                    <div className="text-sm font-semibold text-light-text dark:text-dark-text">
                                                         {customer.fullName}
                                                     </div>
-                                                    <div className="text-xs text-dark-text-tertiary">
+                                                    <div className="text-xs text-light-text-tertiary dark:text-dark-text-tertiary">
                                                         {formatDate(customer.createdAt)}
                                                     </div>
                                                 </div>
@@ -227,19 +227,19 @@ const Customers = () => {
                                         </td>
                                         <td className="px-6 py-4">
                                             <div className="space-y-1">
-                                                <div className="flex items-center gap-2 text-sm text-dark-text">
-                                                    <Mail className="w-3 h-3 text-dark-text-tertiary" />
+                                                <div className="flex items-center gap-2 text-sm text-light-text dark:text-dark-text">
+                                                    <Mail className="w-3 h-3 text-light-text-tertiary dark:text-dark-text-tertiary" />
                                                     {customer.email}
                                                 </div>
-                                                <div className="flex items-center gap-2 text-xs text-dark-text-tertiary">
+                                                <div className="flex items-center gap-2 text-xs text-light-text-tertiary dark:text-dark-text-tertiary">
                                                     <Phone className="w-3 h-3" />
                                                     {customer.mobileNo}
                                                 </div>
                                             </div>
                                         </td>
                                         <td className="px-6 py-4">
-                                            <div className="flex items-start gap-2 text-sm text-dark-text max-w-xs">
-                                                <MapPin className="w-3 h-3 text-dark-text-tertiary mt-1 flex-shrink-0" />
+                                            <div className="flex items-start gap-2 text-sm text-light-text dark:text-dark-text max-w-xs">
+                                                <MapPin className="w-3 h-3 text-light-text-tertiary dark:text-dark-text-tertiary mt-1 flex-shrink-0" />
                                                 <span className="line-clamp-2">
                                                     {customer.address}
                                                 </span>
@@ -274,12 +274,12 @@ const Customers = () => {
                                         </td>
                                         <td className="px-6 py-4">
                                             <div className="space-y-1 text-xs">
-                                                <div className="flex items-center gap-2 text-dark-text">
-                                                    <Calendar className="w-3 h-3 text-dark-text-tertiary" />
+                                                <div className="flex items-center gap-2 text-light-text dark:text-dark-text">
+                                                    <Calendar className="w-3 h-3 text-light-text-tertiary dark:text-dark-text-tertiary" />
                                                     {customer.totalAssignments} assignments
                                                 </div>
-                                                <div className="flex items-center gap-2 text-dark-text">
-                                                    <DollarSign className="w-3 h-3 text-dark-text-tertiary" />
+                                                <div className="flex items-center gap-2 text-light-text dark:text-dark-text">
+                                                    <DollarSign className="w-3 h-3 text-light-text-tertiary dark:text-dark-text-tertiary" />
                                                     ₹{customer.totalSpent.toLocaleString()}
                                                 </div>
                                             </div>
@@ -288,7 +288,7 @@ const Customers = () => {
                                             <div className="flex items-center gap-2">
                                                 <button
                                                     onClick={() => navigate(`/customers/edit/${customer._id}`)}
-                                                    className="p-2 hover:bg-primary-500/10 text-primary-400 rounded-lg transition-colors duration-200"
+                                                    className="p-2 hover:bg-primary-500/10 text-primary-600 dark:text-primary-400 rounded-lg transition-colors duration-200"
                                                     title="Edit"
                                                 >
                                                     <Edit2 className="w-4 h-4" />
@@ -300,7 +300,7 @@ const Customers = () => {
                                                             customer.fullName
                                                         )
                                                     }
-                                                    className="p-2 hover:bg-red-500/10 text-red-400 rounded-lg transition-colors duration-200"
+                                                    className="p-2 hover:bg-red-500/10 text-red-500 dark:text-red-400 rounded-lg transition-colors duration-200"
                                                     title="Delete"
                                                 >
                                                     <Trash2 className="w-4 h-4" />

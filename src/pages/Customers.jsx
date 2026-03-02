@@ -100,17 +100,17 @@ const Customers = () => {
     return (
         <div className="space-y-6 animate-fade-in">
             {/* Page Header */}
-            <div className="flex flex-wrap items-center justify-between">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                 <div>
-                    <h1 className="text-3xl font-bold text-light-text dark:text-dark-text mb-2">Customers</h1>
-                    <p className="text-light-text-secondary dark:text-dark-text-secondary">
+                    <h1 className="text-3xl font-bold text-light-text dark:text-light-text mb-2">Customers</h1>
+                    <p className="text-light-text-secondary dark:text-light-text-secondary">
                         Manage your customer database and relationships
                     </p>
                 </div>
                 <div className="flex flex-wrap items-center gap-3">
                     <button
                         onClick={() => setShowFilters(!showFilters)}
-                        className={`flex items-center gap-2 px-4 py-2 bg-white dark:bg-dark-surface border border-light-border dark:border-dark-border rounded-lg hover:border-primary-500 transition-all duration-300 text-light-text dark:text-dark-text ${showFilters ? 'border-primary-500 ring-2 ring-primary-500/20' : ''
+                        className={`flex items-center gap-2 px-4 py-2 bg-white dark:bg-white border border-light-border dark:border-light-border rounded-lg hover:border-primary-500 transition-all duration-300 text-light-text dark:text-light-text ${showFilters ? 'border-primary-500 ring-2 ring-primary-500/20' : ''
                             }`}
                     >
                         <Filter className="w-4 h-4" />
@@ -118,7 +118,7 @@ const Customers = () => {
                     </button>
                     <button
                         onClick={fetchCustomers}
-                        className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-dark-surface border border-light-border dark:border-dark-border rounded-lg hover:border-primary-500 transition-all duration-300 text-light-text dark:text-dark-text"
+                        className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-white border border-light-border dark:border-light-border rounded-lg hover:border-primary-500 transition-all duration-300 text-light-text dark:text-light-text"
                         disabled={loading}
                     >
                         <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
@@ -137,16 +137,16 @@ const Customers = () => {
             {/* Filters */}
             {/* Filter Options */}
             {showFilters && (
-                <div className="bg-white dark:bg-dark-surface border border-light-border dark:border-dark-border rounded-2xl p-6 animate-fade-in">
+                <div className="bg-white dark:bg-white border border-light-border dark:border-light-border rounded-2xl p-6 animate-fade-in">
                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                         <div>
-                            <label className="block text-sm font-medium text-light-text dark:text-dark-text mb-2">
+                            <label className="block text-sm font-medium text-light-text dark:text-light-text mb-2">
                                 Status
                             </label>
                             <select
                                 value={statusFilter}
                                 onChange={(e) => setStatusFilter(e.target.value)}
-                                className="w-full px-3 py-2 bg-light-bg dark:bg-dark-bg border border-light-border dark:border-dark-border rounded-lg text-sm text-light-text dark:text-dark-text focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20"
+                                className="w-full px-3 py-2 bg-light-bg dark:bg-light-bg border border-light-border dark:border-light-border rounded-lg text-sm text-light-text dark:text-light-text focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20"
                             >
                                 <option value="">All Status</option>
                                 <option value="regular">Regular</option>
@@ -159,15 +159,15 @@ const Customers = () => {
             )}
 
             {/* Customers Table */}
-            <div className="bg-white dark:bg-dark-surface border border-light-border dark:border-dark-border rounded-2xl overflow-hidden">
+            <div className="bg-white dark:bg-white border border-light-border dark:border-light-border rounded-2xl overflow-hidden">
                 {loading ? (
                     <div className="flex items-center justify-center py-12">
                         <RefreshCw className="w-8 h-8 text-primary-500 animate-spin" />
                     </div>
                 ) : customers.length === 0 ? (
                     <div className="flex flex-col items-center justify-center py-12">
-                        <Users className="w-16 h-16 text-light-text-tertiary dark:text-dark-text-tertiary mb-4" />
-                        <p className="text-light-text-secondary dark:text-dark-text-secondary">No customers found</p>
+                        <Users className="w-16 h-16 text-light-text-tertiary dark:text-light-text-tertiary mb-4" />
+                        <p className="text-light-text-secondary dark:text-light-text-secondary">No customers found</p>
                         <button
                             onClick={() => navigate('/customers/create')}
                             className="mt-4 text-primary-500 dark:text-primary-400 hover:text-primary-600 dark:hover:text-primary-300"
@@ -176,142 +176,236 @@ const Customers = () => {
                         </button>
                     </div>
                 ) : (
-                    <div className="overflow-x-auto">
-                        <table className="w-full">
-                            <thead className="bg-light-bg dark:bg-dark-bg border-b border-light-border dark:border-dark-border">
-                                <tr>
-                                    <th className="px-6 py-4 text-left text-xs font-semibold text-light-text-secondary dark:text-dark-text-secondary uppercase tracking-wider">
-                                        Customer
-                                    </th>
-                                    <th className="px-6 py-4 text-left text-xs font-semibold text-light-text-secondary dark:text-dark-text-secondary uppercase tracking-wider">
-                                        Contact
-                                    </th>
-                                    <th className="px-6 py-4 text-left text-xs font-semibold text-light-text-secondary dark:text-dark-text-secondary uppercase tracking-wider">
-                                        Address
-                                    </th>
-                                    <th className="px-6 py-4 text-left text-xs font-semibold text-light-text-secondary dark:text-dark-text-secondary uppercase tracking-wider">
-                                        Status
-                                    </th>
-                                    <th className="px-6 py-4 text-left text-xs font-semibold text-light-text-secondary dark:text-dark-text-secondary uppercase tracking-wider">
-                                        Stats
-                                    </th>
-                                    <th className="px-6 py-4 text-left text-xs font-semibold text-light-text-secondary dark:text-dark-text-secondary uppercase tracking-wider">
-                                        Actions
-                                    </th>
-                                </tr>
-                            </thead>
-                            <tbody className="divide-y divide-light-border dark:divide-dark-border">
-                                {customers.map((customer) => (
-                                    <tr
-                                        key={customer._id}
-                                        className="hover:bg-light-surface-hover dark:hover:bg-dark-surface-hover transition-colors duration-200"
-                                    >
-                                        <td className="px-6 py-4 whitespace-nowrap">
-                                            <div className="flex items-center gap-3">
-                                                <div className="w-10 h-10 gradient-primary rounded-full flex items-center justify-center text-white font-bold text-sm">
-                                                    {customer.fullName
-                                                        .split(' ')
-                                                        .map((n) => n[0])
-                                                        .join('')
-                                                        .toUpperCase()}
-                                                </div>
-                                                <div>
-                                                    <div className="text-sm font-semibold text-light-text dark:text-dark-text">
-                                                        {customer.fullName}
+                    <>
+                        {/* Desktop Table View */}
+                        <div className="overflow-x-auto hidden md:block">
+                            <table className="w-full">
+                                <thead className="bg-light-bg dark:bg-light-bg border-b border-light-border dark:border-light-border">
+                                    <tr>
+                                        <th className="px-6 py-4 text-left text-xs font-semibold text-light-text-secondary dark:text-light-text-secondary uppercase tracking-wider">
+                                            Customer
+                                        </th>
+                                        <th className="px-6 py-4 text-left text-xs font-semibold text-light-text-secondary dark:text-light-text-secondary uppercase tracking-wider">
+                                            Contact
+                                        </th>
+                                        <th className="px-6 py-4 text-left text-xs font-semibold text-light-text-secondary dark:text-light-text-secondary uppercase tracking-wider">
+                                            Address
+                                        </th>
+                                        <th className="px-6 py-4 text-left text-xs font-semibold text-light-text-secondary dark:text-light-text-secondary uppercase tracking-wider">
+                                            Status
+                                        </th>
+                                        <th className="px-6 py-4 text-left text-xs font-semibold text-light-text-secondary dark:text-light-text-secondary uppercase tracking-wider">
+                                            Stats
+                                        </th>
+                                        <th className="px-6 py-4 text-left text-xs font-semibold text-light-text-secondary dark:text-light-text-secondary uppercase tracking-wider">
+                                            Actions
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody className="divide-y divide-light-border dark:divide-light-border">
+                                    {customers.map((customer) => (
+                                        <tr
+                                            key={customer._id}
+                                            className="hover:bg-light-surface-hover dark:hover:bg-light-surface-hover transition-colors duration-200"
+                                        >
+                                            <td className="px-6 py-4 whitespace-nowrap">
+                                                <div className="flex items-center gap-3">
+                                                    <div className="w-10 h-10 gradient-primary rounded-full flex items-center justify-center text-white font-bold text-sm">
+                                                        {customer.fullName
+                                                            .split(' ')
+                                                            .map((n) => n[0])
+                                                            .join('')
+                                                            .toUpperCase()}
                                                     </div>
-                                                    <div className="text-xs text-light-text-tertiary dark:text-dark-text-tertiary">
-                                                        {formatDate(customer.createdAt)}
+                                                    <div>
+                                                        <div className="text-sm font-semibold text-light-text dark:text-light-text">
+                                                            {customer.fullName}
+                                                        </div>
+                                                        <div className="text-xs text-light-text-tertiary dark:text-light-text-tertiary">
+                                                            {formatDate(customer.createdAt)}
+                                                        </div>
                                                     </div>
                                                 </div>
-                                            </div>
-                                        </td>
-                                        <td className="px-6 py-4">
-                                            <div className="space-y-1">
-                                                <div className="flex items-center gap-2 text-sm text-light-text dark:text-dark-text">
-                                                    <Mail className="w-3 h-3 text-light-text-tertiary dark:text-dark-text-tertiary" />
-                                                    {customer.email}
+                                            </td>
+                                            <td className="px-6 py-4">
+                                                <div className="space-y-1">
+                                                    <div className="flex items-center gap-2 text-sm text-light-text dark:text-light-text">
+                                                        <Mail className="w-3 h-3 text-light-text-tertiary dark:text-light-text-tertiary" />
+                                                        {customer.email}
+                                                    </div>
+                                                    <div className="flex items-center gap-2 text-xs text-light-text-tertiary dark:text-light-text-tertiary">
+                                                        <Phone className="w-3 h-3" />
+                                                        {customer.mobileNo}
+                                                    </div>
                                                 </div>
-                                                <div className="flex items-center gap-2 text-xs text-light-text-tertiary dark:text-dark-text-tertiary">
-                                                    <Phone className="w-3 h-3" />
-                                                    {customer.mobileNo}
+                                            </td>
+                                            <td className="px-6 py-4">
+                                                <div className="flex items-start gap-2 text-sm text-light-text dark:text-light-text max-w-xs">
+                                                    <MapPin className="w-3 h-3 text-light-text-tertiary dark:text-light-text-tertiary mt-1 flex-shrink-0" />
+                                                    <span className="line-clamp-2">
+                                                        {customer.address}
+                                                    </span>
                                                 </div>
-                                            </div>
-                                        </td>
-                                        <td className="px-6 py-4">
-                                            <div className="flex items-start gap-2 text-sm text-light-text dark:text-dark-text max-w-xs">
-                                                <MapPin className="w-3 h-3 text-light-text-tertiary dark:text-dark-text-tertiary mt-1 flex-shrink-0" />
-                                                <span className="line-clamp-2">
-                                                    {customer.address}
-                                                </span>
-                                            </div>
-                                        </td>
-                                        <td className="px-6 py-4">
-                                            <div className="space-y-2">
-                                                <span
-                                                    className={`px-3 py-1 rounded-full text-xs font-semibold capitalize ${getStatusBadge(
-                                                        customer.status
-                                                    )}`}
-                                                >
-                                                    {customer.status}
-                                                </span>
-                                                <div>
+                                            </td>
+                                            <td className="px-6 py-4">
+                                                <div className="space-y-2">
+                                                    <span
+                                                        className={`px-3 py-1 rounded-full text-xs font-semibold capitalize ${getStatusBadge(
+                                                            customer.status
+                                                        )}`}
+                                                    >
+                                                        {customer.status}
+                                                    </span>
+                                                    <div>
+                                                        <button
+                                                            onClick={() =>
+                                                                handleToggleStatus(
+                                                                    customer._id,
+                                                                    customer.isActive
+                                                                )
+                                                            }
+                                                            className={`px-2 py-1 rounded text-xs font-semibold ${customer.isActive
+                                                                ? 'bg-green-500/10 text-green-400'
+                                                                : 'bg-gray-500/10 text-gray-400'
+                                                                }`}
+                                                        >
+                                                            {customer.isActive ? 'Active' : 'Inactive'}
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td className="px-6 py-4">
+                                                <div className="space-y-1 text-xs">
+                                                    <div className="flex items-center gap-2 text-light-text dark:text-light-text">
+                                                        <Calendar className="w-3 h-3 text-light-text-tertiary dark:text-light-text-tertiary" />
+                                                        {customer.totalAssignments} assignments
+                                                    </div>
+                                                    <div className="flex items-center gap-2 text-light-text dark:text-light-text">
+                                                        <DollarSign className="w-3 h-3 text-light-text-tertiary dark:text-light-text-tertiary" />
+                                                        ₹{customer.totalSpent.toLocaleString()}
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td className="px-6 py-4">
+                                                <div className="flex items-center gap-2">
+                                                    <button
+                                                        onClick={() => navigate(`/customers/edit/${customer._id}`)}
+                                                        className="p-2 hover:bg-primary-500/10 text-primary-600 dark:text-primary-400 rounded-lg transition-colors duration-200"
+                                                        title="Edit"
+                                                    >
+                                                        <Edit2 className="w-4 h-4" />
+                                                    </button>
                                                     <button
                                                         onClick={() =>
-                                                            handleToggleStatus(
+                                                            handleDeleteCustomer(
                                                                 customer._id,
-                                                                customer.isActive
+                                                                customer.fullName
                                                             )
                                                         }
-                                                        className={`px-2 py-1 rounded text-xs font-semibold ${customer.isActive
+                                                        className="p-2 hover:bg-red-500/10 text-red-500 dark:text-red-400 rounded-lg transition-colors duration-200"
+                                                        title="Delete"
+                                                    >
+                                                        <Trash2 className="w-4 h-4" />
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
+
+                        {/* Mobile Card View */}
+                        <div className="grid grid-cols-1 gap-4 p-4 md:hidden">
+                            {customers.map((customer) => (
+                                <div
+                                    key={customer._id}
+                                    className="bg-white dark:bg-white border border-light-border dark:border-light-border rounded-xl p-4 shadow-sm hover:shadow-md transition-shadow"
+                                >
+                                    <div className="flex items-center justify-between mb-3 border-b border-light-border pb-3">
+                                        <div className="flex items-center gap-3">
+                                            <div className="w-10 h-10 gradient-primary rounded-full flex items-center justify-center text-white font-bold text-sm">
+                                                {customer.fullName
+                                                    .split(' ')
+                                                    .map((n) => n[0])
+                                                    .join('')
+                                                    .toUpperCase()
+                                                    .substring(0, 2)}
+                                            </div>
+                                            <div>
+                                                <div className="text-sm font-semibold text-light-text dark:text-light-text line-clamp-1">
+                                                    {customer.fullName}
+                                                </div>
+                                                <div className="flex items-center gap-2">
+                                                    <span
+                                                        className={`px-2 py-0.5 rounded-full text-[10px] font-semibold capitalize ${getStatusBadge(
+                                                            customer.status
+                                                        )}`}
+                                                    >
+                                                        {customer.status}
+                                                    </span>
+                                                    <span
+                                                        className={`px-2 py-0.5 rounded text-[10px] font-semibold ${customer.isActive
                                                             ? 'bg-green-500/10 text-green-400'
                                                             : 'bg-gray-500/10 text-gray-400'
                                                             }`}
                                                     >
                                                         {customer.isActive ? 'Active' : 'Inactive'}
-                                                    </button>
+                                                    </span>
                                                 </div>
                                             </div>
-                                        </td>
-                                        <td className="px-6 py-4">
-                                            <div className="space-y-1 text-xs">
-                                                <div className="flex items-center gap-2 text-light-text dark:text-dark-text">
-                                                    <Calendar className="w-3 h-3 text-light-text-tertiary dark:text-dark-text-tertiary" />
-                                                    {customer.totalAssignments} assignments
-                                                </div>
-                                                <div className="flex items-center gap-2 text-light-text dark:text-dark-text">
-                                                    <DollarSign className="w-3 h-3 text-light-text-tertiary dark:text-dark-text-tertiary" />
-                                                    ₹{customer.totalSpent.toLocaleString()}
-                                                </div>
-                                            </div>
-                                        </td>
-                                        <td className="px-6 py-4">
-                                            <div className="flex items-center gap-2">
-                                                <button
-                                                    onClick={() => navigate(`/customers/edit/${customer._id}`)}
-                                                    className="p-2 hover:bg-primary-500/10 text-primary-600 dark:text-primary-400 rounded-lg transition-colors duration-200"
-                                                    title="Edit"
-                                                >
-                                                    <Edit2 className="w-4 h-4" />
-                                                </button>
-                                                <button
-                                                    onClick={() =>
-                                                        handleDeleteCustomer(
-                                                            customer._id,
-                                                            customer.fullName
-                                                        )
-                                                    }
-                                                    className="p-2 hover:bg-red-500/10 text-red-500 dark:text-red-400 rounded-lg transition-colors duration-200"
-                                                    title="Delete"
-                                                >
-                                                    <Trash2 className="w-4 h-4" />
-                                                </button>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
-                    </div>
+                                        </div>
+                                        <div className="flex items-center gap-1">
+                                            <button
+                                                onClick={() => navigate(`/customers/edit/${customer._id}`)}
+                                                className="p-1.5 hover:bg-primary-500/10 text-primary-600 dark:text-primary-400 rounded-lg transition-colors"
+                                            >
+                                                <Edit2 className="w-4 h-4" />
+                                            </button>
+                                            <button
+                                                onClick={() => handleDeleteCustomer(customer._id, customer.fullName)}
+                                                className="p-1.5 hover:bg-red-500/10 text-red-500 dark:text-red-400 rounded-lg transition-colors"
+                                            >
+                                                <Trash2 className="w-4 h-4" />
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    <div className="space-y-2 mb-3">
+                                        <div className="flex items-center gap-2 text-xs text-light-text dark:text-light-text">
+                                            <Mail className="w-3.5 h-3.5 text-light-text-tertiary" />
+                                            <span className="truncate">{customer.email}</span>
+                                        </div>
+                                        <div className="flex items-center gap-2 text-xs text-light-text dark:text-light-text">
+                                            <Phone className="w-3.5 h-3.5 text-light-text-tertiary" />
+                                            {customer.mobileNo}
+                                        </div>
+                                        <div className="flex items-start gap-2 text-xs text-light-text dark:text-light-text">
+                                            <MapPin className="w-3.5 h-3.5 text-light-text-tertiary mt-0.5 shrink-0" />
+                                            <span className="line-clamp-2">{customer.address}</span>
+                                        </div>
+                                    </div>
+
+                                    <div className="flex items-center justify-between pt-3 border-t border-light-border dark:border-light-border bg-light-bg/50 rounded-lg px-3 py-2">
+                                        <div className="flex items-center gap-1.5 text-xs font-semibold text-light-text">
+                                            <Calendar className="w-3.5 h-3.5 text-light-text-tertiary" />
+                                            {customer.totalAssignments} jobs
+                                        </div>
+                                        <div className="flex items-center gap-1.5 text-xs font-semibold text-accent-600 dark:text-accent-400">
+                                            <DollarSign className="w-3.5 h-3.5" />
+                                            ₹{customer.totalSpent.toLocaleString()}
+                                        </div>
+                                        <button
+                                            onClick={() => handleToggleStatus(customer._id, customer.isActive)}
+                                            className="text-[10px] underline text-light-text-tertiary hover:text-primary-500"
+                                        >
+                                            Toggle Status
+                                        </button>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </>
                 )}
             </div>
         </div>

@@ -43,14 +43,11 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
 
             {/* Sidebar */}
             <aside
-                className={`fixed left-0 top-0 h-[100dvh] w-72 border-r flex flex-col z-50 transition-all duration-300 ${isDark
-                    ? 'bg-dark-surface border-dark-border'
-                    : 'bg-white border-light-border'
-                    } ${isOpen ? 'translate-x-0' : '-translate-x-full'
+                className={`fixed left-0 top-0 h-[100dvh] w-72 border-r flex flex-col z-50 transition-all duration-300 bg-white border-light-border ${isOpen ? 'translate-x-0' : '-translate-x-full'
                     } md:translate-x-0 shadow-xl md:shadow-none`}
             >
                 {/* Header */}
-                <div className={`p-6 border-b ${isDark ? 'border-dark-border' : 'border-light-border'}`}>
+                <div className={`p-6 border-b border-light-border`}>
                     <div className="flex items-center gap-3">
                         <div className="w-10 h-10 gradient-primary rounded-lg flex items-center justify-center">
                             <Bug className="w-6 h-6 text-white" />
@@ -70,7 +67,7 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
                             className={({ isActive }) =>
                                 `flex items-center gap-3 px-4 py-3 rounded-lg font-medium text-sm transition-all duration-200 relative overflow-hidden group ${isActive
                                     ? 'bg-primary-500/10 text-primary-600 dark:text-primary-400 before:absolute before:left-0 before:top-0 before:w-1 before:h-full before:bg-gradient-to-b before:from-primary-500 before:to-accent-500'
-                                    : `text-light-text-secondary dark:text-dark-text-secondary ${isDark ? 'hover:bg-dark-surface-hover hover:text-dark-text' : 'hover:bg-light-surface-hover hover:text-light-text'}`
+                                    : `text-light-text-secondary dark:text-light-text-secondary hover:bg-light-surface-hover hover:text-light-text`
                                 }`
                             }
                             onClick={() => window.innerWidth < 768 && toggleSidebar()}
@@ -82,19 +79,16 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
                 </nav>
 
                 {/* Footer - User Profile */}
-                <div className={`p-4 border-t ${isDark ? 'border-dark-border' : 'border-light-border'}`}>
-                    <div className={`flex items-center gap-3 p-3 rounded-lg cursor-pointer transition-colors duration-200 ${isDark
-                        ? 'bg-dark-bg hover:bg-dark-surface-hover'
-                        : 'bg-light-bg hover:bg-light-surface-hover'
-                        }`}>
+                <div className={`p-4 border-t border-light-border`}>
+                    <div className={`flex items-center gap-3 p-3 rounded-lg cursor-pointer transition-colors duration-200 bg-light-bg hover:bg-light-surface-hover`}>
                         <div className="w-10 h-10 gradient-primary rounded-full flex items-center justify-center text-white font-bold text-sm">
                             AD
                         </div>
                         <div className="flex-1">
-                            <div className={`text-sm font-semibold ${isDark ? 'text-dark-text' : 'text-light-text'}`}>
+                            <div className={`text-sm font-semibold text-light-text`}>
                                 Admin User
                             </div>
-                            <div className={`text-xs ${isDark ? 'text-dark-text-tertiary' : 'text-light-text-tertiary'}`}>
+                            <div className={`text-xs text-light-text-tertiary`}>
                                 Administrator
                             </div>
                         </div>

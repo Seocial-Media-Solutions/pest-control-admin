@@ -252,11 +252,11 @@ function Tracking() {
             {/* Header */}
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div>
-                    <h1 className="text-2xl md:text-3xl font-bold text-dark-text flex items-center gap-3">
+                    <h1 className="text-2xl md:text-3xl font-bold text-light-text flex items-center gap-3">
                         <MapPin className="w-8 h-8 text-primary-500" />
                         Live Tracking
                     </h1>
-                    <p className="text-dark-text-secondary mt-1">
+                    <p className="text-light-text-secondary mt-1">
                         Monitor technician locations in real-time
                     </p>
                 </div>
@@ -274,9 +274,9 @@ function Tracking() {
 
                 {/* Sidebar - Technicians List */}
                 <div className="w-full lg:w-80 flex-shrink-0 order-2 lg:order-1 flex flex-col gap-4">
-                    <div className="bg-dark-surface border border-dark-border rounded-2xl p-4 flex flex-col h-[500px] lg:h-full">
+                    <div className="bg-white border border-light-border rounded-2xl p-4 flex flex-col h-[500px] lg:h-full">
                         <div className="flex items-center justify-between mb-4">
-                            <h2 className="text-lg font-bold text-dark-text flex items-center gap-2">
+                            <h2 className="text-lg font-bold text-light-text flex items-center gap-2">
                                 <Users className="w-5 h-5 text-primary-400" />
                                 Technicians
                             </h2>
@@ -291,7 +291,7 @@ function Tracking() {
                                 <span className="text-sm">Loading technicians...</span>
                             </div>
                         ) : technicians.length === 0 ? (
-                            <div className="flex-1 flex flex-col items-center justify-center text-dark-text-tertiary gap-2">
+                            <div className="flex-1 flex flex-col items-center justify-center text-light-text-tertiary gap-2">
                                 <Users className="w-10 h-10 opacity-50" />
                                 <span className="text-sm">No technicians found</span>
                             </div>
@@ -314,11 +314,11 @@ function Tracking() {
                                             onClick={() => handleTechnicianSelect(tech._id)}
                                             className={`p-3 rounded-xl border transition-all duration-200 cursor-pointer ${isSelected
                                                 ? 'bg-gradient-to-br from-primary-500 to-accent-500 border-transparent shadow-lg shadow-primary-500/20 text-white'
-                                                : 'bg-dark-bg border-dark-border hover:border-primary-500/50 text-dark-text hover:bg-dark-surface-hover'
+                                                : 'bg-light-bg border-light-border hover:border-primary-500/50 text-light-text hover:bg-light-surface-hover'
                                                 }`}
                                         >
                                             <div className="flex justify-between items-start mb-2">
-                                                <span className={`font-semibold text-sm ${isSelected ? 'text-white' : 'text-dark-text'}`}>
+                                                <span className={`font-semibold text-sm ${isSelected ? 'text-white' : 'text-light-text'}`}>
                                                     {tech.fullName}
                                                 </span>
                                                 {isSelected && (
@@ -332,18 +332,18 @@ function Tracking() {
                                             </div>
 
                                             <div className="space-y-1">
-                                                <div className={`flex items-center gap-1.5 text-xs ${isSelected ? 'text-white/80' : 'text-dark-text-secondary'}`}>
+                                                <div className={`flex items-center gap-1.5 text-xs ${isSelected ? 'text-white/80' : 'text-light-text-secondary'}`}>
                                                     <Mail className="w-3 h-3" />
                                                     <span className="truncate">{tech.email}</span>
                                                 </div>
-                                                <div className={`flex items-center gap-1.5 text-xs ${isSelected ? 'text-white/80' : 'text-dark-text-secondary'}`}>
+                                                <div className={`flex items-center gap-1.5 text-xs ${isSelected ? 'text-white/80' : 'text-light-text-secondary'}`}>
                                                     <Smartphone className="w-3 h-3" />
                                                     <span>{contact}</span>
                                                 </div>
                                             </div>
 
                                             {techLocation && (
-                                                <div className={`mt-2 pt-2 border-t text-[10px] flex items-center gap-1.5 ${isSelected ? 'border-white/20 text-white/90' : 'border-dark-border text-dark-text-tertiary'
+                                                <div className={`mt-2 pt-2 border-t text-[10px] flex items-center gap-1.5 ${isSelected ? 'border-white/20 text-white/90' : 'border-light-border text-light-text-tertiary'
                                                     }`}>
                                                     <Clock className="w-3 h-3" />
                                                     Last seen: {new Date(techLocation.timestamp || Date.now()).toLocaleTimeString()}
@@ -361,7 +361,7 @@ function Tracking() {
                 <div className="flex-1 min-w-0 order-1 lg:order-2 space-y-6">
 
                     {/* Map Container */}
-                    <div className="bg-dark-surface border border-dark-border rounded-2xl p-1 overflow-hidden h-[400px] lg:h-[600px] shadow-lg relative z-0">
+                    <div className="bg-white border border-light-border rounded-2xl p-1 overflow-hidden h-[400px] lg:h-[600px] shadow-lg relative z-0">
                         <MapContainer
                             center={position}
                             zoom={13}
@@ -402,20 +402,20 @@ function Tracking() {
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         {/* WebSocket Stats */}
                         {wsStats && (
-                            <div className="bg-dark-surface border border-dark-border rounded-2xl p-5">
-                                <h3 className="text-sm font-bold text-dark-text mb-4 uppercase tracking-wider text-primary-400">System Status</h3>
+                            <div className="bg-white border border-light-border rounded-2xl p-5">
+                                <h3 className="text-sm font-bold text-light-text mb-4 uppercase tracking-wider text-primary-400">System Status</h3>
                                 <div className="space-y-4">
-                                    <div className="flex justify-between items-center pb-3 border-b border-dark-border/50">
-                                        <span className="text-sm text-dark-text-secondary">Active Connections</span>
-                                        <span className="text-lg font-bold text-dark-text">{wsStats.totalConnections}</span>
+                                    <div className="flex justify-between items-center pb-3 border-b border-light-border/50">
+                                        <span className="text-sm text-light-text-secondary">Active Connections</span>
+                                        <span className="text-lg font-bold text-light-text">{wsStats.totalConnections}</span>
                                     </div>
-                                    <div className="flex justify-between items-center pb-3 border-b border-dark-border/50">
-                                        <span className="text-sm text-dark-text-secondary">Subscribers</span>
-                                        <span className="text-lg font-bold text-dark-text">{wsStats.allSubscribers}</span>
+                                    <div className="flex justify-between items-center pb-3 border-b border-light-border/50">
+                                        <span className="text-sm text-light-text-secondary">Subscribers</span>
+                                        <span className="text-lg font-bold text-light-text">{wsStats.allSubscribers}</span>
                                     </div>
                                     <div className="flex justify-between items-center">
-                                        <span className="text-sm text-dark-text-secondary">Technician Tracks</span>
-                                        <span className="text-lg font-bold text-dark-text">{wsStats.technicianSubscriptions}</span>
+                                        <span className="text-sm text-light-text-secondary">Technician Tracks</span>
+                                        <span className="text-lg font-bold text-light-text">{wsStats.technicianSubscriptions}</span>
                                     </div>
                                 </div>
                             </div>
@@ -426,17 +426,17 @@ function Tracking() {
 
                     {/* Active Sessions List (if any) */}
                     {realtimeLocations.length > 0 && (
-                        <div className="bg-dark-surface border border-dark-border rounded-2xl p-5">
-                            <h3 className="text-sm font-bold text-dark-text mb-4 uppercase tracking-wider text-primary-400">Live Updates</h3>
+                        <div className="bg-white border border-light-border rounded-2xl p-5">
+                            <h3 className="text-sm font-bold text-light-text mb-4 uppercase tracking-wider text-primary-400">Live Updates</h3>
                             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                                 {realtimeLocations.map((loc, idx) => (
-                                    <div key={idx} className="bg-dark-bg border border-dark-border rounded-xl p-3 flex items-start gap-3">
+                                    <div key={idx} className="bg-light-bg border border-light-border rounded-xl p-3 flex items-start gap-3">
                                         <div className="w-8 h-8 rounded-full bg-primary-500/20 flex items-center justify-center text-primary-400">
                                             <Navigation className="w-4 h-4" />
                                         </div>
                                         <div className="min-w-0">
-                                            <p className="text-sm font-bold text-dark-text truncate">{loc.technicianName}</p>
-                                            <p className="text-xs text-dark-text-secondary truncate">
+                                            <p className="text-sm font-bold text-light-text truncate">{loc.technicianName}</p>
+                                            <p className="text-xs text-light-text-secondary truncate">
                                                 {loc.latitude?.toFixed(4)}, {loc.longitude?.toFixed(4)}
                                             </p>
                                         </div>

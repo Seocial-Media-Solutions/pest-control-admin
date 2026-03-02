@@ -243,10 +243,10 @@ const Assignments = () => {
     return (
         <div className="space-y-6 animate-fade-in">
             {/* Page Header */}
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                 <div>
-                    <h1 className="text-3xl font-bold text-light-text dark:text-dark-text mb-2">Assignments</h1>
-                    <p className="text-light-text-secondary dark:text-dark-text-secondary">
+                    <h1 className="text-3xl font-bold text-light-text dark:text-light-text mb-2">Assignments</h1>
+                    <p className="text-light-text-secondary dark:text-light-text-secondary">
                         Manage service assignments with 3-step workflow
                     </p>
                 </div>
@@ -260,15 +260,15 @@ const Assignments = () => {
             </div>
 
             {/* Search */}
-            <div className="bg-white dark:bg-dark-surface border border-light-border dark:border-dark-border rounded-2xl p-6">
+            <div className="bg-white dark:bg-white border border-light-border dark:border-light-border rounded-2xl p-6">
                 <div className="relative">
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-light-text-tertiary dark:text-dark-text-tertiary" />
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-light-text-tertiary dark:text-light-text-tertiary" />
                     <input
                         type="text"
                         placeholder="Search by customer name, email, or phone..."
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
-                        className="w-full pl-10 pr-4 py-2.5 bg-light-bg dark:bg-dark-bg border border-light-border dark:border-dark-border rounded-lg text-sm text-light-text dark:text-dark-text placeholder:text-light-text-tertiary dark:placeholder:text-dark-text-tertiary focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all duration-200"
+                        className="w-full pl-10 pr-4 py-2.5 bg-light-bg dark:bg-light-bg border border-light-border dark:border-light-border rounded-lg text-sm text-light-text dark:text-light-text placeholder:text-light-text-tertiary dark:placeholder:text-light-text-tertiary focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all duration-200"
                     />
                 </div>
             </div>
@@ -278,16 +278,16 @@ const Assignments = () => {
                 {filteredAssignments.map((assignment) => (
                     <div
                         key={assignment._id}
-                        className="bg-white dark:bg-dark-surface border border-light-border dark:border-dark-border rounded-2xl overflow-hidden hover:border-primary-500 transition-all duration-300 hover:shadow-lg hover:shadow-primary-500/10"
+                        className="bg-white dark:bg-white border border-light-border dark:border-light-border rounded-2xl overflow-hidden hover:border-primary-500 transition-all duration-300 hover:shadow-lg hover:shadow-primary-500/10"
                     >
                         <div className="p-6">
                             {/* Header */}
                             <div className="flex items-start justify-between mb-4">
                                 <div className="flex-1">
-                                    <h3 className="text-lg font-bold text-light-text dark:text-dark-text mb-1">
+                                    <h3 className="text-lg font-bold text-light-text dark:text-light-text mb-1">
                                         Assignment #{assignment._id.slice(-6)}
                                     </h3>
-                                    <p className="text-xs text-light-text-tertiary dark:text-dark-text-tertiary">
+                                    <p className="text-xs text-light-text-tertiary dark:text-light-text-tertiary">
                                         {new Date(assignment.createdAt).toLocaleDateString()}
                                     </p>
                                 </div>
@@ -311,19 +311,19 @@ const Assignments = () => {
 
                             {/* Customer Info */}
                             {assignment.bookingId?.customerId && (
-                                <div className="bg-light-bg/50 dark:bg-dark-bg/50 rounded-lg p-4 mb-4">
-                                    <h4 className="text-xs font-semibold text-light-text-tertiary dark:text-dark-text-tertiary mb-2">CUSTOMER</h4>
+                                <div className="bg-light-bg/50 dark:bg-light-bg/50 rounded-lg p-4 mb-4">
+                                    <h4 className="text-xs font-semibold text-light-text-tertiary dark:text-light-text-tertiary mb-2">CUSTOMER</h4>
                                     <div className="space-y-2">
-                                        <div className="flex items-center gap-2 text-sm text-light-text dark:text-dark-text">
-                                            <User className="w-4 h-4 text-light-text-tertiary dark:text-dark-text-tertiary" />
+                                        <div className="flex items-center gap-2 text-sm text-light-text dark:text-light-text">
+                                            <User className="w-4 h-4 text-light-text-tertiary dark:text-light-text-tertiary" />
                                             {assignment.bookingId.customerId.fullName}
                                         </div>
-                                        <div className="flex items-center gap-2 text-sm text-light-text dark:text-dark-text">
-                                            <Phone className="w-4 h-4 text-light-text-tertiary dark:text-dark-text-tertiary" />
+                                        <div className="flex items-center gap-2 text-sm text-light-text dark:text-light-text">
+                                            <Phone className="w-4 h-4 text-light-text-tertiary dark:text-light-text-tertiary" />
                                             {assignment.bookingId.customerId.mobileNumber}
                                         </div>
-                                        <div className="flex items-center gap-2 text-sm text-light-text dark:text-dark-text">
-                                            <Mail className="w-4 h-4 text-light-text-tertiary dark:text-dark-text-tertiary" />
+                                        <div className="flex items-center gap-2 text-sm text-light-text dark:text-light-text">
+                                            <Mail className="w-4 h-4 text-light-text-tertiary dark:text-light-text-tertiary" />
                                             {assignment.bookingId.customerId.email}
                                         </div>
                                     </div>
@@ -332,8 +332,8 @@ const Assignments = () => {
 
                             {/* Booking Details */}
                             {assignment.bookingId && (
-                                <div className="bg-light-bg/50 dark:bg-dark-bg/50 rounded-lg p-4 mb-4 border border-light-border dark:border-dark-border/50">
-                                    <h4 className="text-xs font-semibold text-light-text-tertiary dark:text-dark-text-tertiary mb-2">BOOKING DETAILS</h4>
+                                <div className="bg-light-bg/50 dark:bg-light-bg/50 rounded-lg p-4 mb-4 border border-light-border dark:border-light-border/50">
+                                    <h4 className="text-xs font-semibold text-light-text-tertiary dark:text-light-text-tertiary mb-2">BOOKING DETAILS</h4>
                                     <div className="space-y-3">
                                         {/* Services */}
                                         <div className="flex flex-col gap-2">
@@ -341,9 +341,9 @@ const Assignments = () => {
                                                 assignment.bookingId.subServiceIds.map((subItem, idx) => {
                                                     const service = subItem.serviceId || {};
                                                     return (
-                                                        <div key={idx} className="flex items-center gap-2 p-2 bg-white/80 dark:bg-dark-bg/80 border border-light-border dark:border-dark-border/50 rounded-lg justify-between">
+                                                        <div key={idx} className="flex items-center gap-2 p-2 bg-white/80 dark:bg-light-bg/80 border border-light-border dark:border-light-border/50 rounded-lg justify-between">
                                                             <div className="flex items-center gap-2">
-                                                                <div className="w-10 h-10 rounded overflow-hidden bg-light-bg dark:bg-dark-bg flex-shrink-0 border border-light-border dark:border-dark-border/30">
+                                                                <div className="w-10 h-10 rounded overflow-hidden bg-light-bg dark:bg-light-bg flex-shrink-0 border border-light-border dark:border-light-border/30">
                                                                     {service.metaImage ? (
                                                                         <img
                                                                             src={service.metaImage}
@@ -351,12 +351,12 @@ const Assignments = () => {
                                                                             className="w-full h-full object-cover"
                                                                         />
                                                                     ) : (
-                                                                        <div className="w-full h-full flex items-center justify-center bg-white dark:bg-dark-surface">
-                                                                            <Beaker className="w-4 h-4 text-light-text-tertiary dark:text-dark-text-tertiary" />
+                                                                        <div className="w-full h-full flex items-center justify-center bg-white dark:bg-white">
+                                                                            <Beaker className="w-4 h-4 text-light-text-tertiary dark:text-light-text-tertiary" />
                                                                         </div>
                                                                     )}
                                                                 </div>
-                                                                <span className="text-sm font-medium text-light-text dark:text-dark-text">
+                                                                <span className="text-sm font-medium text-light-text dark:text-light-text">
                                                                     {service.title || 'Service'}
                                                                 </span>
                                                             </div>
@@ -368,30 +368,30 @@ const Assignments = () => {
                                                     )
                                                 })
                                             ) : (
-                                                <span className="text-xs text-light-text-secondary dark:text-dark-text-secondary">No services listed</span>
+                                                <span className="text-xs text-light-text-secondary dark:text-light-text-secondary">No services listed</span>
                                             )}
                                         </div>
 
                                         <div className="grid grid-cols-2 gap-2">
                                             <div>
-                                                <p className="text-xs text-light-text-tertiary dark:text-dark-text-tertiary flex items-center gap-1"><Calendar className="w-3 h-3" /> Date</p>
-                                                <p className="text-sm text-light-text dark:text-dark-text">{new Date(assignment.bookingId.bookingDate).toLocaleDateString()}</p>
+                                                <p className="text-xs text-light-text-tertiary dark:text-light-text-tertiary flex items-center gap-1"><Calendar className="w-3 h-3" /> Date</p>
+                                                <p className="text-sm text-light-text dark:text-light-text">{new Date(assignment.bookingId.bookingDate).toLocaleDateString()}</p>
                                             </div>
                                             <div>
-                                                <p className="text-xs text-light-text-tertiary dark:text-dark-text-tertiary flex items-center gap-1"><Clock className="w-3 h-3" /> Time</p>
-                                                <p className="text-sm text-light-text dark:text-dark-text capitalize">{assignment.bookingId.preferredTimeSlot || 'Anytime'}</p>
+                                                <p className="text-xs text-light-text-tertiary dark:text-light-text-tertiary flex items-center gap-1"><Clock className="w-3 h-3" /> Time</p>
+                                                <p className="text-sm text-light-text dark:text-light-text capitalize">{assignment.bookingId.preferredTimeSlot || 'Anytime'}</p>
                                             </div>
                                         </div>
 
                                         <div>
-                                            <p className="text-xs text-light-text-tertiary dark:text-dark-text-tertiary flex items-center gap-1"><MapPin className="w-3 h-3" /> Address</p>
-                                            <p className="text-sm text-light-text dark:text-dark-text line-clamp-2" title={assignment.bookingId.additionalAddress || assignment.bookingId.customerId?.address}>
+                                            <p className="text-xs text-light-text-tertiary dark:text-light-text-tertiary flex items-center gap-1"><MapPin className="w-3 h-3" /> Address</p>
+                                            <p className="text-sm text-light-text dark:text-light-text line-clamp-2" title={assignment.bookingId.additionalAddress || assignment.bookingId.customerId?.address}>
                                                 {assignment.bookingId.additionalAddress || assignment.bookingId.customerId?.address || 'N/A'}
                                             </p>
                                         </div>
 
-                                        <div className="pt-2 border-t border-light-border dark:border-dark-border/50 flex justify-between items-center">
-                                            <span className="text-xs text-light-text-secondary dark:text-dark-text-secondary">Total Amount</span>
+                                        <div className="pt-2 border-t border-light-border dark:border-light-border/50 flex justify-between items-center">
+                                            <span className="text-xs text-light-text-secondary dark:text-light-text-secondary">Total Amount</span>
                                             <span className="text-sm font-bold text-green-600 dark:text-green-400">₹{assignment.bookingId.totalAmount || 0}</span>
                                         </div>
                                     </div>
@@ -410,7 +410,7 @@ const Assignments = () => {
                             ) : (
                                 <select
                                     onChange={(e) => handleAssignTechnician(assignment._id, e.target.value)}
-                                    className="w-full px-3 py-2 mb-4 bg-light-bg dark:bg-dark-bg border border-light-border dark:border-dark-border rounded-lg text-xs text-light-text dark:text-dark-text focus:outline-none focus:border-primary-500 transition-all duration-200"
+                                    className="w-full px-3 py-2 mb-4 bg-light-bg dark:bg-light-bg border border-light-border dark:border-light-border rounded-lg text-xs text-light-text dark:text-light-text focus:outline-none focus:border-primary-500 transition-all duration-200"
                                     defaultValue=""
                                 >
                                     <option value="" disabled>Assign Technician</option>
@@ -425,7 +425,7 @@ const Assignments = () => {
                             {/* Workflow Progress */}
                             <div className="space-y-2">
                                 <div className="flex items-center justify-between text-xs">
-                                    <span className="flex items-center gap-1 text-light-text-secondary dark:text-dark-text-secondary">
+                                    <span className="flex items-center gap-1 text-light-text-secondary dark:text-light-text-secondary">
                                         <Beaker className="w-3 h-3" />
                                         Treatment Prep
                                     </span>
@@ -434,7 +434,7 @@ const Assignments = () => {
                                     </span>
                                 </div>
                                 <div className="flex items-center justify-between text-xs">
-                                    <span className="flex items-center gap-1 text-light-text-secondary dark:text-dark-text-secondary">
+                                    <span className="flex items-center gap-1 text-light-text-secondary dark:text-light-text-secondary">
                                         <Camera className="w-3 h-3" />
                                         Site Pictures
                                     </span>
@@ -443,7 +443,7 @@ const Assignments = () => {
                                     </span>
                                 </div>
                                 <div className="flex items-center justify-between text-xs">
-                                    <span className="flex items-center gap-1 text-light-text-secondary dark:text-dark-text-secondary">
+                                    <span className="flex items-center gap-1 text-light-text-secondary dark:text-light-text-secondary">
                                         <DollarSign className="w-3 h-3" />
                                         Payments
                                     </span>
@@ -457,7 +457,7 @@ const Assignments = () => {
                                     e.stopPropagation();
                                     navigate(`/assignments/${assignment._id}/workflow`);
                                 }}
-                                className="w-full mt-4 flex items-center justify-center gap-2 px-3 py-2 bg-light-bg dark:bg-dark-bg border border-light-border dark:border-dark-border rounded-lg text-xs font-semibold text-light-text dark:text-dark-text hover:bg-light-surface-hover dark:hover:bg-dark-surface-hover hover:border-primary-500 transition-all"
+                                className="w-full mt-4 flex items-center justify-center gap-2 px-3 py-2 bg-light-bg dark:bg-light-bg border border-light-border dark:border-light-border rounded-lg text-xs font-semibold text-light-text dark:text-light-text hover:bg-light-surface-hover dark:hover:bg-light-surface-hover hover:border-primary-500 transition-all"
                             >
                                 <ClipboardList className="w-3 h-3" />
                                 Test Workflow
@@ -470,11 +470,11 @@ const Assignments = () => {
             {/* Empty State */}
             {filteredAssignments.length === 0 && !loading && (
                 <div className="flex flex-col items-center justify-center min-h-[40vh] text-center">
-                    <ClipboardList className="w-16 h-16 text-dark-text-tertiary mb-4" />
-                    <h3 className="text-xl font-bold text-dark-text mb-2">
+                    <ClipboardList className="w-16 h-16 text-light-text-tertiary mb-4" />
+                    <h3 className="text-xl font-bold text-light-text mb-2">
                         No assignments found
                     </h3>
-                    <p className="text-dark-text-secondary mb-6">
+                    <p className="text-light-text-secondary mb-6">
                         {searchQuery ? 'Try adjusting your search' : 'Get started by creating your first assignment'}
                     </p>
                     {!searchQuery && (
@@ -492,22 +492,22 @@ const Assignments = () => {
             {/* Details Modal - Showing workflow steps */}
             {showDetailsModal && selectedAssignment && (
                 <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-fade-in" onClick={() => setShowDetailsModal(false)}>
-                    <div className="bg-dark-surface border border-dark-border rounded-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
-                        <div className="p-6 border-b border-dark-border sticky top-0 bg-dark-surface z-10">
-                            <h2 className="text-2xl font-bold text-dark-text">Assignment Details</h2>
-                            <p className="text-sm text-dark-text-tertiary">ID: {selectedAssignment._id}</p>
+                    <div className="bg-white border border-light-border rounded-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
+                        <div className="p-6 border-b border-light-border sticky top-0 bg-white z-10">
+                            <h2 className="text-2xl font-bold text-light-text">Assignment Details</h2>
+                            <p className="text-sm text-light-text-tertiary">ID: {selectedAssignment._id}</p>
                         </div>
 
                         <div className="p-6 space-y-6">
                             {/* Customer Info */}
                             {selectedAssignment.customer && (
                                 <div>
-                                    <h3 className="text-lg font-semibold text-dark-text mb-3">Customer Information</h3>
-                                    <div className="bg-dark-bg/50 rounded-lg p-4 space-y-2">
-                                        <p><span className="text-dark-text-tertiary">Name:</span> <span className="text-dark-text font-semibold">{selectedAssignment.customer.fullName}</span></p>
-                                        <p><span className="text-dark-text-tertiary">Email:</span> <span className="text-dark-text">{selectedAssignment.customer.email}</span></p>
-                                        <p><span className="text-dark-text-tertiary">Phone:</span> <span className="text-dark-text">{selectedAssignment.customer.mobileNumber}</span></p>
-                                        <p><span className="text-dark-text-tertiary">Address:</span> <span className="text-dark-text">{selectedAssignment.customer.address}</span></p>
+                                    <h3 className="text-lg font-semibold text-light-text mb-3">Customer Information</h3>
+                                    <div className="bg-light-bg/50 rounded-lg p-4 space-y-2">
+                                        <p><span className="text-light-text-tertiary">Name:</span> <span className="text-light-text font-semibold">{selectedAssignment.customer.fullName}</span></p>
+                                        <p><span className="text-light-text-tertiary">Email:</span> <span className="text-light-text">{selectedAssignment.customer.email}</span></p>
+                                        <p><span className="text-light-text-tertiary">Phone:</span> <span className="text-light-text">{selectedAssignment.customer.mobileNumber}</span></p>
+                                        <p><span className="text-light-text-tertiary">Address:</span> <span className="text-light-text">{selectedAssignment.customer.address}</span></p>
                                     </div>
                                 </div>
                             )}
@@ -515,7 +515,7 @@ const Assignments = () => {
                             {/* Step 1: Treatment Preparation */}
                             <div>
                                 <div className="flex items-center justify-between mb-3">
-                                    <h3 className="text-lg font-semibold text-dark-text flex items-center gap-2">
+                                    <h3 className="text-lg font-semibold text-light-text flex items-center gap-2">
                                         <Beaker className="w-5 h-5 text-primary-400" />
                                         Step 1: Treatment Preparation
                                     </h3>
@@ -532,9 +532,9 @@ const Assignments = () => {
                                 </div>
                                 <div className="space-y-3">
                                     {selectedAssignment.treatmentPreparation?.map((item) => (
-                                        <div key={item._id} className="bg-dark-bg/50 rounded-lg p-4 border border-dark-border">
+                                        <div key={item._id} className="bg-light-bg/50 rounded-lg p-4 border border-light-border">
                                             <div className="flex justify-between items-start mb-2">
-                                                <h4 className="font-semibold text-dark-text">{item.chemicals}</h4>
+                                                <h4 className="font-semibold text-light-text">{item.chemicals}</h4>
                                                 <button
                                                     onClick={() => handleDeleteTreatment(item._id)}
                                                     className="text-red-400 hover:text-red-300"
@@ -542,12 +542,12 @@ const Assignments = () => {
                                                     <XCircle className="w-4 h-4" />
                                                 </button>
                                             </div>
-                                            <p className="text-sm text-dark-text-secondary">Quantity: {item.quantity}</p>
-                                            <p className="text-sm text-dark-text-secondary mt-1">{item.instructions}</p>
+                                            <p className="text-sm text-light-text-secondary">Quantity: {item.quantity}</p>
+                                            <p className="text-sm text-light-text-secondary mt-1">{item.instructions}</p>
                                         </div>
                                     ))}
                                     {(!selectedAssignment.treatmentPreparation || selectedAssignment.treatmentPreparation.length === 0) && (
-                                        <p className="text-dark-text-tertiary text-sm">No treatment items added yet</p>
+                                        <p className="text-light-text-tertiary text-sm">No treatment items added yet</p>
                                     )}
                                 </div>
                             </div>
@@ -555,7 +555,7 @@ const Assignments = () => {
                             {/* Step 2: Apply Treatment (Site Pictures) */}
                             <div>
                                 <div className="flex items-center justify-between mb-3">
-                                    <h3 className="text-lg font-semibold text-dark-text flex items-center gap-2">
+                                    <h3 className="text-lg font-semibold text-light-text flex items-center gap-2">
                                         <Camera className="w-5 h-5 text-primary-400" />
                                         Step 2: Apply Treatment (Site Pictures)
                                     </h3>
@@ -576,7 +576,7 @@ const Assignments = () => {
                                             <img
                                                 src={pic.url}
                                                 alt={pic.filename}
-                                                className="w-full h-32 object-cover rounded-lg border border-dark-border"
+                                                className="w-full h-32 object-cover rounded-lg border border-light-border"
                                             />
                                             <button
                                                 onClick={() => handleDeletePicture(pic._id)}
@@ -584,11 +584,11 @@ const Assignments = () => {
                                             >
                                                 <XCircle className="w-4 h-4" />
                                             </button>
-                                            <p className="text-xs text-dark-text-tertiary mt-1 truncate">{pic.filename}</p>
+                                            <p className="text-xs text-light-text-tertiary mt-1 truncate">{pic.filename}</p>
                                         </div>
                                     ))}
                                     {(!selectedAssignment.applyTreatment?.sitePictures || selectedAssignment.applyTreatment.sitePictures.length === 0) && (
-                                        <p className="text-dark-text-tertiary text-sm col-span-full">No pictures added yet</p>
+                                        <p className="text-light-text-tertiary text-sm col-span-full">No pictures added yet</p>
                                     )}
                                 </div>
                             </div>
@@ -596,7 +596,7 @@ const Assignments = () => {
                             {/* Step 3: Payment Collection */}
                             <div>
                                 <div className="flex items-center justify-between mb-3">
-                                    <h3 className="text-lg font-semibold text-dark-text flex items-center gap-2">
+                                    <h3 className="text-lg font-semibold text-light-text flex items-center gap-2">
                                         <DollarSign className="w-5 h-5 text-primary-400" />
                                         Step 3: Payment Collection
                                     </h3>
@@ -613,11 +613,11 @@ const Assignments = () => {
                                 </div>
                                 <div className="space-y-3">
                                     {selectedAssignment.paymentCollection?.map((payment) => (
-                                        <div key={payment._id} className="bg-dark-bg/50 rounded-lg p-4 border border-dark-border">
+                                        <div key={payment._id} className="bg-light-bg/50 rounded-lg p-4 border border-light-border">
                                             <div className="flex justify-between items-start">
                                                 <div>
-                                                    <p className="font-semibold text-dark-text text-lg">₹{payment.amount}</p>
-                                                    <p className="text-sm text-dark-text-secondary">
+                                                    <p className="font-semibold text-light-text text-lg">₹{payment.amount}</p>
+                                                    <p className="text-sm text-light-text-secondary">
                                                         {payment.paymentMethod.toUpperCase()} • {new Date(payment.paymentDate).toLocaleDateString()}
                                                     </p>
                                                     <span className={`inline-block mt-2 px-2 py-1 rounded text-xs font-semibold ${payment.paymentStatus === 'completed' ? 'bg-green-500/10 text-green-400' :
@@ -637,16 +637,16 @@ const Assignments = () => {
                                         </div>
                                     ))}
                                     {(!selectedAssignment.paymentCollection || selectedAssignment.paymentCollection.length === 0) && (
-                                        <p className="text-dark-text-tertiary text-sm">No payments recorded yet</p>
+                                        <p className="text-light-text-tertiary text-sm">No payments recorded yet</p>
                                     )}
                                 </div>
                             </div>
                         </div>
 
-                        <div className="p-6 border-t border-dark-border">
+                        <div className="p-6 border-t border-light-border">
                             <button
                                 onClick={() => setShowDetailsModal(false)}
-                                className="w-full px-6 py-3 bg-dark-bg border border-dark-border rounded-xl font-semibold text-dark-text hover:bg-dark-surface-hover transition-colors duration-200"
+                                className="w-full px-6 py-3 bg-light-bg border border-light-border rounded-xl font-semibold text-light-text hover:bg-light-surface-hover transition-colors duration-200"
                             >
                                 Close
                             </button>
@@ -658,38 +658,38 @@ const Assignments = () => {
             {/* Treatment Preparation Modal */}
             {showTreatmentModal && (
                 <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4" onClick={() => setShowTreatmentModal(false)}>
-                    <div className="bg-dark-surface border border-dark-border rounded-2xl max-w-md w-full" onClick={(e) => e.stopPropagation()}>
-                        <div className="p-6 border-b border-dark-border">
-                            <h2 className="text-xl font-bold text-dark-text">Add Treatment Preparation</h2>
+                    <div className="bg-white border border-light-border rounded-2xl max-w-md w-full" onClick={(e) => e.stopPropagation()}>
+                        <div className="p-6 border-b border-light-border">
+                            <h2 className="text-xl font-bold text-light-text">Add Treatment Preparation</h2>
                         </div>
                         <form onSubmit={handleAddTreatment} className="p-6 space-y-4">
                             <div>
-                                <label className="block text-sm font-medium text-dark-text mb-2">Chemicals *</label>
+                                <label className="block text-sm font-medium text-light-text mb-2">Chemicals *</label>
                                 <input
                                     type="text"
                                     value={treatmentForm.chemicals}
                                     onChange={(e) => setTreatmentForm({ ...treatmentForm, chemicals: e.target.value })}
-                                    className="w-full px-4 py-2.5 bg-dark-bg border border-dark-border rounded-lg text-dark-text focus:outline-none focus:border-primary-500"
+                                    className="w-full px-4 py-2.5 bg-light-bg border border-light-border rounded-lg text-light-text focus:outline-none focus:border-primary-500"
                                     required
                                 />
                             </div>
                             <div>
-                                <label className="block text-sm font-medium text-dark-text mb-2">Quantity *</label>
+                                <label className="block text-sm font-medium text-light-text mb-2">Quantity *</label>
                                 <input
                                     type="text"
                                     value={treatmentForm.quantity}
                                     onChange={(e) => setTreatmentForm({ ...treatmentForm, quantity: e.target.value })}
-                                    className="w-full px-4 py-2.5 bg-dark-bg border border-dark-border rounded-lg text-dark-text focus:outline-none focus:border-primary-500"
+                                    className="w-full px-4 py-2.5 bg-light-bg border border-light-border rounded-lg text-light-text focus:outline-none focus:border-primary-500"
                                     required
                                 />
                             </div>
                             <div>
-                                <label className="block text-sm font-medium text-dark-text mb-2">Instructions *</label>
+                                <label className="block text-sm font-medium text-light-text mb-2">Instructions *</label>
                                 <textarea
                                     value={treatmentForm.instructions}
                                     onChange={(e) => setTreatmentForm({ ...treatmentForm, instructions: e.target.value })}
                                     rows={3}
-                                    className="w-full px-4 py-2.5 bg-dark-bg border border-dark-border rounded-lg text-dark-text focus:outline-none focus:border-primary-500"
+                                    className="w-full px-4 py-2.5 bg-light-bg border border-light-border rounded-lg text-light-text focus:outline-none focus:border-primary-500"
                                     required
                                 />
                             </div>
@@ -697,7 +697,7 @@ const Assignments = () => {
                                 <button
                                     type="button"
                                     onClick={() => setShowTreatmentModal(false)}
-                                    className="flex-1 px-6 py-3 bg-dark-bg border border-dark-border rounded-xl font-semibold text-dark-text hover:bg-dark-surface-hover transition-colors"
+                                    className="flex-1 px-6 py-3 bg-light-bg border border-light-border rounded-xl font-semibold text-light-text hover:bg-light-surface-hover transition-colors"
                                 >
                                     Cancel
                                 </button>
@@ -716,14 +716,14 @@ const Assignments = () => {
             {/* Site Picture Modal */}
             {showPictureModal && (
                 <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4" onClick={() => setShowPictureModal(false)}>
-                    <div className="bg-dark-surface border border-dark-border rounded-2xl max-w-md w-full" onClick={(e) => e.stopPropagation()}>
-                        <div className="p-6 border-b border-dark-border">
-                            <h2 className="text-xl font-bold text-dark-text">Add Site Picture</h2>
+                    <div className="bg-white border border-light-border rounded-2xl max-w-md w-full" onClick={(e) => e.stopPropagation()}>
+                        <div className="p-6 border-b border-light-border">
+                            <h2 className="text-xl font-bold text-light-text">Add Site Picture</h2>
                         </div>
                         <form onSubmit={handleAddPicture} className="p-6 space-y-4">
                             <div>
-                                <label className="block text-sm font-medium text-dark-text mb-2">Select Image *</label>
-                                <div className="border-2 border-dashed border-dark-border rounded-lg p-8 text-center hover:border-primary-500 transition-colors cursor-pointer relative">
+                                <label className="block text-sm font-medium text-light-text mb-2">Select Image *</label>
+                                <div className="border-2 border-dashed border-light-border rounded-lg p-8 text-center hover:border-primary-500 transition-colors cursor-pointer relative">
                                     <input
                                         type="file"
                                         accept="image/*"
@@ -732,11 +732,11 @@ const Assignments = () => {
                                         required
                                     />
                                     <div className="flex flex-col items-center">
-                                        <Camera className="w-8 h-8 text-dark-text-tertiary mb-2" />
-                                        <p className="text-sm text-dark-text-secondary">
+                                        <Camera className="w-8 h-8 text-light-text-tertiary mb-2" />
+                                        <p className="text-sm text-light-text-secondary">
                                             {pictureForm.file ? pictureForm.file.name : 'Click or drag to upload image'}
                                         </p>
-                                        <p className="text-xs text-dark-text-tertiary mt-1">
+                                        <p className="text-xs text-light-text-tertiary mt-1">
                                             Supports: JPG, PNG, WEBP
                                         </p>
                                     </div>
@@ -746,7 +746,7 @@ const Assignments = () => {
                                 <button
                                     type="button"
                                     onClick={() => setShowPictureModal(false)}
-                                    className="flex-1 px-6 py-3 bg-dark-bg border border-dark-border rounded-xl font-semibold text-dark-text hover:bg-dark-surface-hover transition-colors"
+                                    className="flex-1 px-6 py-3 bg-light-bg border border-light-border rounded-xl font-semibold text-light-text hover:bg-light-surface-hover transition-colors"
                                 >
                                     Cancel
                                 </button>
@@ -765,28 +765,28 @@ const Assignments = () => {
             {/* Payment Collection Modal */}
             {showPaymentModal && (
                 <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4" onClick={() => setShowPaymentModal(false)}>
-                    <div className="bg-dark-surface border border-dark-border rounded-2xl max-w-md w-full" onClick={(e) => e.stopPropagation()}>
-                        <div className="p-6 border-b border-dark-border">
-                            <h2 className="text-xl font-bold text-dark-text">Add Payment Record</h2>
+                    <div className="bg-white border border-light-border rounded-2xl max-w-md w-full" onClick={(e) => e.stopPropagation()}>
+                        <div className="p-6 border-b border-light-border">
+                            <h2 className="text-xl font-bold text-light-text">Add Payment Record</h2>
                         </div>
                         <form onSubmit={handleAddPayment} className="p-6 space-y-4">
                             <div>
-                                <label className="block text-sm font-medium text-dark-text mb-2">Amount (₹) *</label>
+                                <label className="block text-sm font-medium text-light-text mb-2">Amount (₹) *</label>
                                 <input
                                     type="number"
                                     value={paymentForm.amount}
                                     onChange={(e) => setPaymentForm({ ...paymentForm, amount: Number(e.target.value) })}
-                                    className="w-full px-4 py-2.5 bg-dark-bg border border-dark-border rounded-lg text-dark-text focus:outline-none focus:border-primary-500"
+                                    className="w-full px-4 py-2.5 bg-light-bg border border-light-border rounded-lg text-light-text focus:outline-none focus:border-primary-500"
                                     required
                                     min="0"
                                 />
                             </div>
                             <div>
-                                <label className="block text-sm font-medium text-dark-text mb-2">Payment Method *</label>
+                                <label className="block text-sm font-medium text-light-text mb-2">Payment Method *</label>
                                 <select
                                     value={paymentForm.paymentMethod}
                                     onChange={(e) => setPaymentForm({ ...paymentForm, paymentMethod: e.target.value })}
-                                    className="w-full px-4 py-2.5 bg-dark-bg border border-dark-border rounded-lg text-dark-text focus:outline-none focus:border-primary-500"
+                                    className="w-full px-4 py-2.5 bg-light-bg border border-light-border rounded-lg text-light-text focus:outline-none focus:border-primary-500"
                                 >
                                     <option value="cash">Cash</option>
                                     <option value="card">Card</option>
@@ -796,21 +796,21 @@ const Assignments = () => {
                                 </select>
                             </div>
                             <div>
-                                <label className="block text-sm font-medium text-dark-text mb-2">Payment Date *</label>
+                                <label className="block text-sm font-medium text-light-text mb-2">Payment Date *</label>
                                 <input
                                     type="date"
                                     value={paymentForm.paymentDate}
                                     onChange={(e) => setPaymentForm({ ...paymentForm, paymentDate: e.target.value })}
-                                    className="w-full px-4 py-2.5 bg-dark-bg border border-dark-border rounded-lg text-dark-text focus:outline-none focus:border-primary-500"
+                                    className="w-full px-4 py-2.5 bg-light-bg border border-light-border rounded-lg text-light-text focus:outline-none focus:border-primary-500"
                                     required
                                 />
                             </div>
                             <div>
-                                <label className="block text-sm font-medium text-dark-text mb-2">Payment Status *</label>
+                                <label className="block text-sm font-medium text-light-text mb-2">Payment Status *</label>
                                 <select
                                     value={paymentForm.paymentStatus}
                                     onChange={(e) => setPaymentForm({ ...paymentForm, paymentStatus: e.target.value })}
-                                    className="w-full px-4 py-2.5 bg-dark-bg border border-dark-border rounded-lg text-dark-text focus:outline-none focus:border-primary-500"
+                                    className="w-full px-4 py-2.5 bg-light-bg border border-light-border rounded-lg text-light-text focus:outline-none focus:border-primary-500"
                                 >
                                     <option value="pending">Pending</option>
                                     <option value="completed">Completed</option>
@@ -821,7 +821,7 @@ const Assignments = () => {
                                 <button
                                     type="button"
                                     onClick={() => setShowPaymentModal(false)}
-                                    className="flex-1 px-6 py-3 bg-dark-bg border border-dark-border rounded-xl font-semibold text-dark-text hover:bg-dark-surface-hover transition-colors"
+                                    className="flex-1 px-6 py-3 bg-light-bg border border-light-border rounded-xl font-semibold text-light-text hover:bg-light-surface-hover transition-colors"
                                 >
                                     Cancel
                                 </button>

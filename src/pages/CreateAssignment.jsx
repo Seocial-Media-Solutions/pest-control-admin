@@ -109,13 +109,13 @@ const CreateAssignment = () => {
                 <div className="flex items-center gap-4">
                     <button
                         onClick={() => navigate('/assignments')}
-                        className="p-2 hover:bg-dark-surface-hover rounded-lg transition-colors duration-200"
+                        className="p-2 hover:bg-light-surface-hover rounded-lg transition-colors duration-200"
                     >
-                        <ArrowLeft className="w-6 h-6 text-dark-text" />
+                        <ArrowLeft className="w-6 h-6 text-light-text" />
                     </button>
                     <div>
-                        <h1 className="text-3xl font-bold text-dark-text mb-2">Create New Assignment</h1>
-                        <p className="text-dark-text-secondary">
+                        <h1 className="text-3xl font-bold text-light-text mb-2">Create New Assignment</h1>
+                        <p className="text-light-text-secondary">
                             Link a booking to a technician to start the service workflow
                         </p>
                     </div>
@@ -124,63 +124,44 @@ const CreateAssignment = () => {
 
             <form onSubmit={handleSubmit} className="space-y-6">
                 {/* Booking Selection Card */}
-                <div className="bg-dark-surface border border-dark-border rounded-2xl p-6">
+                <div className="bg-white border border-light-border rounded-2xl p-6">
                     <div className="flex items-center gap-3 mb-6">
                         <div className="w-10 h-10 gradient-primary rounded-lg flex items-center justify-center">
                             <Calendar className="w-5 h-5 text-white" />
                         </div>
-                        <h2 className="text-xl font-bold text-dark-text">Select Booking</h2>
+                        <h2 className="text-xl font-bold text-light-text">Select Booking</h2>
                     </div>
 
                     <div className="space-y-4">
                         <div>
-                            <label className="block text-sm font-medium text-dark-text mb-2">
+                            <label className="block text-sm font-medium text-light-text mb-2">
                                 Booking to Assign <span className="text-red-400">*</span>
                             </label>
-                            <select
-                                value={formData.bookingId}
-                                onChange={(e) => setFormData({ ...formData, bookingId: e.target.value })}
-                                className="w-full px-4 py-3 bg-dark-bg border border-dark-border rounded-lg text-dark-text focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all duration-200"
-                                required
-                            >
-                                <option value="">-- Select a pending booking --</option>
-                                {bookings.map((booking) => (
-                                    <option key={booking._id} value={booking._id}>
-                                        {booking.serviceId?.title} - {booking.customerId?.fullName} ({new Date(booking.bookingDate).toLocaleDateString()})
-                                    </option>
-                                ))}
-                                {/* If coming from "Assign Tech" and booking is not in "Pending" list (e.g. status changed), show it anyway */}
-                                {selectedBooking && !bookings.find(b => b._id === selectedBooking._id) && (
-                                    <option value={selectedBooking._id}>
-                                        {selectedBooking.serviceId?.title} - {selectedBooking.customerId?.fullName} (Selected)
-                                    </option>
-                                )}
-                            </select>
                         </div>
 
                         {/* Show selected booking details */}
                         {selectedBooking && (
-                            <div className="bg-dark-bg/50 rounded-lg p-4 border border-dark-border">
-                                <h4 className="text-xs font-semibold text-dark-text-tertiary mb-3">BOOKING SUMMARY</h4>
+                            <div className="bg-light-bg/50 rounded-lg p-4 border border-light-border">
+                                <h4 className="text-xs font-semibold text-light-text-tertiary mb-3">BOOKING SUMMARY</h4>
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                     <div className="space-y-2">
-                                        <div className="flex items-center gap-2 text-sm text-dark-text">
-                                            <User className="w-4 h-4 text-dark-text-tertiary" />
-                                            <span className="text-dark-text-secondary">Customer:</span> {selectedBooking.customerId?.fullName}
+                                        <div className="flex items-center gap-2 text-sm text-light-text">
+                                            <User className="w-4 h-4 text-light-text-tertiary" />
+                                            <span className="text-light-text-secondary">Customer:</span> {selectedBooking.customerId?.fullName}
                                         </div>
-                                        <div className="flex items-center gap-2 text-sm text-dark-text">
-                                            <Phone className="w-4 h-4 text-dark-text-tertiary" />
-                                            <span className="text-dark-text-secondary">Mobile:</span> {selectedBooking.customerId?.mobileNo || selectedBooking.additionalMobileNo}
+                                        <div className="flex items-center gap-2 text-sm text-light-text">
+                                            <Phone className="w-4 h-4 text-light-text-tertiary" />
+                                            <span className="text-light-text-secondary">Mobile:</span> {selectedBooking.customerId?.mobileNo || selectedBooking.additionalMobileNo}
                                         </div>
                                     </div>
                                     <div className="space-y-2">
-                                        <div className="flex items-center gap-2 text-sm text-dark-text">
-                                            <MapPin className="w-4 h-4 text-dark-text-tertiary" />
-                                            <span className="text-dark-text-secondary">Address:</span> <span className="line-clamp-1">{selectedBooking.additionalAddress || selectedBooking.customerId?.address}</span>
+                                        <div className="flex items-center gap-2 text-sm text-light-text">
+                                            <MapPin className="w-4 h-4 text-light-text-tertiary" />
+                                            <span className="text-light-text-secondary">Address:</span> <span className="line-clamp-1">{selectedBooking.additionalAddress || selectedBooking.customerId?.address}</span>
                                         </div>
-                                        <div className="flex items-center gap-2 text-sm text-dark-text">
-                                            <div className="w-4 h-4 flex items-center justify-center text-dark-text-tertiary font-bold text-xs border border-dark-text-tertiary rounded-sm">S</div>
-                                            <span className="text-dark-text-secondary">Service:</span> {selectedBooking.serviceId?.title}
+                                        <div className="flex items-center gap-2 text-sm text-light-text">
+                                            <div className="w-4 h-4 flex items-center justify-center text-light-text-tertiary font-bold text-xs border border-dark-text-tertiary rounded-sm">S</div>
+                                            <span className="text-light-text-secondary">Service:</span> {selectedBooking.serviceId?.title}
                                         </div>
                                     </div>
                                 </div>
@@ -190,23 +171,23 @@ const CreateAssignment = () => {
                 </div>
 
                 {/* Technician Selection Card */}
-                <div className="bg-dark-surface border border-dark-border rounded-2xl p-6">
+                <div className="bg-white border border-light-border rounded-2xl p-6">
                     <div className="flex items-center gap-3 mb-6">
                         <div className="w-10 h-10 gradient-primary rounded-lg flex items-center justify-center">
                             <ClipboardList className="w-5 h-5 text-white" />
                         </div>
-                        <h2 className="text-xl font-bold text-dark-text">Assign Technician</h2>
+                        <h2 className="text-xl font-bold text-light-text">Assign Technician</h2>
                     </div>
 
                     <div className="space-y-4">
                         <div>
-                            <label className="block text-sm font-medium text-dark-text mb-2">
+                            <label className="block text-sm font-medium text-light-text mb-2">
                                 Select Technician (Optional)
                             </label>
                             <select
                                 value={formData.technicianId}
                                 onChange={(e) => setFormData({ ...formData, technicianId: e.target.value })}
-                                className="w-full px-4 py-3 bg-dark-bg border border-dark-border rounded-lg text-dark-text focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all duration-200"
+                                className="w-full px-4 py-3 bg-light-bg border border-light-border rounded-lg text-light-text focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all duration-200"
                             >
                                 <option value="">No technician (assign later)</option>
                                 {technicians.map((tech) => (
@@ -224,7 +205,7 @@ const CreateAssignment = () => {
                     <button
                         type="button"
                         onClick={() => navigate('/assignments')}
-                        className="px-6 py-3 bg-dark-bg border border-dark-border rounded-xl font-semibold text-dark-text hover:bg-dark-surface-hover transition-colors duration-200"
+                        className="px-6 py-3 bg-light-bg border border-light-border rounded-xl font-semibold text-light-text hover:bg-light-surface-hover transition-colors duration-200"
                         disabled={loading}
                     >
                         Cancel

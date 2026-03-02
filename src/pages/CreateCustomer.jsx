@@ -122,15 +122,15 @@ const CreateCustomer = () => {
             <div className="flex items-center gap-4">
                 <button
                     onClick={() => navigate('/customers')}
-                    className="p-2 hover:bg-dark-surface border border-dark-border rounded-lg transition-colors duration-200"
+                    className="p-2 hover:bg-white border border-light-border rounded-lg transition-colors duration-200"
                 >
-                    <ArrowLeft className="w-5 h-5 text-dark-text" />
+                    <ArrowLeft className="w-5 h-5 text-light-text" />
                 </button>
                 <div>
-                    <h1 className="text-3xl font-bold text-dark-text">
+                    <h1 className="text-3xl font-bold text-light-text">
                         {isEditMode ? 'Edit Customer' : 'Add New Customer'}
                     </h1>
-                    <p className="text-dark-text-secondary mt-1">
+                    <p className="text-light-text-secondary mt-1">
                         {isEditMode ? 'Update customer information' : 'Create a new customer account'}
                     </p>
                 </div>
@@ -166,17 +166,17 @@ const CreateCustomer = () => {
             )}
 
             {/* Form */}
-            <div className="bg-dark-surface border border-dark-border rounded-2xl p-8">
+            <div className="bg-white border border-light-border rounded-2xl p-8">
                 <form onSubmit={handleSubmit} className="space-y-6">
                     {/* Personal Information Section */}
                     <div>
-                        <h2 className="text-xl font-semibold text-dark-text mb-4 flex items-center gap-2">
+                        <h2 className="text-xl font-semibold text-light-text mb-4 flex items-center gap-2">
                             <User className="w-5 h-5 text-primary-400" />
                             Personal Information
                         </h2>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div>
-                                <label className="block text-sm font-medium text-dark-text mb-2">
+                                <label className="block text-sm font-medium text-light-text mb-2">
                                     Full Name <span className="text-red-400">*</span>
                                 </label>
                                 <input
@@ -187,13 +187,13 @@ const CreateCustomer = () => {
                                     required
                                     minLength="2"
                                     maxLength="100"
-                                    className="w-full px-4 py-3 bg-dark-bg border border-dark-border rounded-lg text-dark-text focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all duration-200"
+                                    className="w-full px-4 py-3 bg-light-bg border border-light-border rounded-lg text-light-text focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all duration-200"
                                     placeholder="Enter full name"
                                 />
                             </div>
 
                             <div>
-                                <label className="block text-sm font-medium text-dark-text mb-2">
+                                <label className="block text-sm font-medium text-light-text mb-2">
                                     Status <span className="text-red-400">*</span>
                                 </label>
                                 <select
@@ -201,7 +201,7 @@ const CreateCustomer = () => {
                                     value={formData.status}
                                     onChange={handleInputChange}
                                     required
-                                    className="w-full px-4 py-3 bg-dark-bg border border-dark-border rounded-lg text-dark-text focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all duration-200"
+                                    className="w-full px-4 py-3 bg-light-bg border border-light-border rounded-lg text-light-text focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all duration-200"
                                 >
                                     <option value="regular">Regular</option>
                                     <option value="temporary">Temporary</option>
@@ -212,14 +212,14 @@ const CreateCustomer = () => {
                     </div>
 
                     {/* Contact Information Section */}
-                    <div className="pt-6 border-t border-dark-border">
-                        <h2 className="text-xl font-semibold text-dark-text mb-4 flex items-center gap-2">
+                    <div className="pt-6 border-t border-light-border">
+                        <h2 className="text-xl font-semibold text-light-text mb-4 flex items-center gap-2">
                             <Phone className="w-5 h-5 text-primary-400" />
                             Contact Information
                         </h2>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div>
-                                <label className="block text-sm font-medium text-dark-text mb-2">
+                                <label className="block text-sm font-medium text-light-text mb-2">
                                     <Mail className="w-4 h-4 inline mr-1" />
                                     Email <span className="text-red-400">*</span>
                                 </label>
@@ -229,13 +229,13 @@ const CreateCustomer = () => {
                                     value={formData.email}
                                     onChange={handleInputChange}
                                     required
-                                    className="w-full px-4 py-3 bg-dark-bg border border-dark-border rounded-lg text-dark-text focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all duration-200"
+                                    className="w-full px-4 py-3 bg-light-bg border border-light-border rounded-lg text-light-text focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all duration-200"
                                     placeholder="email@example.com"
                                 />
                             </div>
 
                             <div>
-                                <label className="block text-sm font-medium text-dark-text mb-2">
+                                <label className="block text-sm font-medium text-light-text mb-2">
                                     <Phone className="w-4 h-4 inline mr-1" />
                                     Mobile Number <span className="text-red-400">*</span>
                                 </label>
@@ -246,7 +246,7 @@ const CreateCustomer = () => {
                                     onChange={handleInputChange}
                                     required
                                     pattern="[0-9]{10}"
-                                    className="w-full px-4 py-3 bg-dark-bg border border-dark-border rounded-lg text-dark-text focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all duration-200"
+                                    className="w-full px-4 py-3 bg-light-bg border border-light-border rounded-lg text-light-text focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all duration-200"
                                     placeholder="10-digit mobile number"
                                 />
                             </div>
@@ -254,17 +254,17 @@ const CreateCustomer = () => {
                     </div>
 
                     {/* Security Section */}
-                    <div className="pt-6 border-t border-dark-border">
-                        <h2 className="text-xl font-semibold text-dark-text mb-4 flex items-center gap-2">
+                    <div className="pt-6 border-t border-light-border">
+                        <h2 className="text-xl font-semibold text-light-text mb-4 flex items-center gap-2">
                             <Lock className="w-5 h-5 text-primary-400" />
                             Security
                         </h2>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div>
-                                <label className="block text-sm font-medium text-dark-text mb-2">
+                                <label className="block text-sm font-medium text-light-text mb-2">
                                     Password {!isEditMode && <span className="text-red-400">*</span>}
                                     {isEditMode && (
-                                        <span className="text-xs text-dark-text-tertiary ml-2">
+                                        <span className="text-xs text-light-text-tertiary ml-2">
                                             (Leave empty to keep current)
                                         </span>
                                     )}
@@ -277,7 +277,7 @@ const CreateCustomer = () => {
                                         onChange={handleInputChange}
                                         required={!isEditMode}
                                         minLength="6"
-                                        className="w-full px-4 py-3 pr-12 bg-dark-bg border border-dark-border rounded-lg text-dark-text focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all duration-200"
+                                        className="w-full px-4 py-3 pr-12 bg-light-bg border border-light-border rounded-lg text-light-text focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all duration-200"
                                         placeholder={
                                             isEditMode
                                                 ? 'Enter new password (optional)'
@@ -287,17 +287,17 @@ const CreateCustomer = () => {
                                     <button
                                         type="button"
                                         onClick={() => setShowPassword(!showPassword)}
-                                        className="absolute right-3 top-1/2 -translate-y-1/2 p-2 hover:bg-dark-surface rounded-lg transition-colors"
+                                        className="absolute right-3 top-1/2 -translate-y-1/2 p-2 hover:bg-white rounded-lg transition-colors"
                                     >
                                         {showPassword ? (
-                                            <EyeOff className="w-4 h-4 text-dark-text-tertiary" />
+                                            <EyeOff className="w-4 h-4 text-light-text-tertiary" />
                                         ) : (
-                                            <Eye className="w-4 h-4 text-dark-text-tertiary" />
+                                            <Eye className="w-4 h-4 text-light-text-tertiary" />
                                         )}
                                     </button>
                                 </div>
                                 {!isEditMode && (
-                                    <p className="text-xs text-dark-text-tertiary mt-2">
+                                    <p className="text-xs text-light-text-tertiary mt-2">
                                         Password must be at least 6 characters long
                                     </p>
                                 )}
@@ -306,13 +306,13 @@ const CreateCustomer = () => {
                     </div>
 
                     {/* Address Section */}
-                    <div className="pt-6 border-t border-dark-border">
-                        <h2 className="text-xl font-semibold text-dark-text mb-4 flex items-center gap-2">
+                    <div className="pt-6 border-t border-light-border">
+                        <h2 className="text-xl font-semibold text-light-text mb-4 flex items-center gap-2">
                             <MapPin className="w-5 h-5 text-primary-400" />
                             Address
                         </h2>
                         <div>
-                            <label className="block text-sm font-medium text-dark-text mb-2">
+                            <label className="block text-sm font-medium text-light-text mb-2">
                                 Complete Address <span className="text-red-400">*</span>
                             </label>
                             <textarea
@@ -323,23 +323,23 @@ const CreateCustomer = () => {
                                 minLength="10"
                                 maxLength="500"
                                 rows="4"
-                                className="w-full px-4 py-3 bg-dark-bg border border-dark-border rounded-lg text-dark-text focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all duration-200 resize-none"
+                                className="w-full px-4 py-3 bg-light-bg border border-light-border rounded-lg text-light-text focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all duration-200 resize-none"
                                 placeholder="Enter complete address with landmarks"
                             />
-                            <p className="text-xs text-dark-text-tertiary mt-2">
+                            <p className="text-xs text-light-text-tertiary mt-2">
                                 Minimum 10 characters, maximum 500 characters
                             </p>
                         </div>
                     </div>
 
                     {/* Notes Section */}
-                    <div className="pt-6 border-t border-dark-border">
-                        <h2 className="text-xl font-semibold text-dark-text mb-4 flex items-center gap-2">
+                    <div className="pt-6 border-t border-light-border">
+                        <h2 className="text-xl font-semibold text-light-text mb-4 flex items-center gap-2">
                             <FileText className="w-5 h-5 text-primary-400" />
                             Additional Notes
                         </h2>
                         <div>
-                            <label className="block text-sm font-medium text-dark-text mb-2">
+                            <label className="block text-sm font-medium text-light-text mb-2">
                                 Notes (Optional)
                             </label>
                             <textarea
@@ -348,7 +348,7 @@ const CreateCustomer = () => {
                                 onChange={handleInputChange}
                                 maxLength="1000"
                                 rows="4"
-                                className="w-full px-4 py-3 bg-dark-bg border border-dark-border rounded-lg text-dark-text focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all duration-200 resize-none"
+                                className="w-full px-4 py-3 bg-light-bg border border-light-border rounded-lg text-light-text focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all duration-200 resize-none"
                                 placeholder="Any additional notes about the customer..."
                             />
                         </div>
@@ -367,7 +367,7 @@ const CreateCustomer = () => {
                         <button
                             type="button"
                             onClick={() => navigate('/customers')}
-                            className="px-8 py-3 bg-dark-bg border border-dark-border text-dark-text rounded-xl font-semibold hover:bg-dark-surface-hover transition-all duration-200"
+                            className="px-8 py-3 bg-light-bg border border-light-border text-light-text rounded-xl font-semibold hover:bg-light-surface-hover transition-all duration-200"
                         >
                             Cancel
                         </button>

@@ -69,20 +69,20 @@ const AddService = () => {
             <div className="flex items-center gap-4 mb-8">
                 <button
                     onClick={() => navigate('/services')}
-                    className="p-2 hover:bg-dark-surface rounded-lg transition-colors text-dark-text-secondary"
+                    className="p-2 hover:bg-white rounded-lg transition-colors text-light-text-secondary"
                 >
                     <ArrowLeft className="w-6 h-6" />
                 </button>
                 <div>
-                    <h1 className="text-3xl font-bold text-dark-text">Add New Service</h1>
-                    <p className="text-dark-text-secondary">Create a new pest control service package</p>
+                    <h1 className="text-3xl font-bold text-light-text">Add New Service</h1>
+                    <p className="text-light-text-secondary">Create a new pest control service package</p>
                 </div>
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-6">
                 {/* Main Info Card */}
-                <div className="bg-dark-surface border border-dark-border rounded-2xl p-6">
-                    <h2 className="text-xl font-bold text-dark-text mb-6 flex items-center gap-2">
+                <div className="bg-white border border-light-border rounded-2xl p-6">
+                    <h2 className="text-xl font-bold text-light-text mb-6 flex items-center gap-2">
                         <Bug className="w-5 h-5 text-primary-500" />
                         Service Details
                     </h2>
@@ -90,14 +90,14 @@ const AddService = () => {
                     <div className="space-y-6">
                         {/* Title */}
                         <div>
-                            <label className="block text-sm font-medium text-dark-text mb-2">
+                            <label className="block text-sm font-medium text-light-text mb-2">
                                 Service Title <span className="text-red-500">*</span>
                             </label>
                             <input
                                 type="text"
                                 value={formData.title}
                                 onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                                className="w-full px-4 py-3 bg-dark-bg border border-dark-border rounded-xl text-dark-text focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all"
+                                className="w-full px-4 py-3 bg-light-bg border border-light-border rounded-xl text-light-text focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all"
                                 placeholder="e.g. General Pest Control"
                                 required
                             />
@@ -105,14 +105,14 @@ const AddService = () => {
 
                         {/* Description */}
                         <div>
-                            <label className="block text-sm font-medium text-dark-text mb-2">
+                            <label className="block text-sm font-medium text-light-text mb-2">
                                 Description <span className="text-red-500">*</span>
                             </label>
                             <textarea
                                 value={formData.description}
                                 onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                                 rows={4}
-                                className="w-full px-4 py-3 bg-dark-bg border border-dark-border rounded-xl text-dark-text focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all resize-none"
+                                className="w-full px-4 py-3 bg-light-bg border border-light-border rounded-xl text-light-text focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all resize-none"
                                 placeholder="Detailed description of the service..."
                                 required
                             />
@@ -120,13 +120,13 @@ const AddService = () => {
 
                         {/* Image Upload */}
                         <div>
-                            <label className="block text-sm font-medium text-dark-text mb-2">
+                            <label className="block text-sm font-medium text-light-text mb-2">
                                 Service Image <span className="text-red-500">*</span>
                             </label>
 
                             <div className={`
                                 relative border-2 border-dashed rounded-xl p-8 transition-all duration-200 text-center
-                                ${imagePreview ? 'border-primary-500/50 bg-primary-500/5' : 'border-dark-border hover:border-primary-500/50 hover:bg-dark-bg/50'}
+                                ${imagePreview ? 'border-primary-500/50 bg-primary-500/5' : 'border-light-border hover:border-primary-500/50 hover:bg-light-bg/50'}
                             `}>
                                 {imagePreview ? (
                                     <div className="relative inline-block">
@@ -149,8 +149,8 @@ const AddService = () => {
                                             <Upload className="w-8 h-8" />
                                         </div>
                                         <div>
-                                            <p className="text-dark-text font-medium">Click to upload or drag and drop</p>
-                                            <p className="text-sm text-dark-text-tertiary mt-1">SVG, PNG, JPG or WEBP (max. 5MB)</p>
+                                            <p className="text-light-text font-medium">Click to upload or drag and drop</p>
+                                            <p className="text-sm text-light-text-tertiary mt-1">SVG, PNG, JPG or WEBP (max. 5MB)</p>
                                         </div>
                                     </div>
                                 )}
@@ -167,58 +167,58 @@ const AddService = () => {
                 </div>
 
                 {/* SEO Card */}
-                <div className="bg-dark-surface border border-dark-border rounded-2xl p-6">
-                    <h2 className="text-xl font-bold text-dark-text mb-6">SEO Configuration</h2>
+                <div className="bg-white border border-light-border rounded-2xl p-6">
+                    <h2 className="text-xl font-bold text-light-text mb-6">SEO Configuration</h2>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div className="md:col-span-2">
-                            <label className="block text-sm font-medium text-dark-text mb-2">
+                            <label className="block text-sm font-medium text-light-text mb-2">
                                 Meta Title
                             </label>
                             <input
                                 type="text"
                                 value={formData.metaTitle}
                                 onChange={(e) => setFormData({ ...formData, metaTitle: e.target.value })}
-                                className="w-full px-4 py-3 bg-dark-bg border border-dark-border rounded-xl text-dark-text focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all"
+                                className="w-full px-4 py-3 bg-light-bg border border-light-border rounded-xl text-light-text focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all"
                                 placeholder="SEO Title"
                             />
                         </div>
 
                         <div className="md:col-span-2">
-                            <label className="block text-sm font-medium text-dark-text mb-2">
+                            <label className="block text-sm font-medium text-light-text mb-2">
                                 Meta Description
                             </label>
                             <textarea
                                 value={formData.metaDescription}
                                 onChange={(e) => setFormData({ ...formData, metaDescription: e.target.value })}
                                 rows={2}
-                                className="w-full px-4 py-3 bg-dark-bg border border-dark-border rounded-xl text-dark-text focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all resize-none"
+                                className="w-full px-4 py-3 bg-light-bg border border-light-border rounded-xl text-light-text focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all resize-none"
                                 placeholder="SEO Description"
                             />
                         </div>
 
                         <div>
-                            <label className="block text-sm font-medium text-dark-text mb-2">
+                            <label className="block text-sm font-medium text-light-text mb-2">
                                 Meta Keywords
                             </label>
                             <input
                                 type="text"
                                 value={formData.metaKeywords}
                                 onChange={(e) => setFormData({ ...formData, metaKeywords: e.target.value })}
-                                className="w-full px-4 py-3 bg-dark-bg border border-dark-border rounded-xl text-dark-text focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all"
+                                className="w-full px-4 py-3 bg-light-bg border border-light-border rounded-xl text-light-text focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all"
                                 placeholder="keyword1, keyword2"
                             />
                         </div>
 
                         <div>
-                            <label className="block text-sm font-medium text-dark-text mb-2">
+                            <label className="block text-sm font-medium text-light-text mb-2">
                                 Meta Image URL
                             </label>
                             <input
                                 type="text"
                                 value={formData.metaImage}
                                 onChange={(e) => setFormData({ ...formData, metaImage: e.target.value })}
-                                className="w-full px-4 py-3 bg-dark-bg border border-dark-border rounded-xl text-dark-text focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all"
+                                className="w-full px-4 py-3 bg-light-bg border border-light-border rounded-xl text-light-text focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all"
                                 placeholder="https://..."
                             />
                         </div>
@@ -230,7 +230,7 @@ const AddService = () => {
                     <button
                         type="button"
                         onClick={() => navigate('/services')}
-                        className="px-6 py-3 bg-dark-surface border border-dark-border rounded-xl font-semibold text-dark-text hover:bg-dark-surface-hover transition-colors"
+                        className="px-6 py-3 bg-white border border-light-border rounded-xl font-semibold text-light-text hover:bg-light-surface-hover transition-colors"
                     >
                         Cancel
                     </button>

@@ -63,9 +63,9 @@ const Login = () => {
     };
 
     return (
-        <div className="min-h-[100dvh] bg-light-bg dark:bg-dark-bg flex flex-col items-center justify-center p-4 transition-colors duration-300 overflow-y-auto">
+        <div className="min-h-[100dvh] bg-light-bg dark:bg-light-bg flex flex-col items-center justify-center p-4 transition-colors duration-300 overflow-y-auto">
             <div className="w-full flex-1 flex flex-col items-center justify-center min-h-[min-content] py-8">
-                <div className="max-w-md w-full bg-light-surface dark:bg-dark-surface border border-light-border dark:border-dark-border rounded-2xl p-8 shadow-xl animate-fade-in relative overflow-hidden transition-colors duration-300 mx-auto">
+                <div className="max-w-md w-full bg-light-surface dark:bg-white border border-light-border dark:border-light-border rounded-2xl p-8 shadow-xl animate-fade-in relative overflow-hidden transition-colors duration-300 mx-auto">
                     {/* Decorative Elements */}
                     <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-primary-500 to-accent-500"></div>
                     <div className="absolute -top-24 -right-24 w-48 h-48 bg-primary-500/10 rounded-full blur-3xl"></div>
@@ -75,8 +75,8 @@ const Login = () => {
                             <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-primary-500/20 to-accent-500/20 mb-4 text-primary-600 dark:text-primary-400">
                                 <ShieldCheck className="w-8 h-8" />
                             </div>
-                            <h1 className="text-2xl font-bold text-light-text dark:text-dark-text transition-colors duration-300">Admin Portal</h1>
-                            <p className="text-light-text-secondary dark:text-dark-text-secondary mt-2 transition-colors duration-300">
+                            <h1 className="text-2xl font-bold text-light-text dark:text-light-text transition-colors duration-300">Admin Portal</h1>
+                            <p className="text-light-text-secondary dark:text-light-text-secondary mt-2 transition-colors duration-300">
                                 {step === 'credentials' ? 'Sign in to access your dashboard' : 'Enter the OTP sent to your email'}
                             </p>
                         </div>
@@ -91,16 +91,16 @@ const Login = () => {
                         {step === 'credentials' ? (
                             <form onSubmit={handleLogin} className="space-y-6 animate-in slide-in-from-right-4 duration-300">
                                 <div>
-                                    <label className="block text-sm font-medium text-light-text dark:text-dark-text mb-2 transition-colors duration-300">
+                                    <label className="block text-sm font-medium text-light-text dark:text-light-text mb-2 transition-colors duration-300">
                                         Email Address
                                     </label>
                                     <div className="relative">
-                                        <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-light-text-tertiary dark:text-dark-text-tertiary transition-colors duration-300" />
+                                        <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-light-text-tertiary dark:text-light-text-tertiary transition-colors duration-300" />
                                         <input
                                             type="email"
                                             value={email}
                                             onChange={(e) => setEmail(e.target.value)}
-                                            className="w-full pl-10 pr-4 py-3 bg-light-bg dark:bg-dark-bg border border-light-border dark:border-dark-border rounded-xl text-light-text dark:text-dark-text focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all duration-200 placeholder:text-light-text-tertiary dark:placeholder:text-dark-text-tertiary"
+                                            className="w-full pl-10 pr-4 py-3 bg-light-bg dark:bg-light-bg border border-light-border dark:border-light-border rounded-xl text-light-text dark:text-light-text focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all duration-200 placeholder:text-light-text-tertiary dark:placeholder:text-light-text-tertiary"
                                             placeholder="admin@example.com"
                                             required
                                         />
@@ -108,16 +108,16 @@ const Login = () => {
                                 </div>
 
                                 <div>
-                                    <label className="block text-sm font-medium text-light-text dark:text-dark-text mb-2 transition-colors duration-300">
+                                    <label className="block text-sm font-medium text-light-text dark:text-light-text mb-2 transition-colors duration-300">
                                         Password
                                     </label>
                                     <div className="relative">
-                                        <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-light-text-tertiary dark:text-dark-text-tertiary transition-colors duration-300" />
+                                        <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-light-text-tertiary dark:text-light-text-tertiary transition-colors duration-300" />
                                         <input
                                             type="password"
                                             value={password}
                                             onChange={(e) => setPassword(e.target.value)}
-                                            className="w-full pl-10 pr-4 py-3 bg-light-bg dark:bg-dark-bg border border-light-border dark:border-dark-border rounded-xl text-light-text dark:text-dark-text focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all duration-200 placeholder:text-light-text-tertiary dark:placeholder:text-dark-text-tertiary"
+                                            className="w-full pl-10 pr-4 py-3 bg-light-bg dark:bg-light-bg border border-light-border dark:border-light-border rounded-xl text-light-text dark:text-light-text focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all duration-200 placeholder:text-light-text-tertiary dark:placeholder:text-light-text-tertiary"
                                             placeholder="••••••••"
                                             required
                                         />
@@ -142,23 +142,23 @@ const Login = () => {
                         ) : (
                             <form onSubmit={handleOtpVerify} className="space-y-6 animate-in slide-in-from-right-4 duration-300">
                                 <div>
-                                    <label className="block text-sm font-medium text-light-text dark:text-dark-text mb-2 transition-colors duration-300">
+                                    <label className="block text-sm font-medium text-light-text dark:text-light-text mb-2 transition-colors duration-300">
                                         One-Time Password
                                     </label>
                                     <div className="relative">
-                                        <KeyRound className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-light-text-tertiary dark:text-dark-text-tertiary transition-colors duration-300" />
+                                        <KeyRound className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-light-text-tertiary dark:text-light-text-tertiary transition-colors duration-300" />
                                         <input
                                             type="text"
                                             value={otp}
                                             onChange={(e) => setOtp(e.target.value.replace(/\D/g, '').slice(0, 6))}
-                                            className="w-full pl-10 pr-4 py-3 bg-light-bg dark:bg-dark-bg border border-light-border dark:border-dark-border rounded-xl text-light-text dark:text-dark-text focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all duration-200 text-center tracking-widest font-mono text-lg placeholder:text-light-text-tertiary dark:placeholder:text-dark-text-tertiary"
+                                            className="w-full pl-10 pr-4 py-3 bg-light-bg dark:bg-light-bg border border-light-border dark:border-light-border rounded-xl text-light-text dark:text-light-text focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all duration-200 text-center tracking-widest font-mono text-lg placeholder:text-light-text-tertiary dark:placeholder:text-light-text-tertiary"
                                             placeholder="000000"
                                             required
                                             maxLength={6}
                                             autoFocus
                                         />
                                     </div>
-                                    <p className="text-xs text-light-text-tertiary dark:text-dark-text-tertiary mt-2 text-center transition-colors duration-300">
+                                    <p className="text-xs text-light-text-tertiary dark:text-light-text-tertiary mt-2 text-center transition-colors duration-300">
                                         Please enter the 6-digit code sent to {email}
                                     </p>
                                 </div>
@@ -185,7 +185,7 @@ const Login = () => {
                                         setOtp('');
                                         setError('');
                                     }}
-                                    className="w-full text-sm text-light-text-secondary dark:text-dark-text-secondary hover:text-primary-600 dark:hover:text-primary-400 transition-colors"
+                                    className="w-full text-sm text-light-text-secondary dark:text-light-text-secondary hover:text-primary-600 dark:hover:text-primary-400 transition-colors"
                                 >
                                     ← Back to Login
                                 </button>
@@ -195,7 +195,7 @@ const Login = () => {
                 </div>
             </div>
 
-            <div className="mt-8 text-light-text-tertiary dark:text-dark-text-tertiary text-xs transition-colors duration-300 text-center">
+            <div className="mt-8 text-light-text-tertiary dark:text-light-text-tertiary text-xs transition-colors duration-300 text-center">
                 © {new Date().getFullYear()} Pest Control Admin. All rights reserved.
             </div>
         </div>

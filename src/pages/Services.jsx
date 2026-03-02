@@ -240,8 +240,8 @@ const Services = () => {
             {/* Page Header */}
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div>
-                    <h1 className="text-2xl md:text-3xl font-bold text-dark-text mb-2">Services</h1>
-                    <p className="text-dark-text-secondary text-sm md:text-base">
+                    <h1 className="text-2xl md:text-3xl font-bold text-light-text mb-2">Services</h1>
+                    <p className="text-light-text-secondary text-sm md:text-base">
                         Manage your pest control services and packages
                     </p>
                 </div>
@@ -262,15 +262,15 @@ const Services = () => {
             )}
 
             {/* Search Bar */}
-            <div className="bg-dark-surface border border-dark-border rounded-2xl p-4 md:p-6">
+            <div className="bg-white border border-light-border rounded-2xl p-4 md:p-6">
                 <div className="relative">
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-dark-text-tertiary" />
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-light-text-tertiary" />
                     <input
                         type="text"
                         placeholder="Search services..."
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
-                        className="w-full pl-10 pr-4 py-2.5 bg-dark-bg border border-dark-border rounded-lg text-sm text-dark-text placeholder:text-dark-text-tertiary focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all duration-200"
+                        className="w-full pl-10 pr-4 py-2.5 bg-light-bg border border-light-border rounded-lg text-sm text-light-text placeholder:text-light-text-tertiary focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all duration-200"
                     />
                 </div>
             </div>
@@ -280,7 +280,7 @@ const Services = () => {
                 {filteredServices.map((service) => (
                     <div
                         key={service._id}
-                        className="bg-dark-surface border border-dark-border rounded-2xl overflow-hidden hover:border-primary-500 transition-all duration-300 hover:shadow-lg hover:shadow-primary-500/10 flex flex-col"
+                        className="bg-white border border-light-border rounded-2xl overflow-hidden hover:border-primary-500 transition-all duration-300 hover:shadow-lg hover:shadow-primary-500/10 flex flex-col"
                     >
                         {/* Service Header */}
                         <div className="p-6 flex-1 flex flex-col">
@@ -314,15 +314,15 @@ const Services = () => {
                                 </div>
                             </div>
 
-                            <h3 className="text-xl font-bold text-dark-text mb-2 capitalize line-clamp-1">
+                            <h3 className="text-xl font-bold text-light-text mb-2 capitalize line-clamp-1">
                                 {service.title}
                             </h3>
-                            <p className="text-sm text-dark-text-secondary mb-4 line-clamp-3 flex-1">
+                            <p className="text-sm text-light-text-secondary mb-4 line-clamp-3 flex-1">
                                 {service.description}
                             </p>
 
-                            <div className="flex items-center justify-between mt-auto pt-4 border-t border-dark-border">
-                                <span className="text-xs text-dark-text-tertiary flex items-center gap-1">
+                            <div className="flex items-center justify-between mt-auto pt-4 border-t border-light-border">
+                                <span className="text-xs text-light-text-tertiary flex items-center gap-1">
                                     <Bug className="w-3 h-3" />
                                     {service.services?.length || 0} Sub-services
                                 </span>
@@ -341,9 +341,9 @@ const Services = () => {
 
                         {/* Expandable Sub-services Section */}
                         {expandedServices[service._id] && (
-                            <div className="border-t border-dark-border bg-dark-bg/50 p-4">
+                            <div className="border-t border-light-border bg-light-bg/50 p-4">
                                 <div className="flex items-center justify-between mb-4">
-                                    <h4 className="text-sm font-bold text-dark-text">Sub-services</h4>
+                                    <h4 className="text-sm font-bold text-light-text">Sub-services</h4>
                                     <button
                                         onClick={() => openAddSubServiceModal(service._id)}
                                         className="text-xs flex items-center gap-1 px-3 py-1.5 bg-green-500/10 text-green-400 rounded-lg hover:bg-green-500/20 transition-colors"
@@ -357,29 +357,29 @@ const Services = () => {
                                         service.services.map((subService) => (
                                             <div
                                                 key={subService._id}
-                                                className="bg-dark-surface border border-dark-border rounded-xl p-3 hover:border-primary-500/30 transition-all"
+                                                className="bg-white border border-light-border rounded-xl p-3 hover:border-primary-500/30 transition-all"
                                             >
                                                 <div className="flex items-start gap-3">
                                                     {subService.image && (
-                                                        <div className="w-10 h-10 rounded-lg bg-dark-bg overflow-hidden flex-shrink-0">
+                                                        <div className="w-10 h-10 rounded-lg bg-light-bg overflow-hidden flex-shrink-0">
                                                             <img src={subService.image} alt={subService.title} className="w-full h-full object-cover" />
                                                         </div>
                                                     )}
                                                     <div className="flex-1 min-w-0">
                                                         <div className="flex justify-between items-start">
-                                                            <h5 className="text-sm font-semibold text-dark-text truncate">
+                                                            <h5 className="text-sm font-semibold text-light-text truncate">
                                                                 {subService.title}
                                                             </h5>
                                                             <span className="text-xs font-medium text-primary-400 bg-primary-500/10 px-1.5 py-0.5 rounded whitespace-nowrap ml-2">
                                                                 ${subService.startingPrice}
                                                             </span>
                                                         </div>
-                                                        <p className="text-xs text-dark-text-secondary truncate mt-0.5">
+                                                        <p className="text-xs text-light-text-secondary truncate mt-0.5">
                                                             {subService.description}
                                                         </p>
                                                     </div>
                                                 </div>
-                                                <div className="flex justify-end gap-2 mt-2 pt-2 border-t border-dark-border/50">
+                                                <div className="flex justify-end gap-2 mt-2 pt-2 border-t border-light-border/50">
                                                     <button
                                                         onClick={() => openEditSubServiceModal(service._id, subService)}
                                                         className="text-xs text-primary-400 hover:text-primary-300"
@@ -396,7 +396,7 @@ const Services = () => {
                                             </div>
                                         ))
                                     ) : (
-                                        <p className="text-center text-xs text-dark-text-tertiary py-4">
+                                        <p className="text-center text-xs text-light-text-tertiary py-4">
                                             No sub-services yet.
                                         </p>
                                     )}
@@ -410,11 +410,11 @@ const Services = () => {
             {/* Empty State */}
             {filteredServices.length === 0 && !loading && (
                 <div className="flex flex-col items-center justify-center min-h-[40vh] text-center p-6">
-                    <Bug className="w-16 h-16 text-dark-text-tertiary mb-4" />
-                    <h3 className="text-xl font-bold text-dark-text mb-2">
+                    <Bug className="w-16 h-16 text-light-text-tertiary mb-4" />
+                    <h3 className="text-xl font-bold text-light-text mb-2">
                         No services found
                     </h3>
-                    <p className="text-dark-text-secondary mb-6">
+                    <p className="text-light-text-secondary mb-6">
                         {searchQuery
                             ? 'Try adjusting your search terms'
                             : 'Get started by creating your first service'}
@@ -432,14 +432,14 @@ const Services = () => {
             {/* Main Service Modal */}
             {showModal && (
                 <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-end md:items-center justify-center p-0 md:p-4 animate-fade-in">
-                    <div className="bg-dark-surface border-t md:border border-dark-border rounded-t-3xl md:rounded-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto flex flex-col">
-                        <div className="p-6 border-b border-dark-border flex items-center justify-between sticky top-0 bg-dark-surface z-10">
-                            <h2 className="text-xl font-bold text-dark-text">
+                    <div className="bg-white border-t md:border border-light-border rounded-t-3xl md:rounded-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto flex flex-col">
+                        <div className="p-6 border-b border-light-border flex items-center justify-between sticky top-0 bg-white z-10">
+                            <h2 className="text-xl font-bold text-light-text">
                                 {selectedService ? 'Edit Service' : 'Add New Service'}
                             </h2>
                             <button
                                 onClick={() => { setShowModal(false); resetForm(); }}
-                                className="p-2 hover:bg-dark-bg rounded-lg text-dark-text-secondary transition-colors"
+                                className="p-2 hover:bg-light-bg rounded-lg text-light-text-secondary transition-colors"
                             >
                                 <plus className="w-6 h-6 rotate-45" /> {/* Close icon using Plus rotated, or just import X */}
                                 <span className="sr-only">Close</span>
@@ -449,38 +449,38 @@ const Services = () => {
 
                         <form onSubmit={handleCreateService} className="p-6 space-y-4">
                             <div>
-                                <label className="block text-sm font-medium text-dark-text mb-2">
+                                <label className="block text-sm font-medium text-light-text mb-2">
                                     Title <span className="text-red-500">*</span>
                                 </label>
                                 <input
                                     type="text"
                                     value={formData.title}
                                     onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                                    className="w-full px-4 py-2.5 bg-dark-bg border border-dark-border rounded-lg text-dark-text focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20"
+                                    className="w-full px-4 py-2.5 bg-light-bg border border-light-border rounded-lg text-light-text focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20"
                                     required
                                 />
                             </div>
 
                             <div>
-                                <label className="block text-sm font-medium text-dark-text mb-2">
+                                <label className="block text-sm font-medium text-light-text mb-2">
                                     Description <span className="text-red-500">*</span>
                                 </label>
                                 <textarea
                                     value={formData.description}
                                     onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                                     rows={3}
-                                    className="w-full px-4 py-2.5 bg-dark-bg border border-dark-border rounded-lg text-dark-text focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20"
+                                    className="w-full px-4 py-2.5 bg-light-bg border border-light-border rounded-lg text-light-text focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20"
                                     required
                                 />
                             </div>
 
                             <div>
-                                <label className="block text-sm font-medium text-dark-text mb-2">
+                                <label className="block text-sm font-medium text-light-text mb-2">
                                     Service Image
                                 </label>
                                 <div className="space-y-3">
                                     {(imageFile || formData.image) && (
-                                        <div className="w-full h-40 bg-dark-bg border border-dark-border rounded-lg overflow-hidden flex items-center justify-center relative group">
+                                        <div className="w-full h-40 bg-light-bg border border-light-border rounded-lg overflow-hidden flex items-center justify-center relative group">
                                             <img
                                                 src={imageFile ? URL.createObjectURL(imageFile) : formData.image}
                                                 alt="Preview"
@@ -489,9 +489,9 @@ const Services = () => {
                                         </div>
                                     )}
                                     <div className="flex items-center gap-2">
-                                        <label className="flex-1 cursor-pointer flex items-center justify-center gap-2 px-4 py-2 bg-dark-bg border border-dark-border rounded-lg hover:bg-dark-surface-hover transition-colors">
-                                            <ImageIcon className="w-5 h-5 text-dark-text-secondary" />
-                                            <span className="text-sm text-dark-text">Choose Image</span>
+                                        <label className="flex-1 cursor-pointer flex items-center justify-center gap-2 px-4 py-2 bg-light-bg border border-light-border rounded-lg hover:bg-light-surface-hover transition-colors">
+                                            <ImageIcon className="w-5 h-5 text-light-text-secondary" />
+                                            <span className="text-sm text-light-text">Choose Image</span>
                                             <input
                                                 type="file"
                                                 accept="image/*"
@@ -504,31 +504,31 @@ const Services = () => {
                             </div>
 
                             {/* SEO Section Toggle or just inline */}
-                            <div className="border-t border-dark-border pt-4 mt-4">
-                                <h3 className="text-sm font-bold text-dark-text mb-3">SEO Configuration</h3>
+                            <div className="border-t border-light-border pt-4 mt-4">
+                                <h3 className="text-sm font-bold text-light-text mb-3">SEO Configuration</h3>
                                 <div className="space-y-3">
                                     <input
                                         type="text"
                                         placeholder="Meta Title"
                                         value={formData.metaTitle}
                                         onChange={(e) => setFormData({ ...formData, metaTitle: e.target.value })}
-                                        className="w-full px-4 py-2.5 bg-dark-bg border border-dark-border rounded-lg text-dark-text text-sm focus:outline-none focus:border-primary-500"
+                                        className="w-full px-4 py-2.5 bg-light-bg border border-light-border rounded-lg text-light-text text-sm focus:outline-none focus:border-primary-500"
                                     />
                                     <textarea
                                         placeholder="Meta Description"
                                         value={formData.metaDescription}
                                         onChange={(e) => setFormData({ ...formData, metaDescription: e.target.value })}
                                         rows={2}
-                                        className="w-full px-4 py-2.5 bg-dark-bg border border-dark-border rounded-lg text-dark-text text-sm focus:outline-none focus:border-primary-500"
+                                        className="w-full px-4 py-2.5 bg-light-bg border border-light-border rounded-lg text-light-text text-sm focus:outline-none focus:border-primary-500"
                                     />
                                 </div>
                             </div>
 
-                            <div className="flex gap-3 pt-4 sticky bottom-0 bg-dark-surface border-t border-dark-border -mx-6 -mb-6 p-6">
+                            <div className="flex gap-3 pt-4 sticky bottom-0 bg-white border-t border-light-border -mx-6 -mb-6 p-6">
                                 <button
                                     type="button"
                                     onClick={() => { setShowModal(false); resetForm(); }}
-                                    className="flex-1 px-6 py-3 bg-dark-bg border border-dark-border rounded-xl font-semibold text-dark-text hover:bg-dark-surface-hover"
+                                    className="flex-1 px-6 py-3 bg-light-bg border border-light-border rounded-xl font-semibold text-light-text hover:bg-light-surface-hover"
                                 >
                                     Cancel
                                 </button>
@@ -547,14 +547,14 @@ const Services = () => {
             {/* Sub-Service Modal */}
             {showSubServiceModal && (
                 <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-end md:items-center justify-center p-0 md:p-4 animate-fade-in">
-                    <div className="bg-dark-surface border-t md:border border-dark-border rounded-t-3xl md:rounded-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto flex flex-col">
-                        <div className="p-6 border-b border-dark-border flex items-center justify-between sticky top-0 bg-dark-surface z-10">
-                            <h2 className="text-xl font-bold text-dark-text">
+                    <div className="bg-white border-t md:border border-light-border rounded-t-3xl md:rounded-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto flex flex-col">
+                        <div className="p-6 border-b border-light-border flex items-center justify-between sticky top-0 bg-white z-10">
+                            <h2 className="text-xl font-bold text-light-text">
                                 {selectedSubService ? 'Edit Sub-Service' : 'Add Sub-Service'}
                             </h2>
                             <button
                                 onClick={() => { setShowSubServiceModal(false); resetSubServiceForm(); }}
-                                className="p-2 hover:bg-dark-bg rounded-lg text-dark-text-secondary transition-colors"
+                                className="p-2 hover:bg-light-bg rounded-lg text-light-text-secondary transition-colors"
                             >
                                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
                             </button>
@@ -562,36 +562,36 @@ const Services = () => {
 
                         <form onSubmit={handleSubServiceSubmit} className="p-6 space-y-4">
                             <div>
-                                <label className="block text-sm font-medium text-dark-text mb-2">
+                                <label className="block text-sm font-medium text-light-text mb-2">
                                     Title <span className="text-red-500">*</span>
                                 </label>
                                 <input
                                     type="text"
                                     value={subServiceFormData.title}
                                     onChange={(e) => setSubServiceFormData({ ...subServiceFormData, title: e.target.value })}
-                                    className="w-full px-4 py-2.5 bg-dark-bg border border-dark-border rounded-lg text-dark-text focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20"
+                                    className="w-full px-4 py-2.5 bg-light-bg border border-light-border rounded-lg text-light-text focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20"
                                     required
                                 />
                             </div>
 
                             <div className="grid grid-cols-2 gap-4">
                                 <div>
-                                    <label className="block text-sm font-medium text-dark-text mb-2">
+                                    <label className="block text-sm font-medium text-light-text mb-2">
                                         Price ($) <span className="text-red-500">*</span>
                                     </label>
                                     <input
                                         type="number"
                                         value={subServiceFormData.startingPrice}
                                         onChange={(e) => setSubServiceFormData({ ...subServiceFormData, startingPrice: e.target.value })}
-                                        className="w-full px-4 py-2.5 bg-dark-bg border border-dark-border rounded-lg text-dark-text focus:outline-none focus:border-primary-500"
+                                        className="w-full px-4 py-2.5 bg-light-bg border border-light-border rounded-lg text-light-text focus:outline-none focus:border-primary-500"
                                         required
                                         min="0"
                                     />
                                 </div>
                                 <div className="flex items-end">
-                                    <label className="w-full cursor-pointer flex items-center justify-center gap-2 px-4 py-2.5 bg-dark-bg border border-dark-border rounded-lg hover:bg-dark-surface-hover transition-colors h-[46px]">
-                                        <ImageIcon className="w-5 h-5 text-dark-text-secondary" />
-                                        <span className="text-sm text-dark-text truncate">{imageFile ? 'File Selected' : 'Image'}</span>
+                                    <label className="w-full cursor-pointer flex items-center justify-center gap-2 px-4 py-2.5 bg-light-bg border border-light-border rounded-lg hover:bg-light-surface-hover transition-colors h-[46px]">
+                                        <ImageIcon className="w-5 h-5 text-light-text-secondary" />
+                                        <span className="text-sm text-light-text truncate">{imageFile ? 'File Selected' : 'Image'}</span>
                                         <input
                                             type="file"
                                             accept="image/*"
@@ -603,7 +603,7 @@ const Services = () => {
                             </div>
 
                             {(imageFile || subServiceFormData.image) && (
-                                <div className="w-full h-32 bg-dark-bg border border-dark-border rounded-lg overflow-hidden flex items-center justify-center relative">
+                                <div className="w-full h-32 bg-light-bg border border-light-border rounded-lg overflow-hidden flex items-center justify-center relative">
                                     <img
                                         src={imageFile ? URL.createObjectURL(imageFile) : subServiceFormData.image}
                                         alt="Preview"
@@ -613,23 +613,23 @@ const Services = () => {
                             )}
 
                             <div>
-                                <label className="block text-sm font-medium text-dark-text mb-2">
+                                <label className="block text-sm font-medium text-light-text mb-2">
                                     Description <span className="text-red-500">*</span>
                                 </label>
                                 <textarea
                                     value={subServiceFormData.description}
                                     onChange={(e) => setSubServiceFormData({ ...subServiceFormData, description: e.target.value })}
                                     rows={3}
-                                    className="w-full px-4 py-2.5 bg-dark-bg border border-dark-border rounded-lg text-dark-text focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20"
+                                    className="w-full px-4 py-2.5 bg-light-bg border border-light-border rounded-lg text-light-text focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20"
                                     required
                                 />
                             </div>
 
-                            <div className="flex gap-3 pt-4 sticky bottom-0 bg-dark-surface border-t border-dark-border -mx-6 -mb-6 p-6">
+                            <div className="flex gap-3 pt-4 sticky bottom-0 bg-white border-t border-light-border -mx-6 -mb-6 p-6">
                                 <button
                                     type="button"
                                     onClick={() => { setShowSubServiceModal(false); resetSubServiceForm(); }}
-                                    className="flex-1 px-6 py-3 bg-dark-bg border border-dark-border rounded-xl font-semibold text-dark-text hover:bg-dark-surface-hover"
+                                    className="flex-1 px-6 py-3 bg-light-bg border border-light-border rounded-xl font-semibold text-light-text hover:bg-light-surface-hover"
                                 >
                                     Cancel
                                 </button>

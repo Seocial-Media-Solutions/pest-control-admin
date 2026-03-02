@@ -143,15 +143,15 @@ const CreateBooking = () => {
             <div className="flex items-center gap-4">
                 <button
                     onClick={() => navigate('/bookings')}
-                    className="p-2 hover:bg-dark-surface border border-dark-border rounded-lg transition-colors duration-200"
+                    className="p-2 hover:bg-white border border-light-border rounded-lg transition-colors duration-200"
                 >
-                    <ArrowLeft className="w-5 h-5 text-dark-text" />
+                    <ArrowLeft className="w-5 h-5 text-light-text" />
                 </button>
                 <div>
-                    <h1 className="text-3xl font-bold text-dark-text">
+                    <h1 className="text-3xl font-bold text-light-text">
                         {isEditMode ? 'Edit Booking' : 'Create New Booking'}
                     </h1>
-                    <p className="text-dark-text-secondary mt-1">
+                    <p className="text-light-text-secondary mt-1">
                         {isEditMode ? 'Update booking information' : 'Create a new customer booking'}
                     </p>
                 </div>
@@ -187,17 +187,17 @@ const CreateBooking = () => {
             )}
 
             {/* Form */}
-            <div className="bg-dark-surface border border-dark-border rounded-2xl p-8">
+            <div className="bg-white border border-light-border rounded-2xl p-8">
                 <form onSubmit={handleSubmit} className="space-y-6">
                     {/* Customer & Service Selection */}
                     <div>
-                        <h2 className="text-xl font-semibold text-dark-text mb-4 flex items-center gap-2">
+                        <h2 className="text-xl font-semibold text-light-text mb-4 flex items-center gap-2">
                             <User className="w-5 h-5 text-primary-400" />
                             Booking Details
                         </h2>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div>
-                                <label className="block text-sm font-medium text-dark-text mb-2">
+                                <label className="block text-sm font-medium text-light-text mb-2">
                                     Customer <span className="text-red-400">*</span>
                                 </label>
                                 <select
@@ -205,7 +205,7 @@ const CreateBooking = () => {
                                     value={formData.customerId}
                                     onChange={handleInputChange}
                                     required
-                                    className="w-full px-4 py-3 bg-dark-bg border border-dark-border rounded-lg text-dark-text focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all duration-200"
+                                    className="w-full px-4 py-3 bg-light-bg border border-light-border rounded-lg text-light-text focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all duration-200"
                                 >
                                     <option value="">Select Customer</option>
                                     {customers.map((customer) => (
@@ -217,7 +217,7 @@ const CreateBooking = () => {
                             </div>
 
                             <div>
-                                <label className="block text-sm font-medium text-dark-text mb-2">
+                                <label className="block text-sm font-medium text-light-text mb-2">
                                     Filter by Service Category
                                 </label>
                                 <select
@@ -229,7 +229,7 @@ const CreateBooking = () => {
                                             serviceId: e.target.value
                                         }));
                                     }}
-                                    className="w-full px-4 py-3 bg-dark-bg border border-dark-border rounded-lg text-dark-text focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all duration-200"
+                                    className="w-full px-4 py-3 bg-light-bg border border-light-border rounded-lg text-light-text focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all duration-200"
                                 >
                                     <option value="">All Services</option>
                                     {services.map((service) => (
@@ -243,7 +243,7 @@ const CreateBooking = () => {
                             {/* Selected Sub Services Summary */}
                             {formData.subServiceIds.length > 0 && (
                                 <div className="col-span-1 md:col-span-2 space-y-3">
-                                    <label className="block text-sm font-medium text-dark-text">
+                                    <label className="block text-sm font-medium text-light-text">
                                         Selected Services ({formData.subServiceIds.length})
                                     </label>
                                     <div className="flex flex-wrap gap-2">
@@ -275,8 +275,8 @@ const CreateBooking = () => {
                             )}
 
                             {/* Sub Service Selection Grid */}
-                            <div className="col-span-1 md:col-span-2 bg-dark-bg/50 border border-dark-border rounded-lg p-4">
-                                <label className="block text-sm font-medium text-dark-text mb-3">
+                            <div className="col-span-1 md:col-span-2 bg-light-bg/50 border border-light-border rounded-lg p-4">
+                                <label className="block text-sm font-medium text-light-text mb-3">
                                     {formData.serviceId
                                         ? `Services from "${services.find(s => s._id === formData.serviceId)?.title}"`
                                         : "All Available Services"}
@@ -291,7 +291,7 @@ const CreateBooking = () => {
                                                 relative flex items-start p-3 rounded-lg border cursor-pointer transition-all duration-200
                                                 ${formData.subServiceIds.includes(subService._id)
                                                         ? 'bg-primary-500/10 border-primary-500/50'
-                                                        : 'bg-dark-surface border-dark-border hover:border-dark-text-tertiary'}
+                                                        : 'bg-white border-light-border hover:border-dark-text-tertiary'}
                                             `}
                                                 onClick={() => {
                                                     setFormData(prev => {
@@ -311,19 +311,19 @@ const CreateBooking = () => {
                                                         type="checkbox"
                                                         checked={formData.subServiceIds.includes(subService._id)}
                                                         onChange={() => { }} // Handled by parent div onClick
-                                                        className="w-4 h-4 text-primary-600 bg-dark-bg border-dark-border rounded focus:ring-primary-500"
+                                                        className="w-4 h-4 text-primary-600 bg-light-bg border-light-border rounded focus:ring-primary-500"
                                                     />
                                                 </div>
                                                 <div className="ml-3 text-sm">
-                                                    <label className="font-medium text-dark-text cursor-pointer">
+                                                    <label className="font-medium text-light-text cursor-pointer">
                                                         {subService.title}
                                                     </label>
                                                     <div className="flex justify-between items-center mt-1 w-full gap-2">
-                                                        <p className="text-dark-text-tertiary text-xs">
+                                                        <p className="text-light-text-tertiary text-xs">
                                                             ₹{subService.startingPrice}
                                                         </p>
                                                         {!formData.serviceId && (
-                                                            <span className="text-[10px] bg-dark-surface px-1.5 py-0.5 rounded text-dark-text-secondary border border-dark-border">
+                                                            <span className="text-[10px] bg-white px-1.5 py-0.5 rounded text-light-text-secondary border border-light-border">
                                                                 {subService.serviceId?.title}
                                                             </span>
                                                         )}
@@ -333,7 +333,7 @@ const CreateBooking = () => {
                                             </div>
                                         ))}
                                     {allSubServices.filter(sub => !formData.serviceId || sub.serviceId?._id === formData.serviceId || sub.serviceId === formData.serviceId).length === 0 && (
-                                        <div className="col-span-full text-center py-8 text-dark-text-tertiary">
+                                        <div className="col-span-full text-center py-8 text-light-text-tertiary">
                                             No services found.
                                         </div>
                                     )}
@@ -343,7 +343,7 @@ const CreateBooking = () => {
                             {/* Total Amount Display */}
                             <div className="col-span-1 md:col-span-2">
                                 <div className="flex justify-end items-center p-4 bg-primary-500/10 border border-primary-500/30 rounded-xl">
-                                    <span className="text-dark-text-secondary mr-2">Total Amount:</span>
+                                    <span className="text-light-text-secondary mr-2">Total Amount:</span>
                                     <span className="text-2xl font-bold text-primary-400">
                                         ₹{formData.subServiceIds.reduce((sum, id) => {
                                             const sub = allSubServices.find(s => s._id === id);
@@ -356,14 +356,14 @@ const CreateBooking = () => {
                     </div>
 
                     {/* Contact Information */}
-                    <div className="pt-6 border-t border-dark-border">
-                        <h2 className="text-xl font-semibold text-dark-text mb-4 flex items-center gap-2">
+                    <div className="pt-6 border-t border-light-border">
+                        <h2 className="text-xl font-semibold text-light-text mb-4 flex items-center gap-2">
                             <Phone className="w-5 h-5 text-primary-400" />
                             Additional Contact Information
                         </h2>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div>
-                                <label className="block text-sm font-medium text-dark-text mb-2">
+                                <label className="block text-sm font-medium text-light-text mb-2">
                                     <Phone className="w-4 h-4 inline mr-1" />
                                     Mobile Number <span className="text-red-400">*</span>
                                 </label>
@@ -374,13 +374,13 @@ const CreateBooking = () => {
                                     onChange={handleInputChange}
                                     required
                                     pattern="[0-9]{10}"
-                                    className="w-full px-4 py-3 bg-dark-bg border border-dark-border rounded-lg text-dark-text focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all duration-200"
+                                    className="w-full px-4 py-3 bg-light-bg border border-light-border rounded-lg text-light-text focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all duration-200"
                                     placeholder="10-digit mobile number"
                                 />
                             </div>
 
                             <div>
-                                <label className="block text-sm font-medium text-dark-text mb-2">
+                                <label className="block text-sm font-medium text-light-text mb-2">
                                     Deadline Date <span className="text-red-400">*</span>
                                 </label>
                                 <input
@@ -390,9 +390,9 @@ const CreateBooking = () => {
                                     onChange={handleInputChange}
                                     required
                                     min={new Date().toISOString().split('T')[0]}
-                                    className="w-full px-4 py-3 bg-dark-bg border border-dark-border rounded-lg text-dark-text focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all duration-200"
+                                    className="w-full px-4 py-3 bg-light-bg border border-light-border rounded-lg text-light-text focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all duration-200"
                                 />
-                                <p className="text-xs text-dark-text-tertiary mt-2">
+                                <p className="text-xs text-light-text-tertiary mt-2">
                                     Select the deadline for this booking
                                 </p>
                             </div>
@@ -400,13 +400,13 @@ const CreateBooking = () => {
                     </div>
 
                     {/* Address */}
-                    <div className="pt-6 border-t border-dark-border">
-                        <h2 className="text-xl font-semibold text-dark-text mb-4 flex items-center gap-2">
+                    <div className="pt-6 border-t border-light-border">
+                        <h2 className="text-xl font-semibold text-light-text mb-4 flex items-center gap-2">
                             <MapPin className="w-5 h-5 text-primary-400" />
                             Service Address
                         </h2>
                         <div>
-                            <label className="block text-sm font-medium text-dark-text mb-2">
+                            <label className="block text-sm font-medium text-light-text mb-2">
                                 Complete Address <span className="text-red-400">*</span>
                             </label>
                             <textarea
@@ -417,10 +417,10 @@ const CreateBooking = () => {
                                 minLength="10"
                                 maxLength="500"
                                 rows="4"
-                                className="w-full px-4 py-3 bg-dark-bg border border-dark-border rounded-lg text-dark-text focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all duration-200 resize-none"
+                                className="w-full px-4 py-3 bg-light-bg border border-light-border rounded-lg text-light-text focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all duration-200 resize-none"
                                 placeholder="Enter complete service address with landmarks"
                             />
-                            <p className="text-xs text-dark-text-tertiary mt-2">
+                            <p className="text-xs text-light-text-tertiary mt-2">
                                 Minimum 10 characters, maximum 500 characters
                             </p>
                         </div>
@@ -439,7 +439,7 @@ const CreateBooking = () => {
                         <button
                             type="button"
                             onClick={() => navigate('/bookings')}
-                            className="px-8 py-3 bg-dark-bg border border-dark-border text-dark-text rounded-xl font-semibold hover:bg-dark-surface-hover transition-all duration-200"
+                            className="px-8 py-3 bg-light-bg border border-light-border text-light-text rounded-xl font-semibold hover:bg-light-surface-hover transition-all duration-200"
                         >
                             Cancel
                         </button>

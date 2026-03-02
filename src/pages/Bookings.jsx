@@ -117,17 +117,17 @@ const Bookings = () => {
     return (
         <div className="space-y-6 animate-fade-in">
             {/* Page Header */}
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                 <div>
-                    <h1 className="text-3xl font-bold text-dark-text mb-2">Bookings</h1>
-                    <p className="text-dark-text-secondary">
+                    <h1 className="text-3xl font-bold text-light-text mb-2">Bookings</h1>
+                    <p className="text-light-text-secondary">
                         Manage customer bookings and assign technicians
                     </p>
                 </div>
-                <div className="flex items-center gap-3">
+                <div className="flex flex-wrap items-center gap-3">
                     <button
                         onClick={fetchBookings}
-                        className="flex items-center gap-2 px-4 py-2 bg-dark-surface border border-dark-border rounded-lg hover:border-primary-500 transition-all duration-300 text-dark-text"
+                        className="flex items-center gap-2 px-4 py-2 bg-white border border-light-border rounded-lg hover:border-primary-500 transition-all duration-300 text-light-text"
                     >
                         <RefreshCw className="w-4 h-4" />
                         Refresh
@@ -150,26 +150,26 @@ const Bookings = () => {
                         <RefreshCw className="w-8 h-8 text-primary-500 animate-spin" />
                     </div>
                 ) : bookings.length === 0 ? (
-                    <div className="flex flex-col items-center justify-center py-12 bg-dark-surface border border-dark-border rounded-2xl">
-                        <Calendar className="w-16 h-16 text-dark-text-tertiary mb-4" />
-                        <p className="text-dark-text-secondary">No bookings found</p>
+                    <div className="flex flex-col items-center justify-center py-12 bg-white border border-light-border rounded-2xl">
+                        <Calendar className="w-16 h-16 text-light-text-tertiary mb-4" />
+                        <p className="text-light-text-secondary">No bookings found</p>
                     </div>
                 ) : (
                     bookings.map((booking) => (
-                        <div key={booking._id} className="bg-dark-surface border border-dark-border rounded-2xl p-6 hover:border-primary-500/50 transition-all duration-200 shadow-md shadow-black/20">
+                        <div key={booking._id} className="bg-white border border-light-border rounded-2xl p-6 hover:border-primary-500/50 transition-all duration-200 shadow-md shadow-black/20">
                             <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
 
 
                                 {/* Service Image & Info (Col 1-4) */}
                                 <div className="lg:col-span-4 flex flex-col justify-between">
                                     <div className="space-y-3 max-h-60 overflow-y-auto pr-2 custom-scrollbar">
-                                        <h3 className="text-xs font-semibold text-dark-text-secondary uppercase tracking-wider mb-2">Selected Services ({booking.subServiceIds?.length || 0})</h3>
+                                        <h3 className="text-xs font-semibold text-light-text-secondary uppercase tracking-wider mb-2">Selected Services ({booking.subServiceIds?.length || 0})</h3>
                                         {booking.subServiceIds?.length > 0 ? (
                                             booking.subServiceIds.map((subItem, idx) => {
                                                 const sub = subItem.serviceId || {}; // Handle potential missing population
                                                 return (
-                                                    <div key={`${sub._id || idx}`} className="flex items-center gap-3 p-2 rounded-lg bg-dark-bg/50 border border-dark-border/50 hover:border-primary-500/30 transition-colors">
-                                                        <div className="w-10 h-10 rounded-md overflow-hidden bg-dark-bg flex-shrink-0 border border-dark-border">
+                                                    <div key={`${sub._id || idx}`} className="flex items-center gap-3 p-2 rounded-lg bg-light-bg/50 border border-light-border/50 hover:border-primary-500/30 transition-colors">
+                                                        <div className="w-10 h-10 rounded-md overflow-hidden bg-light-bg flex-shrink-0 border border-light-border">
                                                             {sub.metaImage ? (
                                                                 <img
                                                                     src={sub.metaImage}
@@ -178,14 +178,14 @@ const Bookings = () => {
                                                                 />
                                                             ) : (
                                                                 <div className="w-full h-full flex items-center justify-center">
-                                                                    <Briefcase className="w-4 h-4 text-dark-text-tertiary" />
+                                                                    <Briefcase className="w-4 h-4 text-light-text-tertiary" />
                                                                 </div>
                                                             )}
                                                         </div>
                                                         <div className="flex-1 min-w-0">
-                                                            <p className="text-sm font-medium text-dark-text truncate" title={sub.title}>{sub.title || 'Unknown Service'}</p>
+                                                            <p className="text-sm font-medium text-light-text truncate" title={sub.title}>{sub.title || 'Unknown Service'}</p>
                                                             <div className="flex items-center justify-between">
-                                                                <p className="text-xs text-dark-text-secondary">₹{sub.startingPrice || 0}</p>
+                                                                <p className="text-xs text-light-text-secondary">₹{sub.startingPrice || 0}</p>
                                                                 <span className={`text-[10px] px-1.5 py-0.5 rounded capitalize ${subItem.status === 'completed' ? 'bg-green-500/10 text-green-400' : 'bg-yellow-500/10 text-yellow-400'
                                                                     }`}>
                                                                     {subItem.status || 'pending'}
@@ -196,18 +196,18 @@ const Bookings = () => {
                                                 )
                                             })
                                         ) : (
-                                            <div className="flex items-center gap-3 p-2 rounded-lg bg-dark-bg/50 border border-dark-border/50 border-dashed">
-                                                <div className="w-10 h-10 rounded bg-dark-surface flex items-center justify-center">
-                                                    <Briefcase className="w-4 h-4 text-dark-text-tertiary" />
+                                            <div className="flex items-center gap-3 p-2 rounded-lg bg-light-bg/50 border border-light-border/50 border-dashed">
+                                                <div className="w-10 h-10 rounded bg-white flex items-center justify-center">
+                                                    <Briefcase className="w-4 h-4 text-light-text-tertiary" />
                                                 </div>
-                                                <p className="text-sm text-dark-text-secondary">No Services Selected</p>
+                                                <p className="text-sm text-light-text-secondary">No Services Selected</p>
                                             </div>
                                         )}
                                     </div>
 
-                                    <div className="mt-4 pt-3 border-t border-dark-border flex items-center justify-between">
+                                    <div className="mt-4 pt-3 border-t border-light-border flex items-center justify-between">
                                         <div>
-                                            <p className="text-xs text-dark-text-secondary">Total Amount</p>
+                                            <p className="text-xs text-light-text-secondary">Total Amount</p>
                                             <p className="text-lg font-bold text-primary-400">₹{booking.totalAmount?.toLocaleString() || 0}</p>
                                         </div>
                                         <span className={`inline-flex px-3 py-1 rounded-full text-xs font-semibold border ${getStatusBadge(booking.status)}`}>
@@ -217,17 +217,17 @@ const Bookings = () => {
                                 </div>
 
                                 {/* Customer & Address (Col 5-8) */}
-                                <div className="lg:col-span-4 border-t pt-6 lg:border-t-0 lg:pt-0 lg:border-l border-dark-border lg:pl-6 space-y-3">
+                                <div className="lg:col-span-4 border-t pt-6 lg:border-t-0 lg:pt-0 lg:border-l border-light-border lg:pl-6 space-y-3">
                                     <div className="flex items-start gap-3">
                                         <User className="w-5 h-5 text-primary-400 mt-0.5" />
                                         <div>
-                                            <p className="text-sm font-semibold text-dark-text">
+                                            <p className="text-sm font-semibold text-light-text">
                                                 {booking.customerId?.fullName || 'Unknown Customer'}
                                             </p>
-                                            <p className="text-xs text-dark-text-secondary">
+                                            <p className="text-xs text-light-text-secondary">
                                                 {booking.customerId?.email}
                                             </p>
-                                            <p className="text-xs text-dark-text-secondary">
+                                            <p className="text-xs text-light-text-secondary">
                                                 {booking.customerId?.mobileNo}
                                             </p>
                                         </div>
@@ -235,7 +235,7 @@ const Bookings = () => {
                                     <div className="flex items-start gap-3">
                                         <MapPin className="w-5 h-5 text-primary-400 mt-0.5" />
                                         <div>
-                                            <p className="text-sm text-dark-text">
+                                            <p className="text-sm text-light-text">
                                                 {booking.additionalAddress || booking.customerId?.address || 'No address provided'}
                                             </p>
                                         </div>
@@ -243,18 +243,18 @@ const Bookings = () => {
                                 </div>
 
                                 {/* Dates & Actions (Col 9-12) */}
-                                <div className="lg:col-span-4 border-t pt-6 lg:border-t-0 lg:pt-0 lg:border-l border-dark-border lg:pl-6 flex flex-col justify-between">
+                                <div className="lg:col-span-4 border-t pt-6 lg:border-t-0 lg:pt-0 lg:border-l border-light-border lg:pl-6 flex flex-col justify-between">
                                     <div className="space-y-2 mb-4">
                                         <div className="flex items-center justify-between text-sm">
-                                            <span className="text-dark-text-tertiary flex items-center gap-2">
+                                            <span className="text-light-text-tertiary flex items-center gap-2">
                                                 <Calendar className="w-4 h-4" /> Booked On:
                                             </span>
-                                            <span className="text-dark-text font-medium">
+                                            <span className="text-light-text font-medium">
                                                 {formatDate(booking.bookingDate)}
                                             </span>
                                         </div>
                                         <div className="flex items-center justify-between text-sm">
-                                            <span className="text-dark-text-tertiary flex items-center gap-2">
+                                            <span className="text-light-text-tertiary flex items-center gap-2">
                                                 <Clock className="w-4 h-4 text-orange-400" /> Deadline:
                                             </span>
                                             <span className="text-orange-400 font-medium">
@@ -287,10 +287,10 @@ const Bookings = () => {
                                         {booking.status !== 'pending' && (
                                             <>
                                                 <button
-                                                    onClick={() => navigate(`/assignments`)}
-                                                    className="col-span-2 px-4 py-2 rounded-lg bg-dark-bg border border-dark-border text-dark-text-secondary hover:text-dark-text text-sm font-semibold transition-colors"
+                                                    onClick={() => handleAssignToTechnician(booking)}
+                                                    className="col-span-2 px-4 py-2 rounded-lg bg-light-bg border border-light-border text-light-text-secondary hover:text-light-text text-sm font-semibold transition-colors"
                                                 >
-                                                    View Assignments
+                                                    ReAssign tech
                                                 </button>
                                             </>
                                         )}

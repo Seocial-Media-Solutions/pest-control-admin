@@ -35,14 +35,14 @@ const Header = ({ toggleSidebar }) => {
                     </button>
 
                     {/* Search Bar */}
-                    <div className="relative max-w-md flex-1">
-                        <Search className={`absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 pointer-events-none text-light-text-tertiary`} />
+                    <div className="relative max-w-lg flex-1 group">
+                        <Search className={`absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 pointer-events-none text-light-text-tertiary transition-colors group-focus-within:text-primary-500`} />
                         <input
                             type="text"
-                            placeholder="Search..."
+                            placeholder="Global Search..."
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
-                            className={`w-full pl-10 pr-4 py-2.5 border rounded-lg text-sm transition-all duration-200 bg-white border-light-border text-light-text placeholder:text-light-text-tertiary focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500/20`}
+                            className={`w-full pl-10 pr-4 py-2 border rounded-xl text-sm transition-all duration-200 bg-light-bg/50 border-transparent hover:border-light-border text-light-text placeholder:text-light-text-tertiary focus:border-primary-500 focus:bg-white focus:outline-none focus:ring-4 focus:ring-primary-500/10 shadow-sm`}
                         />
                     </div>
                 </div>

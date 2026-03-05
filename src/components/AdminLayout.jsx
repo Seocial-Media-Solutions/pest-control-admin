@@ -18,8 +18,10 @@ const AdminLayout = () => {
                 <Header toggleSidebar={toggleSidebar} />
 
                 {/* Main Content */}
-                <main className="flex-1 pt-[90px] px-4 pb-8 sm:pr-6 sm:pl-6 md:pr-6 md:pl-[19rem] lg:pr-8 lg:pl-[20rem] w-full max-w-[100vw] mx-auto transition-all duration-300 overflow-x-hidden">
-                    <Outlet />
+                <main className="flex-1 pt-[90px] px-4 pb-8 sm:pr-4 sm:pl-4 md:pr-4 md:pl-[18rem] lg:pr-6 lg:pl-[19rem] w-full max-w-[100vw] mx-auto transition-all duration-300 overflow-x-hidden">
+                    <div className="w-full max-w-7xl mx-auto">
+                        <Outlet />
+                    </div>
                 </main>
             </div>
         </div>

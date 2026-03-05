@@ -287,10 +287,17 @@ const Bookings = () => {
                                         {booking.status !== 'pending' && (
                                             <>
                                                 <button
-                                                    onClick={() => handleAssignToTechnician(booking)}
-                                                    className="col-span-2 px-4 py-2 rounded-lg bg-light-bg border border-light-border text-light-text-secondary hover:text-light-text text-sm font-semibold transition-colors"
+                                                    onClick={() => navigate(`/assignments`)}
+                                                    className="col-span-1 px-4 py-2 rounded-lg bg-light-bg border border-light-border text-light-text-secondary hover:text-light-text text-sm font-semibold transition-colors flex items-center justify-center"
                                                 >
-                                                    ReAssign tech
+                                                    View
+                                                </button>
+                                                <button
+                                                    onClick={() => handleAssignToTechnician(booking)}
+                                                    className="col-span-1 px-4 py-2 rounded-lg gradient-primary text-white text-sm font-semibold hover:shadow-lg transition-all flex items-center justify-center gap-2"
+                                                >
+                                                    <RefreshCw className="w-4 h-4" />
+                                                    Reassign
                                                 </button>
                                             </>
                                         )}

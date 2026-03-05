@@ -46,23 +46,25 @@ export default {
                 },
                 // Dark mode colors
                 dark: {
-                    bg: '#0a2e1a',           // Very dark green
-                    surface: '#0f3d24',       // Dark green surface
-                    'surface-hover': '#144a2d', // Slightly lighter on hover
-                    border: '#1a5f3a',        // Forest green border
-                    text: '#ffffff',          // White text
-                    'text-secondary': '#c8e6c9', // Light green text
-                    'text-tertiary': '#81c784',  // Medium green text
+                    bg: '#0f172a',
+                    surface: '#1e293b',
+                    'surface-hover': '#334155',
+                    border: 'rgba(255, 255, 255, 0.08)',
+                    text: '#f8fafc',
+                    heading: '#ffffff',
+                    'text-secondary': '#cbd5e1',
+                    'text-tertiary': '#94a3b8',
                 },
                 // Light mode colors
                 light: {
-                    bg: '#f1f8e9',            // Very light green
-                    surface: '#ffffff',        // White surface
-                    'surface-hover': '#e8f5e9', // Light green hover
-                    border: '#c8e6c9',         // Light green border
-                    text: '#1b5e20',           // Dark green text
-                    'text-secondary': '#2e7d32', // Medium green text
-                    'text-tertiary': '#43a047',  // Lighter green text
+                    bg: '#f9fafb',
+                    surface: '#ffffff',
+                    'surface-hover': '#f3f4f6',
+                    border: 'rgba(0, 0, 0, 0.05)',
+                    text: '#374151',
+                    heading: '#111827',
+                    'text-secondary': '#6b7280',
+                    'text-tertiary': '#9ca3af',
                 },
             },
             fontFamily: {

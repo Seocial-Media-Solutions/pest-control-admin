@@ -9,7 +9,7 @@ export default defineConfig({
 
       output: {
         // Let Vite handle chunks automatically to avoid initialization order issues
-},
+      },
     },
   },
 })

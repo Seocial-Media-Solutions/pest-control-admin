@@ -7,18 +7,26 @@ export default function AddTechnician() {
   const navigate = useNavigate();
 
   const handleSubmit = async (data) => {
-    const res = await fetch(`${API_URL}/technicians`, {
+    const promise = fetch(`${API_URL}/technicians`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(data),
+    }).then(async (res) => {
+      const result = await res.json();
+      if (!result.success) throw new Error(result.message || "Error creating technician");
+      return result;
     });
-    const result = await res.json();
-    if (result.success) {
-      toast.success("Technician created successfully!");
+
+    toast.promise(promise, {
+      loading: "Creating technician...",
+      success: "Technician created successfully!",
+      error: (err) => err.message,
+    });
+
+    try {
+      await promise;
       navigate("/");
-    } else {
-      toast.error(result.message || "Error creating technician");
-    }
+    } catch (err) { }
   };
 
   return (

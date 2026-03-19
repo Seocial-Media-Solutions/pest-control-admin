@@ -23,6 +23,7 @@ const CreateBooking = () => {
         additionalAddress: '',
         additionalMobileNo: '',
         deadlineDate: '',
+        plan: 'single',
     });
 
     // Fetch customers and services on mount
@@ -70,6 +71,7 @@ const CreateBooking = () => {
                 additionalAddress: booking.additionalAddress || '',
                 additionalMobileNo: booking.additionalMobileNo || '',
                 deadlineDate: booking.deadlineDate ? new Date(booking.deadlineDate).toISOString().split('T')[0] : '',
+                plan: booking.plan || 'single',
             });
         } catch (error) {
             console.error('Error fetching booking:', error);
@@ -104,6 +106,7 @@ const CreateBooking = () => {
                 additionalAddress: formData.additionalAddress,
                 additionalMobileNo: formData.additionalMobileNo,
                 deadlineDate: formData.deadlineDate,
+                plan: formData.plan,
             };
 
             if (isEditMode) {
@@ -240,6 +243,24 @@ const CreateBooking = () => {
                                 </select>
                             </div>
 
+                            <div>
+                                <label className="block text-sm font-medium text-light-text mb-2">
+                                    Service Plan <span className="text-red-400">*</span>
+                                </label>
+                                <select
+                                    name="plan"
+                                    value={formData.plan}
+                                    onChange={handleInputChange}
+                                    required
+                                    className="w-full px-4 py-3 bg-light-bg border border-light-border rounded-lg text-light-text focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all duration-200"
+                                >
+                                    <option value="single">Single Service</option>
+                                    <option value="monthly">Monthly</option>
+                                    <option value="quarterly">Quarterly</option>
+                                    <option value="amc">AMC (Annual Maintenance Contract)</option>
+                                </select>
+                            </div>
+
                             {/* Selected Sub Services Summary */}
                             {formData.subServiceIds.length > 0 && (
                                 <div className="col-span-1 md:col-span-2 space-y-3">
@@ -365,14 +386,14 @@ const CreateBooking = () => {
                             <div>
                                 <label className="block text-sm font-medium text-light-text mb-2">
                                     <Phone className="w-4 h-4 inline mr-1" />
-                                    Mobile Number <span className="text-red-400">*</span>
+                                    Mobile Number(optional)
                                 </label>
                                 <input
                                     type="tel"
                                     name="additionalMobileNo"
                                     value={formData.additionalMobileNo}
                                     onChange={handleInputChange}
-                                    required
+
                                     pattern="[0-9]{10}"
                                     className="w-full px-4 py-3 bg-light-bg border border-light-border rounded-lg text-light-text focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all duration-200"
                                     placeholder="10-digit mobile number"
@@ -407,13 +428,12 @@ const CreateBooking = () => {
                         </h2>
                         <div>
                             <label className="block text-sm font-medium text-light-text mb-2">
-                                Complete Address <span className="text-red-400">*</span>
+                                Complete Address(optional) 
                             </label>
                             <textarea
                                 name="additionalAddress"
                                 value={formData.additionalAddress}
                                 onChange={handleInputChange}
-                                required
                                 minLength="10"
                                 maxLength="500"
                                 rows="4"

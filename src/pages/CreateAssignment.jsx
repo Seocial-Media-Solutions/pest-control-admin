@@ -129,15 +129,11 @@ const CreateAssignment = () => {
                         <div className="w-10 h-10 gradient-primary rounded-lg flex items-center justify-center">
                             <Calendar className="w-5 h-5 text-white" />
                         </div>
-                        <h2 className="text-xl font-bold text-light-text">Select Booking</h2>
+                        <h2 className="text-xl font-bold text-light-text">Booking Summary</h2>
                     </div>
 
                     <div className="space-y-4">
-                        <div>
-                            <label className="block text-sm font-medium text-light-text mb-2">
-                                Booking to Assign <span className="text-red-400">*</span>
-                            </label>
-                        </div>
+                       
 
                         {/* Show selected booking details */}
                         {selectedBooking && (
@@ -159,10 +155,7 @@ const CreateAssignment = () => {
                                             <MapPin className="w-4 h-4 text-light-text-tertiary" />
                                             <span className="text-light-text-secondary">Address:</span> <span className="line-clamp-1">{selectedBooking.additionalAddress || selectedBooking.customerId?.address}</span>
                                         </div>
-                                        <div className="flex items-center gap-2 text-sm text-light-text">
-                                            <div className="w-4 h-4 flex items-center justify-center text-light-text-tertiary font-bold text-xs border border-dark-text-tertiary rounded-sm">S</div>
-                                            <span className="text-light-text-secondary">Service:</span> {selectedBooking.serviceId?.title}
-                                        </div>
+                                      
                                     </div>
                                 </div>
                             </div>

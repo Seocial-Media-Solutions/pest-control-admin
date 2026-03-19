@@ -18,18 +18,26 @@ export default function EditTechnician() {
   }, [id]);
 
   const handleSubmit = async (data) => {
-    const res = await fetch(`${API_URL}/technicians/${id}`, {
+    const promise = fetch(`${API_URL}/technicians/${id}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(data),
+    }).then(async (res) => {
+      const result = await res.json();
+      if (!result.success) throw new Error(result.message || "Error updating technician");
+      return result;
     });
-    const result = await res.json();
-    if (result.success) {
-      toast.success("Technician updated successfully!");
+
+    toast.promise(promise, {
+      loading: "Updating technician...",
+      success: "Technician updated successfully!",
+      error: (err) => err.message,
+    });
+
+    try {
+      await promise;
       navigate("/technicians");
-    } else {
-      toast.error(result.message || "Error updating technician");
-    }
+    } catch (err) { }
   };
 
   if (!initialData) return <p className="text-center mt-20">Loading...</p>;

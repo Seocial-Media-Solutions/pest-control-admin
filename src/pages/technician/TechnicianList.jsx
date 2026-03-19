@@ -1,19 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import {
-  Users,
-  UserPlus,
-  Trash2,
-  Search,
-  CheckCircle,
-  XCircle,
-  ChevronLeft,
-  ChevronRight,
-  ChevronsLeft,
-  ChevronsRight,
-  Loader2,
-  Calendar,
-  Clock,
+  Users, UserPlus, Trash2, Search, CheckCircle, XCircle,
+  ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight,
+  Loader2, Calendar, Clock, AlertTriangle,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
@@ -21,297 +11,289 @@ import { getAllTechnicians, markAttendance } from '../../services/technicianServ
 import Toggle from '../../components/Toggle';
 import { API_URL } from "../../utils";
 
-export default function TechnicianList() {
-  const queryClient = useQueryClient();
-  const [search, setSearch] = useState("");
-  const [currentPage, setCurrentPage] = useState(1);
-  const [markingAttendanceFor, setMarkingAttendanceFor] = useState(null);
-  const pageSize = 10; // technicians per page
-  const navigate = useNavigate();
+const PRIMARY = "#74bc4c";
 
-  // Fetch all technicians using TanStack Query
-  const {
-    data: technicians = [],
-    isLoading: loading,
-    refetch: fetchTechnicians
-  } = useQuery({
-    queryKey: ['technicians'],
-    queryFn: async () => {
-      const response = await getAllTechnicians();
-      return response.data || [];
-    },
-    staleTime: 2 * 60 * 1000, // 2 minutes
-    refetchOnMount: true,
-  });
+// ─── Rich Toast Helpers ───────────────────────────────────────────────────────
+const richToast = {
+  loading: (title, sub) =>
+    toast.loading(
+      <div className="flex items-center gap-3">
+        <Loader2 size={15} className="animate-spin shrink-0" style={{ color: PRIMARY }} />
+        <div><p className="font-semibold text-gray-800 text-sm">{title}</p><p className="text-xs text-gray-400">{sub}</p></div>
+      </div>,
+      { style: toastStyle() }
+    ),
+  success: (id, title, sub) =>
+    toast.success(
+      <div className="flex items-center gap-3">
+        <CheckCircle size={15} className="shrink-0" style={{ color: PRIMARY }} />
+        <div><p className="font-semibold text-gray-800 text-sm">{title}</p><p className="text-xs text-gray-400">{sub}</p></div>
+      </div>,
+      { id, duration: 3000, style: toastStyle("0 8px 32px rgba(116,188,76,0.18)") }
+    ),
+  error: (id, title, sub) =>
+    toast.error(
+      <div className="flex items-center gap-3">
+        <XCircle size={15} className="shrink-0 text-red-500" />
+        <div><p className="font-semibold text-gray-800 text-sm">{title}</p><p className="text-xs text-gray-400">{sub}</p></div>
+      </div>,
+      { id, duration: 4000, style: toastStyle() }
+    ),
+};
+function toastStyle(shadow = "0 8px 32px rgba(0,0,0,0.10)") {
+  return { padding: "10px 14px", borderRadius: "14px", boxShadow: shadow, fontFamily: "'Plus Jakarta Sans', sans-serif" };
+}
 
-  // Mutation for marking attendance
-  const markAttendanceMutation = useMutation({
-    mutationFn: async ({ technicianId, status }) => {
-      return await markAttendance(technicianId, {
-        status,
-        date: new Date().toISOString()
-      });
-    },
-    onMutate: async ({ technicianId }) => {
-      setMarkingAttendanceFor(technicianId);
-    },
-    onSuccess: (data, variables) => {
-      const technician = technicians.find(t => t._id === variables.technicianId);
-      toast.success(`Attendance marked as ${variables.status} for ${technician?.fullName || 'technician'}`);
-
-      // Invalidate and refetch
-      queryClient.invalidateQueries(['technicians']);
-    },
-    onError: (error) => {
-      toast.error(error.response?.data?.message || 'Failed to mark attendance');
-    },
-    onSettled: () => {
-      setMarkingAttendanceFor(null);
-    }
-  });
-
-  const handleMarkAttendance = (technicianId, isPresent) => {
-    if (!technicianId) return;
-    const status = isPresent ? 'Present' : 'Absent';
-    markAttendanceMutation.mutate({ technicianId, status });
-  };
-
-  // Delete technician
-  const handleDelete = async (id) => {
-    toast((t) => (
-      <div>
-        <p className="text-sm mb-2">Are you sure you want to delete?</p>
+// ─── Confirm Delete Modal via Toast ──────────────────────────────────────────
+function confirmDelete(name, onConfirm) {
+  toast(
+    (t) => (
+      <div style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
+        <div className="flex items-center gap-2 mb-2">
+          <AlertTriangle size={15} className="text-red-500 shrink-0" />
+          <p className="font-semibold text-gray-800 text-sm">Delete {name}?</p>
+        </div>
+        <p className="text-xs text-gray-400 mb-3">This action cannot be undone.</p>
         <div className="flex gap-2">
           <button
-            onClick={async () => {
-              try {
-                const res = await fetch(`${API_URL}/technicians/${id}`,
-                  { method: "DELETE" }
-                );
-                const result = await res.json();
-                if (result.success) {
-                  toast.success("Technician deleted");
-                  queryClient.invalidateQueries(['technicians']);
-                } else {
-                  toast.error(result.message || "Delete failed");
-                }
-              } catch {
-                toast.error("Server error while deleting");
-              }
-              toast.dismiss(t.id);
-            }}
-            className="bg-red-600 text-white px-3 py-1 rounded-md text-xs"
+            onClick={() => { toast.dismiss(t.id); onConfirm(); }}
+            className="flex-1 py-1.5 rounded-lg text-xs font-semibold text-white transition-all hover:opacity-90"
+            style={{ background: "linear-gradient(135deg, #ef4444, #dc2626)" }}
           >
-            Confirm
+            Delete
           </button>
           <button
             onClick={() => toast.dismiss(t.id)}
-            className="bg-gray-200 px-3 py-1 rounded-md text-xs"
+            className="flex-1 py-1.5 rounded-lg text-xs font-semibold bg-gray-100 text-gray-600 hover:bg-gray-200 transition-all"
           >
             Cancel
           </button>
         </div>
       </div>
-    ));
-  };
+    ),
+    { duration: 8000, style: { ...toastStyle(), minWidth: "220px" } }
+  );
+}
 
-  // Edit technician
-  const handleEdit = (exec) => {
-    navigate(`/technician/${exec._id}`);
-  };
+export default function TechnicianList() {
+  const queryClient = useQueryClient();
+  const [search, setSearch] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [markingAttendanceFor, setMarkingAttendanceFor] = useState(null);
+  const pageSize = 10;
+  const navigate = useNavigate();
 
-  // Filter (search)
-  const filteredTechnicians = technicians.filter((e) => {
-    const query = search.toLowerCase();
-    return (
-      e.fullName?.toLowerCase().includes(query) ||
-      e.username?.toLowerCase().includes(query) ||
-      e.email?.toLowerCase().includes(query)
-    );
+  const { data: technicians = [], isLoading: loading } = useQuery({
+    queryKey: ['technicians'],
+    queryFn: async () => {
+      const response = await getAllTechnicians();
+      return response.data || [];
+    },
+    staleTime: 2 * 60 * 1000,
+    refetchOnMount: true,
   });
 
-  // Pagination logic
-  const totalPages = Math.ceil(filteredTechnicians.length / pageSize);
-  const startIndex = (currentPage - 1) * pageSize;
-  const endIndex = startIndex + pageSize;
-  const paginatedTechnicians = filteredTechnicians.slice(startIndex, endIndex);
+  const markAttendanceMutation = useMutation({
+    mutationFn: async ({ technicianId, status }) =>
+      await markAttendance(technicianId, { status, date: new Date().toISOString() }),
+    onMutate: ({ technicianId }) => setMarkingAttendanceFor(technicianId),
+    onSuccess: (_, variables) => {
+      const tech = technicians.find(t => t._id === variables.technicianId);
+      richToast.success(undefined,
+        `Marked ${variables.status}`,
+        tech?.fullName || "Technician"
+      );
+      queryClient.invalidateQueries(['technicians']);
+    },
+    onError: (error) => richToast.error(undefined, "Failed to mark attendance", error.response?.data?.message || "Please try again"),
+    onSettled: () => setMarkingAttendanceFor(null),
+  });
 
-  const goToPage = (page) => {
-    if (page >= 1 && page <= totalPages) {
-      setCurrentPage(page);
-    }
+  const handleMarkAttendance = (technicianId, isPresent) => {
+    if (!technicianId) return;
+    markAttendanceMutation.mutate({ technicianId, status: isPresent ? 'Present' : 'Absent' });
   };
 
-  // Reset to page 1 when search changes
-  useEffect(() => {
-    setCurrentPage(1);
-  }, [search]);
+  const handleDelete = (id, name) => {
+    confirmDelete(name, async () => {
+      const toastId = richToast.loading("Deleting...", name);
+      try {
+        const res = await fetch(`${API_URL}/technicians/${id}`, { method: "DELETE" });
+        const result = await res.json();
+        if (result.success) {
+          richToast.success(toastId, "Technician Deleted", `${name} has been removed.`);
+          queryClient.invalidateQueries(['technicians']);
+        } else {
+          richToast.error(toastId, "Delete Failed", result.message || "Something went wrong");
+        }
+      } catch {
+        richToast.error(toastId, "Server Error", "Could not delete technician");
+      }
+    });
+  };
+
+  const filteredTechnicians = technicians.filter((e) => {
+    const q = search.toLowerCase();
+    return e.fullName?.toLowerCase().includes(q) || e.username?.toLowerCase().includes(q) || e.email?.toLowerCase().includes(q);
+  });
+
+  const totalPages = Math.ceil(filteredTechnicians.length / pageSize);
+  const startIndex = (currentPage - 1) * pageSize;
+  const paginatedTechnicians = filteredTechnicians.slice(startIndex, startIndex + pageSize);
+
+  useEffect(() => { setCurrentPage(1); }, [search]);
 
   return (
-    <div className="min-h-screen max-w-full mx-auto space-y-6 animate-fade-in">
-      {/* Header */}
-      <div className="bg-white dark:bg-white border border-light-border dark:border-light-border rounded-2xl p-6 flex flex-wrap justify-between items-center gap-4">
-        <div className="flex items-center gap-4">
-          <div className="p-3 rounded-xl bg-primary-500/10 text-primary-600 dark:text-primary-400">
-            <Users className="w-8 h-8" />
+    <div className="min-h-screen max-w-full mx-auto space-y-5 animate-fade-in">
+      <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+        .tech-page * { font-family: 'Plus Jakarta Sans', sans-serif; }
+        .btn-primary-sm {
+          background: linear-gradient(135deg, #74bc4c, #5fa33b);
+          box-shadow: 0 3px 14px rgba(116,188,76,0.32);
+          transition: all 0.2s ease;
+        }
+        .btn-primary-sm:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(116,188,76,0.40); }
+        .row-hover:hover { background: #f8fdf5 !important; }
+        .search-focus:focus { border-color: #74bc4c !important; box-shadow: 0 0 0 4px rgba(116,188,76,0.10) !important; }
+        .page-btn { transition: all 0.15s ease; }
+        .page-btn:hover:not(:disabled) { background: #f0fae8; border-color: #74bc4c; color: #5fa33b; }
+        .card-shadow { box-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 4px 16px rgba(0,0,0,0.04); }
+      `}</style>
+
+      <div className="tech-page">
+        {/* ── Header ── */}
+        <div className="bg-white border border-gray-100 rounded-2xl p-5 flex flex-wrap justify-between items-center gap-4 card-shadow">
+          <div className="flex items-center gap-3">
+            <div className="p-2.5 rounded-xl" style={{ background: "linear-gradient(135deg, #f0fae8, #dcf5c8)" }}>
+              <Users size={22} style={{ color: PRIMARY }} />
+            </div>
+            <div>
+              <h1 className="text-xl font-bold text-gray-800">Technician Management</h1>
+              <p className="text-xs text-gray-400 mt-0.5">
+                {loading ? "Loading..." : `${technicians.length} technician${technicians.length !== 1 ? "s" : ""} registered`}
+              </p>
+            </div>
           </div>
-          <div>
-            <h1 className="text-2xl font-bold text-light-text dark:text-light-text">Technician Management</h1>
-            <p className="text-light-text-secondary dark:text-light-text-secondary">Manage technicians and track attendance</p>
+          <button
+            onClick={() => navigate("/technicians/addtechnician")}
+            className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-white text-sm font-semibold btn-primary-sm"
+          >
+            <UserPlus size={16} /> Add Technician
+          </button>
+        </div>
+
+        {/* ── Search ── */}
+        <div className="bg-white border border-gray-100 rounded-2xl px-5 py-4 card-shadow">
+          <div className="relative">
+            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-300" />
+            <input
+              type="text"
+              placeholder="Search by name, username, or email..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="w-full pl-10 pr-4 py-2.5 bg-gray-50 border-2 border-gray-100 rounded-xl text-sm text-gray-700 outline-none placeholder:text-gray-300 transition-all duration-200 search-focus"
+            />
           </div>
         </div>
-        <button
-          onClick={() => navigate("/technicians/addtechnician")}
-          className="flex items-center gap-2 px-6 py-3 gradient-primary text-white rounded-xl font-semibold hover:shadow-lg hover:shadow-primary-500/30 hover:-translate-y-0.5 transition-all duration-200"
-        >
-          <UserPlus size={20} /> Add New Technician
-        </button>
-      </div>
 
-      {/* Search */}
-      <div className="bg-white dark:bg-white border border-light-border dark:border-light-border rounded-2xl p-6">
-        <div className="relative">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-light-text-tertiary dark:text-light-text-tertiary" />
-          <input
-            type="text"
-            placeholder="Search by name, username, or email..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="w-full pl-10 pr-4 py-2.5 bg-light-bg dark:bg-light-bg border border-light-border dark:border-light-border rounded-lg text-sm text-light-text dark:text-light-text placeholder:text-light-text-tertiary dark:placeholder:text-light-text-tertiary focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all duration-200"
-          />
-        </div>
-      </div>
+        {/* ── Table ── */}
+        <div className="bg-white border border-gray-100 rounded-2xl overflow-hidden card-shadow">
 
-      <div className="bg-white dark:bg-white border border-light-border dark:border-light-border rounded-2xl overflow-hidden shadow-sm">
-        <>
-          {/* Desktop Table View */}
+          {/* Desktop */}
           <div className="overflow-x-auto hidden md:block">
             <table className="w-full">
-              <thead className="bg-light-bg dark:bg-light-bg border-b border-light-border dark:border-light-border">
-                <tr>
-                  {[
-                    "Full Name",
-                    "Username",
-                    "Email",
-                    "Contact",
-                    "Status",
-                    "Today's Attendance",
-                    "Mark Attendance",
-                    "Actions",
-                  ].map((head) => (
-                    <th key={head} className="px-6 py-4 text-left text-xs font-semibold text-light-text-secondary dark:text-light-text-secondary uppercase tracking-wider">
-                      {head}
+              <thead>
+                <tr style={{ background: "linear-gradient(180deg, #f8fdf5, #f3fbed)" }}>
+                  {["Full Name", "Username", "Email", "Contact", "Status", "Today", "Attendance", "Actions"].map(h => (
+                    <th key={h} className="px-5 py-3.5 text-left text-[11px] font-bold text-gray-400 uppercase tracking-widest border-b border-gray-100">
+                      {h}
                     </th>
                   ))}
                 </tr>
               </thead>
-              <tbody className="divide-y divide-light-border dark:divide-light-border">
+              <tbody className="divide-y divide-gray-50">
                 {loading ? (
-                  <tr>
-                    <td colSpan="8" className="px-6 py-12 text-center">
-                      <Loader2 className="w-8 h-8 animate-spin mx-auto text-primary-500 dark:text-primary-400 mb-2" />
-                      <p className="text-light-text-secondary dark:text-light-text-secondary">Loading technicians...</p>
-                    </td>
-                  </tr>
+                  <tr><td colSpan="8" className="py-16 text-center">
+                    <div className="flex flex-col items-center gap-3">
+                      <div className="w-10 h-10 rounded-2xl flex items-center justify-center" style={{ background: "linear-gradient(135deg, #74bc4c, #5fa33b)" }}>
+                        <Loader2 className="text-white animate-spin" size={18} />
+                      </div>
+                      <p className="text-sm text-gray-400 font-medium">Loading technicians...</p>
+                    </div>
+                  </td></tr>
                 ) : paginatedTechnicians.length === 0 ? (
-                  <tr>
-                    <td
-                      colSpan="8"
-                      className="px-6 py-12 text-center text-light-text-tertiary dark:text-light-text-tertiary"
-                    >
-                      No technicians found
-                    </td>
-                  </tr>
+                  <tr><td colSpan="8" className="py-16 text-center">
+                    <Users size={32} className="mx-auto mb-3 text-gray-200" />
+                    <p className="text-sm text-gray-400 font-medium">No technicians found</p>
+                    {search && <p className="text-xs text-gray-300 mt-1">Try a different search term</p>}
+                  </td></tr>
                 ) : (
                   paginatedTechnicians.map((exec) => {
-                    // Get today's attendance from backend
-                    const todayAttendance = exec.attendance;
-                    const isTodayPresent = todayAttendance?.status === 'Present';
-
+                    const att = exec.attendance;
+                    const isPresent = att?.status === 'Present';
                     return (
-                      <tr
-                        key={exec._id}
-                        className="transition-colors duration-200 hover:bg-light-bg/50 dark:hover:bg-light-bg/50"
-                      >
+                      <tr key={exec._id} className="row-hover transition-colors duration-150">
                         <td
-                          className="px-6 py-4 text-sm font-semibold text-light-text dark:text-light-text cursor-pointer hover:text-primary-600 dark:hover:text-primary-400 transition-colors"
-                          onClick={() => handleEdit(exec)}
+                          className="px-5 py-3.5 text-sm font-semibold text-gray-700 cursor-pointer hover:text-[#5fa33b] transition-colors"
+                          onClick={() => navigate(`/technician/${exec._id}`)}
                         >
                           {exec.fullName}
                         </td>
-                        <td className="px-6 py-4 text-sm text-light-text-secondary dark:text-light-text-secondary">{exec.username}</td>
-                        <td className="px-6 py-4 text-sm text-light-text-secondary dark:text-light-text-secondary">{exec.email}</td>
-                        <td className="px-6 py-4 text-sm text-light-text-secondary dark:text-light-text-secondary">{exec.contactNumber}</td>
-                        <td className="px-6 py-4 text-sm">
+                        <td className="px-5 py-3.5 text-sm text-gray-400">@{exec.username}</td>
+                        <td className="px-5 py-3.5 text-sm text-gray-400">{exec.email}</td>
+                        <td className="px-5 py-3.5 text-sm text-gray-400">{exec.contactNumber}</td>
+                        <td className="px-5 py-3.5">
                           {exec.isActive ? (
-                            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-green-500/10 text-green-600 dark:text-green-400">
-                              <CheckCircle size={12} /> Active
+                            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-green-50 text-green-600">
+                              <span className="w-1.5 h-1.5 rounded-full bg-green-500" /> Active
                             </span>
                           ) : (
-                            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-red-500/10 text-red-600 dark:text-red-400">
-                              <XCircle size={12} /> Inactive
+                            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-red-50 text-red-500">
+                              <span className="w-1.5 h-1.5 rounded-full bg-red-400" /> Inactive
                             </span>
                           )}
                         </td>
-                        <td className="px-6 py-4 text-sm">
-                          <div className="flex items-center gap-2">
-                            {todayAttendance ? (
-                              <>
-                                <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium ${todayAttendance.status === 'Present'
-                                  ? 'bg-green-500/10 text-green-600 dark:text-green-400'
-                                  : 'bg-red-500/10 text-red-600 dark:text-red-400'
-                                  }`}>
-                                  {todayAttendance.status === 'Present' ? (
-                                    <CheckCircle size={12} />
-                                  ) : (
-                                    <XCircle size={12} />
-                                  )}
-                                  {todayAttendance.status}
-                                </span>
-                                <button
-                                  onClick={() => navigate('/attendance/' + exec._id)}
-                                  className="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-medium text-primary-600 dark:text-primary-400 hover:bg-primary-500/10 rounded-lg transition-colors"
-                                  title="View Full Record"
-                                >
-                                  <Calendar size={12} />
-                                  Record
-                                </button>
-                              </>
-                            ) : (
-                              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-light-bg dark:bg-light-bg text-light-text-tertiary dark:text-light-text-tertiary border border-light-border dark:border-light-border">
-                                <Clock size={12} />
-                                Not Marked
+                        <td className="px-5 py-3.5">
+                          {att ? (
+                            <div className="flex items-center gap-2">
+                              <span className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold ${att.status === 'Present' ? 'bg-green-50 text-green-600' : 'bg-red-50 text-red-500'}`}>
+                                {att.status === 'Present' ? <CheckCircle size={11} /> : <XCircle size={11} />}
+                                {att.status}
                               </span>
-                            )}
-                          </div>
+                              <button
+                                onClick={() => navigate('/attendance/' + exec._id)}
+                                className="inline-flex items-center gap-1 px-2 py-1 text-[11px] font-semibold rounded-lg transition-colors hover:bg-gray-100"
+                                style={{ color: PRIMARY }}
+                              >
+                                <Calendar size={11} /> Record
+                              </button>
+                            </div>
+                          ) : (
+                            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-gray-50 text-gray-400 border border-gray-100">
+                              <Clock size={11} /> Not Marked
+                            </span>
+                          )}
                         </td>
-                        <td className="px-6 py-4 text-sm">
-                          <div className="flex items-center">
-                            {markingAttendanceFor === exec._id ? (
-                              <Loader2 className="w-5 h-5 animate-spin text-primary-500" />
-                            ) : (
-                              <Toggle
-                                checked={isTodayPresent}
-                                onChange={(isPresent) => handleMarkAttendance(exec._id, isPresent)}
-                                disabled={markingAttendanceFor !== null}
-                                size="md"
-                              />
-                            )}
-                          </div>
+                        <td className="px-5 py-3.5">
+                          {markingAttendanceFor === exec._id ? (
+                            <Loader2 size={18} className="animate-spin" style={{ color: PRIMARY }} />
+                          ) : (
+                            <Toggle
+                              checked={isPresent}
+                              onChange={(v) => handleMarkAttendance(exec._id, v)}
+                              disabled={markingAttendanceFor !== null}
+                              size="md"
+                            />
+                          )}
                         </td>
-                        <td className="px-6 py-4 text-sm">
-                          <div className="flex items-center gap-2">
-                            <button
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                handleDelete(exec._id);
-                              }}
-                              className="p-2 text-red-500 hover:bg-red-500/10 rounded-lg transition-all duration-200"
-                              title="Delete Technician"
-                            >
-                              <Trash2 size={16} />
-                            </button>
-                          </div>
+                        <td className="px-5 py-3.5">
+                          <button
+                            onClick={(e) => { e.stopPropagation(); handleDelete(exec._id, exec.fullName); }}
+                            className="p-2 rounded-xl text-gray-300 hover:text-red-500 hover:bg-red-50 transition-all duration-200"
+                          >
+                            <Trash2 size={15} />
+                          </button>
                         </td>
                       </tr>
                     );
@@ -321,150 +303,118 @@ export default function TechnicianList() {
             </table>
           </div>
 
-          {/* Mobile Card View */}
-          <div className="grid grid-cols-1 gap-4 p-4 md:hidden">
+          {/* Mobile Cards */}
+          <div className="grid grid-cols-1 gap-3 p-4 md:hidden">
             {loading ? (
-              <div className="py-12 text-center">
-                <Loader2 className="w-8 h-8 animate-spin mx-auto text-primary-500 mb-2" />
-                <p className="text-light-text-secondary">Loading technicians...</p>
+              <div className="py-12 text-center flex flex-col items-center gap-3">
+                <div className="w-10 h-10 rounded-2xl flex items-center justify-center" style={{ background: "linear-gradient(135deg, #74bc4c, #5fa33b)" }}>
+                  <Loader2 className="text-white animate-spin" size={18} />
+                </div>
+                <p className="text-sm text-gray-400 font-medium">Loading...</p>
               </div>
             ) : paginatedTechnicians.length === 0 ? (
-              <div className="py-12 text-center text-light-text-tertiary">
-                No technicians found
+              <div className="py-12 text-center">
+                <Users size={28} className="mx-auto mb-2 text-gray-200" />
+                <p className="text-sm text-gray-400">No technicians found</p>
               </div>
             ) : (
               paginatedTechnicians.map((exec) => {
-                const todayAttendance = exec.attendance;
-                const isTodayPresent = todayAttendance?.status === 'Present';
-
+                const att = exec.attendance;
+                const isPresent = att?.status === 'Present';
                 return (
-                  <div key={exec._id} className="bg-white dark:bg-white border border-light-border dark:border-light-border rounded-xl p-4 shadow-sm relative">
-                    {/* Card Header */}
-                    <div className="flex items-start justify-between mb-3 pb-3 border-b border-light-border">
-                      <div className="flex-1 cursor-pointer" onClick={() => handleEdit(exec)}>
-                        <div className="text-sm font-bold text-light-text mb-1 hover:text-primary-600 transition-colors">
-                          {exec.fullName}
-                        </div>
-                        <div className="text-xs text-light-text-secondary mb-1">
-                          @{exec.username}
-                        </div>
-                        <div className="flex items-center gap-2">
+                  <div key={exec._id} className="bg-white border border-gray-100 rounded-2xl overflow-hidden" style={{ boxShadow: "0 2px 8px rgba(0,0,0,0.05)" }}>
+                    {/* Card Top */}
+                    <div className="p-4 flex items-start justify-between">
+                      <div className="flex-1 cursor-pointer" onClick={() => navigate(`/technician/${exec._id}`)}>
+                        <div className="flex items-center gap-2 mb-1">
+                          <p className="text-sm font-bold text-gray-800 hover:text-[#5fa33b] transition-colors">{exec.fullName}</p>
                           {exec.isActive ? (
-                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-medium bg-green-500/10 text-green-600">
-                              <CheckCircle size={10} /> Active
+                            <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md text-[10px] font-semibold bg-green-50 text-green-600">
+                              <span className="w-1 h-1 rounded-full bg-green-500" /> Active
                             </span>
                           ) : (
-                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-medium bg-red-500/10 text-red-600">
-                              <XCircle size={10} /> Inactive
+                            <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md text-[10px] font-semibold bg-red-50 text-red-500">
+                              Inactive
                             </span>
                           )}
                         </div>
+                        <p className="text-xs text-gray-400">@{exec.username}</p>
+                        <p className="text-xs text-gray-400 mt-0.5">{exec.email}</p>
+                        <p className="text-xs text-gray-400">{exec.contactNumber}</p>
                       </div>
                       <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleDelete(exec._id);
-                        }}
-                        className="p-1.5 align-top text-red-500 hover:bg-red-500/10 rounded-lg transition-colors"
+                        onClick={(e) => { e.stopPropagation(); handleDelete(exec._id, exec.fullName); }}
+                        className="p-2 text-gray-200 hover:text-red-500 hover:bg-red-50 rounded-xl transition-all"
                       >
-                        <Trash2 size={16} />
+                        <Trash2 size={15} />
                       </button>
                     </div>
 
-                    {/* Contact Details */}
-                    <div className="space-y-2 mb-4">
-                      <div className="text-xs flex items-center gap-2 text-light-text-secondary">
-                        <span className="w-4 flex justify-center text-light-text-tertiary">📧</span> {exec.email}
-                      </div>
-                      <div className="text-xs flex items-center gap-2 text-light-text-secondary">
-                        <span className="w-4 flex justify-center text-light-text-tertiary">📞</span> {exec.contactNumber}
-                      </div>
-                    </div>
-
-                    {/* Attendance Controls */}
-                    <div className="bg-light-bg -mx-4 -mb-4 px-4 py-3 rounded-b-xl flex justify-between items-center border-t border-light-border">
+                    {/* Card Footer */}
+                    <div className="px-4 py-3 flex items-center justify-between border-t border-gray-50" style={{ background: "#f8fdf5" }}>
                       <div>
-                        <div className="text-[10px] text-light-text-secondary mb-1 uppercase font-semibold">Today's Attendance</div>
-                        <div className="flex items-center gap-2 mt-1">
-                          {todayAttendance ? (
-                            <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-medium ${todayAttendance.status === 'Present' ? 'bg-green-500/10 text-green-600' : 'bg-red-500/10 text-red-600'}`}>
-                              {todayAttendance.status === 'Present' ? <CheckCircle size={10} /> : <XCircle size={10} />}
-                              {todayAttendance.status}
-                            </span>
+                        <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1.5">Today's Attendance</p>
+                        <div className="flex items-center gap-2">
+                          {att ? (
+                            <>
+                              <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-lg text-[11px] font-semibold ${att.status === 'Present' ? 'bg-green-50 text-green-600' : 'bg-red-50 text-red-500'}`}>
+                                {att.status === 'Present' ? <CheckCircle size={10} /> : <XCircle size={10} />} {att.status}
+                              </span>
+                              <button onClick={() => navigate('/attendance/' + exec._id)} className="text-[11px] font-semibold underline" style={{ color: PRIMARY }}>
+                                Record
+                              </button>
+                            </>
                           ) : (
-                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-medium bg-white border border-light-border text-light-text-tertiary">
+                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg text-[11px] font-medium bg-white border border-gray-100 text-gray-400">
                               <Clock size={10} /> Not Marked
                             </span>
                           )}
-                          {todayAttendance && (
-                            <button
-                              onClick={() => navigate('/attendance/' + exec._id)}
-                              className="text-[10px] text-primary-600 font-medium underline"
-                            >
-                              Record
-                            </button>
-                          )}
                         </div>
                       </div>
-                      <div>
-                        {markingAttendanceFor === exec._id ? (
-                          <Loader2 className="w-5 h-5 animate-spin text-primary-500" />
-                        ) : (
-                          <Toggle
-                            checked={isTodayPresent}
-                            onChange={(isPresent) => handleMarkAttendance(exec._id, isPresent)}
-                            disabled={markingAttendanceFor !== null}
-                            size="sm"
-                          />
-                        )}
-                      </div>
+                      {markingAttendanceFor === exec._id ? (
+                        <Loader2 size={18} className="animate-spin" style={{ color: PRIMARY }} />
+                      ) : (
+                        <Toggle
+                          checked={isPresent}
+                          onChange={(v) => handleMarkAttendance(exec._id, v)}
+                          disabled={markingAttendanceFor !== null}
+                          size="sm"
+                        />
+                      )}
                     </div>
                   </div>
                 );
               })
             )}
           </div>
-        </>
 
-        {/* Pagination */}
-        <div className="px-6 py-4 border-t border-light-border dark:border-light-border flex items-center justify-between bg-white dark:bg-white">
-          <div className="text-sm text-light-text-secondary dark:text-light-text-secondary">
-            Showing {filteredTechnicians.length > 0 ? startIndex + 1 : 0} to{" "}
-            {Math.min(endIndex, filteredTechnicians.length)} of{" "}
-            {filteredTechnicians.length} results
-          </div>
-          <div className="flex items-center gap-2">
-            <button
-              onClick={() => goToPage(1)}
-              disabled={currentPage === 1}
-              className="p-2 rounded-lg border border-light-border dark:border-light-border text-light-text dark:text-light-text hover:bg-light-bg dark:hover:bg-light-bg disabled:opacity-30 disabled:hover:bg-transparent transition-all"
-            >
-              <ChevronsLeft className="w-4 h-4" />
-            </button>
-            <button
-              onClick={() => goToPage(currentPage - 1)}
-              disabled={currentPage === 1}
-              className="p-2 rounded-lg border border-light-border dark:border-light-border text-light-text dark:text-light-text hover:bg-light-bg dark:hover:bg-light-bg disabled:opacity-30 disabled:hover:bg-transparent transition-all"
-            >
-              <ChevronLeft className="w-4 h-4" />
-            </button>
-            <span className="px-4 py-2 text-sm font-medium text-light-text dark:text-light-text">
-              {currentPage} / {totalPages || 1}
-            </span>
-            <button
-              onClick={() => goToPage(currentPage + 1)}
-              disabled={currentPage === totalPages}
-              className="p-2 rounded-lg border border-light-border dark:border-light-border text-light-text dark:text-light-text hover:bg-light-bg dark:hover:bg-light-bg disabled:opacity-30 disabled:hover:bg-transparent transition-all"
-            >
-              <ChevronRight className="w-4 h-4" />
-            </button>
-            <button
-              onClick={() => goToPage(totalPages)}
-              disabled={currentPage === totalPages}
-              className="p-2 rounded-lg border border-light-border dark:border-light-border text-light-text dark:text-light-text hover:bg-light-bg dark:hover:bg-light-bg disabled:opacity-30 disabled:hover:bg-transparent transition-all"
-            >
-              <ChevronsRight className="w-4 h-4" />
-            </button>
+          {/* Pagination */}
+          <div className="px-5 py-3.5 border-t border-gray-50 flex items-center justify-between bg-white">
+            <p className="text-xs text-gray-400 font-medium">
+              {filteredTechnicians.length > 0
+                ? `Showing ${startIndex + 1}–${Math.min(startIndex + pageSize, filteredTechnicians.length)} of ${filteredTechnicians.length}`
+                : "No results"}
+            </p>
+            <div className="flex items-center gap-1.5">
+              {[
+                { icon: ChevronsLeft, action: () => setCurrentPage(1), disabled: currentPage === 1 },
+                { icon: ChevronLeft, action: () => setCurrentPage(p => Math.max(1, p - 1)), disabled: currentPage === 1 },
+                { icon: ChevronRight, action: () => setCurrentPage(p => Math.min(totalPages, p + 1)), disabled: currentPage === totalPages },
+                { icon: ChevronsRight, action: () => setCurrentPage(totalPages), disabled: currentPage === totalPages },
+              ].map(({ icon: Icon, action, disabled }, i) => (
+                <button
+                  key={i}
+                  onClick={action}
+                  disabled={disabled}
+                  className="p-1.5 rounded-lg border border-gray-100 text-gray-400 disabled:opacity-30 page-btn"
+                >
+                  <Icon size={15} />
+                </button>
+              ))}
+              <span className="px-3 py-1.5 text-xs font-semibold text-gray-500">
+                {currentPage} / {totalPages || 1}
+              </span>
+            </div>
           </div>
         </div>
       </div>

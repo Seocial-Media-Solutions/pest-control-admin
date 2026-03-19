@@ -16,10 +16,9 @@ const CreateCustomer = () => {
         fullName: '',
         email: '',
         mobileNo: '',
-        address: '',
+        googleMapLink: '',
         status: 'temporary',
         notes: '',
-        password: '',
     });
 
     // Fetch customer data if editing
@@ -38,10 +37,9 @@ const CreateCustomer = () => {
                 fullName: customer.fullName,
                 email: customer.email,
                 mobileNo: customer.mobileNo,
-                address: customer.address,
+                googleMapLink: customer.googleMapLink || '',
                 status: customer.status,
                 notes: customer.notes || '',
-                password: '', // Leave empty for security
             });
         } catch (error) {
             console.error('Error fetching customer:', error);
@@ -66,27 +64,18 @@ const CreateCustomer = () => {
         // Clear previous errors
         setValidationErrors([]);
 
-        // Validate password for new customers
-        if (!isEditMode && (!formData.password || formData.password.length < 6)) {
-            const error = 'Password must be at least 6 characters long';
-            setValidationErrors([error]);
-            toast.error(error);
-            return;
-        }
 
+
+        const toastId = toast.loading(isEditMode ? 'Updating customer...' : 'Creating customer...');
         try {
             setLoading(true);
             if (isEditMode) {
-                // For updates, only include password if it's not empty
                 const updateData = { ...formData };
-                if (!updateData.password) {
-                    delete updateData.password;
-                }
                 await customerService.updateCustomer(id, updateData);
-                toast.success('Customer updated successfully');
+                toast.success('Customer updated successfully', { id: toastId });
             } else {
                 await customerService.createCustomer(formData);
-                toast.success('Customer created successfully');
+                toast.success('Customer created successfully', { id: toastId });
             }
             navigate('/customers');
         } catch (error) {
@@ -94,22 +83,16 @@ const CreateCustomer = () => {
 
             // Handle validation errors from backend
             if (error.response?.data?.errors && Array.isArray(error.response.data.errors)) {
-                // Set validation errors to state
                 setValidationErrors(error.response.data.errors);
-                // Display each validation error as toast
-                error.response.data.errors.forEach((err) => {
-                    toast.error(err);
-                });
+                toast.error('Validation failed. Check the form for errors.', { id: toastId });
             } else if (error.response?.data?.message) {
-                // Display general error message
                 const errorMsg = error.response.data.message;
                 setValidationErrors([errorMsg]);
-                toast.error(errorMsg);
+                toast.error(errorMsg, { id: toastId });
             } else {
-                // Fallback error message
                 const fallbackMsg = 'Failed to save customer. Please try again.';
                 setValidationErrors([fallbackMsg]);
-                toast.error(fallbackMsg);
+                toast.error(fallbackMsg, { id: toastId });
             }
         } finally {
             setLoading(false);
@@ -253,81 +236,30 @@ const CreateCustomer = () => {
                         </div>
                     </div>
 
-                    {/* Security Section */}
-                    <div className="pt-6 border-t border-light-border">
-                        <h2 className="text-xl font-semibold text-light-text mb-4 flex items-center gap-2">
-                            <Lock className="w-5 h-5 text-primary-400" />
-                            Security
-                        </h2>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div>
-                                <label className="block text-sm font-medium text-light-text mb-2">
-                                    Password {!isEditMode && <span className="text-red-400">*</span>}
-                                    {isEditMode && (
-                                        <span className="text-xs text-light-text-tertiary ml-2">
-                                            (Leave empty to keep current)
-                                        </span>
-                                    )}
-                                </label>
-                                <div className="relative">
-                                    <input
-                                        type={showPassword ? 'text' : 'password'}
-                                        name="password"
-                                        value={formData.password}
-                                        onChange={handleInputChange}
-                                        required={!isEditMode}
-                                        minLength="6"
-                                        className="w-full px-4 py-3 pr-12 bg-light-bg border border-light-border rounded-lg text-light-text focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all duration-200"
-                                        placeholder={
-                                            isEditMode
-                                                ? 'Enter new password (optional)'
-                                                : 'Minimum 6 characters'
-                                        }
-                                    />
-                                    <button
-                                        type="button"
-                                        onClick={() => setShowPassword(!showPassword)}
-                                        className="absolute right-3 top-1/2 -translate-y-1/2 p-2 hover:bg-white rounded-lg transition-colors"
-                                    >
-                                        {showPassword ? (
-                                            <EyeOff className="w-4 h-4 text-light-text-tertiary" />
-                                        ) : (
-                                            <Eye className="w-4 h-4 text-light-text-tertiary" />
-                                        )}
-                                    </button>
-                                </div>
-                                {!isEditMode && (
-                                    <p className="text-xs text-light-text-tertiary mt-2">
-                                        Password must be at least 6 characters long
-                                    </p>
-                                )}
-                            </div>
-                        </div>
-                    </div>
 
-                    {/* Address Section */}
+
+                    {/* Google Map Link Section */}
                     <div className="pt-6 border-t border-light-border">
                         <h2 className="text-xl font-semibold text-light-text mb-4 flex items-center gap-2">
                             <MapPin className="w-5 h-5 text-primary-400" />
-                            Address
+                            Location
                         </h2>
                         <div>
                             <label className="block text-sm font-medium text-light-text mb-2">
-                                Complete Address <span className="text-red-400">*</span>
+                                Google Map Link <span className="text-red-400">*</span>
                             </label>
-                            <textarea
-                                name="address"
-                                value={formData.address}
+                            <input
+                                type="url"
+                                name="googleMapLink"
+                                value={formData.googleMapLink}
                                 onChange={handleInputChange}
                                 required
-                                minLength="10"
-                                maxLength="500"
-                                rows="4"
-                                className="w-full px-4 py-3 bg-light-bg border border-light-border rounded-lg text-light-text focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all duration-200 resize-none"
-                                placeholder="Enter complete address with landmarks"
+                                pattern="^https?:\/\/(www\.)?(google\.com\/maps|maps\.app\.goo\.gl|maps\.google\.com).*"
+                                className="w-full px-4 py-3 bg-light-bg border border-light-border rounded-lg text-light-text focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all duration-200"
+                                placeholder="https://maps.google.com/..."
                             />
                             <p className="text-xs text-light-text-tertiary mt-2">
-                                Minimum 10 characters, maximum 500 characters
+                                Please paste a valid Google Maps URL.
                             </p>
                         </div>
                     </div>

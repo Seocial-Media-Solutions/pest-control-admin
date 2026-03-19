@@ -52,28 +52,34 @@ const Customers = () => {
     // Delete customer
     const handleDeleteCustomer = async (id, name) => {
         if (window.confirm(`Are you sure you want to delete ${name}?`)) {
+            const promise = customerService.deleteCustomer(id);
+            toast.promise(promise, {
+                loading: 'Deleting customer...',
+                success: 'Customer deleted successfully',
+                error: 'Failed to delete customer'
+            });
             try {
-                await customerService.deleteCustomer(id);
-                toast.success('Customer deleted successfully');
+                await promise;
                 fetchCustomers();
             } catch (error) {
                 console.error('Error deleting customer:', error);
-                toast.error('Failed to delete customer');
             }
         }
     };
 
     // Toggle customer status
     const handleToggleStatus = async (id, currentStatus) => {
+        const promise = customerService.toggleCustomerStatus(id);
+        toast.promise(promise, {
+            loading: 'Updating status...',
+            success: `Customer ${currentStatus ? 'deactivated' : 'activated'} successfully`,
+            error: 'Failed to update customer status'
+        });
         try {
-            await customerService.toggleCustomerStatus(id);
-            toast.success(
-                `Customer ${currentStatus ? 'deactivated' : 'activated'} successfully`
-            );
+            await promise;
             fetchCustomers();
         } catch (error) {
             console.error('Error toggling status:', error);
-            toast.error('Failed to update customer status');
         }
     };
 
@@ -189,7 +195,7 @@ const Customers = () => {
                                             Contact
                                         </th>
                                         <th className="px-6 py-4 text-left text-xs font-semibold text-light-text-secondary dark:text-light-text-secondary uppercase tracking-wider">
-                                            Address
+                                            Location Link
                                         </th>
                                         <th className="px-6 py-4 text-left text-xs font-semibold text-light-text-secondary dark:text-light-text-secondary uppercase tracking-wider">
                                             Status
@@ -242,9 +248,9 @@ const Customers = () => {
                                             <td className="px-6 py-4">
                                                 <div className="flex items-start gap-2 text-sm text-light-text dark:text-light-text max-w-xs">
                                                     <MapPin className="w-3 h-3 text-light-text-tertiary dark:text-light-text-tertiary mt-1 flex-shrink-0" />
-                                                    <span className="line-clamp-2">
-                                                        {customer.address}
-                                                    </span>
+                                                    <a href={customer.googleMapLink} target="_blank" rel="noopener noreferrer" className="text-primary-500 hover:underline line-clamp-2 break-all">
+                                                        {customer.googleMapLink || 'No link'}
+                                                    </a>
                                                 </div>
                                             </td>
                                             <td className="px-6 py-4">
@@ -382,7 +388,9 @@ const Customers = () => {
                                         </div>
                                         <div className="flex items-start gap-2 text-xs text-light-text dark:text-light-text">
                                             <MapPin className="w-3.5 h-3.5 text-light-text-tertiary mt-0.5 shrink-0" />
-                                            <span className="line-clamp-2">{customer.address}</span>
+                                            <a href={customer.googleMapLink} target="_blank" rel="noopener noreferrer" className="text-primary-500 hover:underline line-clamp-1 break-all">
+                                                {customer.googleMapLink || 'No link'}
+                                            </a>
                                         </div>
                                     </div>
 

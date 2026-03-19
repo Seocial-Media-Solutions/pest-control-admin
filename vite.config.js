@@ -6,9 +6,10 @@ export default defineConfig({
   plugins: [react()],
   build: {
     rollupOptions: {
+
       output: {
         // Let Vite handle chunks automatically to avoid initialization order issues
-      },
+},
     },
   },
 })

@@ -260,8 +260,8 @@ function Tracking() {
                         Monitor technician locations in real-time
                     </p>
                 </div>
-                <div className={`flex items-center gap-2 px-4 py-2 rounded-full border ${connected
-                    ? 'bg-green-500/10 border-green-500/20 text-green-500'
+                <div className={`flex items-center gap-2 px-4 py-2   rounded-full border ${connected
+                    ? 'bg-green-500/10 border-green-500/20 text-green-500' 
                     : 'bg-red-500/10 border-red-500/20 text-red-500'
                     }`}>
                     {connected ? <Wifi className="w-4 h-4" /> : <WifiOff className="w-4 h-4" />}

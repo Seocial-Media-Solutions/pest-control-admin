@@ -261,7 +261,7 @@ function Tracking() {
                     </p>
                 </div>
                 <div className={`flex items-center gap-2 px-4 py-2   rounded-full border ${connected
-                    ? 'bg-green-500/10 border-green-500/20 text-green-500' 
+                    ? 'bg-green-500/10 border-green-500/20 text-green-500'
                     : 'bg-red-500/10 border-red-500/20 text-red-500'
                     }`}>
                     {connected ? <Wifi className="w-4 h-4" /> : <WifiOff className="w-4 h-4" />}
@@ -313,40 +313,59 @@ function Tracking() {
                                             key={tech._id}
                                             onClick={() => handleTechnicianSelect(tech._id)}
                                             className={`p-3 rounded-xl border transition-all duration-200 cursor-pointer ${isSelected
-                                                ? 'bg-gradient-to-br from-primary-500 to-accent-500 border-transparent shadow-lg shadow-primary-500/20 text-light-text'
-                                                : 'bg-light-bg border-light-border hover:border-primary-500/50 text-light-text hover:bg-light-surface-hover'
+                                                    ? "bg-gradient-to-br from-primary-600 to-accent-600 border-transparent shadow-lg shadow-primary-500/20 text-white"
+                                                    : "bg-light-bg border-light-border hover:border-primary-500/50 text-light-text hover:bg-light-surface-hover"
                                                 }`}
                                         >
                                             <div className="flex justify-between items-start mb-2">
-                                                <span className={`font-semibold text-sm ${isSelected ? 'text-light-text' : 'text-light-text'}`}>
+                                                <span
+                                                    className={`font-semibold text-sm ${isSelected ? "text-white" : "text-light-text"
+                                                        }`}
+                                                >
                                                     {tech.fullName}
                                                 </span>
+
                                                 {isSelected && (
-                                                    <span className="text-[10px] bg-white/20 px-2 py-0.5 rounded-full font-bold text-light-text uppercase tracking-wider">
+                                                    <span className="text-[10px] bg-white/20 px-2 py-0.5 rounded-full font-bold text-white uppercase tracking-wider">
                                                         Tracking
                                                     </span>
                                                 )}
+
                                                 {!isSelected && techLocation && (
                                                     <span className="w-2.5 h-2.5 bg-green-500 rounded-full animate-pulse shadow-[0_0_8px_rgba(34,197,94,0.6)]"></span>
                                                 )}
                                             </div>
 
                                             <div className="space-y-1">
-                                                <div className={`flex items-center gap-1.5 text-xs ${isSelected ? 'text-light-text-secondary' : 'text-light-text-secondary'}`}>
+                                                <div
+                                                    className={`flex items-center gap-1.5 text-xs ${isSelected ? "text-white/80" : "text-light-text-secondary"
+                                                        }`}
+                                                >
                                                     <Mail className="w-3 h-3" />
                                                     <span className="truncate">{tech.email}</span>
                                                 </div>
-                                                <div className={`flex items-center gap-1.5 text-xs ${isSelected ? 'text-light-text-secondary' : 'text-light-text-secondary'}`}>
+
+                                                <div
+                                                    className={`flex items-center gap-1.5 text-xs ${isSelected ? "text-white/80" : "text-light-text-secondary"
+                                                        }`}
+                                                >
                                                     <Smartphone className="w-3 h-3" />
                                                     <span>{contact}</span>
                                                 </div>
                                             </div>
 
                                             {techLocation && (
-                                                <div className={`mt-2 pt-2 border-t text-[10px] flex items-center gap-1.5 ${isSelected ? 'border-white/20 text-white/90' : 'border-light-border text-light-text-tertiary'
-                                                    }`}>
+                                                <div
+                                                    className={`mt-2 pt-2 border-t text-[10px] flex items-center gap-1.5 ${isSelected
+                                                            ? "border-white/20 text-white/90"
+                                                            : "border-light-border text-light-text-tertiary"
+                                                        }`}
+                                                >
                                                     <Clock className="w-3 h-3" />
-                                                    Last seen: {new Date(techLocation.timestamp || Date.now()).toLocaleTimeString()}
+                                                    Last seen:{" "}
+                                                    {new Date(
+                                                        techLocation.timestamp || Date.now()
+                                                    ).toLocaleTimeString()}
                                                 </div>
                                             )}
                                         </div>

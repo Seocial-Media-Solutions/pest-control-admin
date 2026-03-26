@@ -313,16 +313,16 @@ function Tracking() {
                                             key={tech._id}
                                             onClick={() => handleTechnicianSelect(tech._id)}
                                             className={`p-3 rounded-xl border transition-all duration-200 cursor-pointer ${isSelected
-                                                ? 'bg-gradient-to-br from-primary-500 to-accent-500 border-transparent shadow-lg shadow-primary-500/20 text-white'
+                                                ? 'bg-gradient-to-br from-primary-500 to-accent-500 border-transparent shadow-lg shadow-primary-500/20 text-light-text'
                                                 : 'bg-light-bg border-light-border hover:border-primary-500/50 text-light-text hover:bg-light-surface-hover'
                                                 }`}
                                         >
                                             <div className="flex justify-between items-start mb-2">
-                                                <span className={`font-semibold text-sm ${isSelected ? 'text-white' : 'text-light-text'}`}>
+                                                <span className={`font-semibold text-sm ${isSelected ? 'text-light-text' : 'text-light-text'}`}>
                                                     {tech.fullName}
                                                 </span>
                                                 {isSelected && (
-                                                    <span className="text-[10px] bg-white/20 px-2 py-0.5 rounded-full font-bold text-white uppercase tracking-wider">
+                                                    <span className="text-[10px] bg-white/20 px-2 py-0.5 rounded-full font-bold text-light-text uppercase tracking-wider">
                                                         Tracking
                                                     </span>
                                                 )}
@@ -332,11 +332,11 @@ function Tracking() {
                                             </div>
 
                                             <div className="space-y-1">
-                                                <div className={`flex items-center gap-1.5 text-xs ${isSelected ? 'text-white/80' : 'text-light-text-secondary'}`}>
+                                                <div className={`flex items-center gap-1.5 text-xs ${isSelected ? 'text-light-text-secondary' : 'text-light-text-secondary'}`}>
                                                     <Mail className="w-3 h-3" />
                                                     <span className="truncate">{tech.email}</span>
                                                 </div>
-                                                <div className={`flex items-center gap-1.5 text-xs ${isSelected ? 'text-white/80' : 'text-light-text-secondary'}`}>
+                                                <div className={`flex items-center gap-1.5 text-xs ${isSelected ? 'text-light-text-secondary' : 'text-light-text-secondary'}`}>
                                                     <Smartphone className="w-3 h-3" />
                                                     <span>{contact}</span>
                                                 </div>

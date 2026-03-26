@@ -300,28 +300,10 @@ const Dashboard = () => {
                         </div>
                     )}
 
-                    {/* Technician Performance Bar */}
-                    {technicianPerformanceData.length > 0 && (
-                        <div className="card p-6">
-                            <h3 className="text-base font-bold text-[#2e4d1b] mb-5">Top Technician Performance</h3>
-                            <ResponsiveContainer width="100%" height={280}>
-                                <BarChart data={technicianPerformanceData} barCategoryGap="30%">
-                                    <CartesianGrid strokeDasharray="3 3" stroke="#d4edbe" />
-                                    <XAxis dataKey="name" stroke="#7aac52" tick={{ fontSize: 11 }} />
-                                    <YAxis stroke="#7aac52" tick={{ fontSize: 11 }} />
-                                    <Tooltip
-                                        contentStyle={{ backgroundColor: '#1a2e0e', border: '1px solid #4e8230', borderRadius: '8px', color: '#d4edbe' }}
-                                    />
-                                    <Legend wrapperStyle={{ fontSize: 12, color: '#4e8230' }} />
-                                    <Bar dataKey="completed" name="Completed" fill="#79bd4b" radius={[6, 6, 0, 0]} />
-                                    <Bar dataKey="pending"   name="Pending"   fill="#f0a830" radius={[6, 6, 0, 0]} />
-                                </BarChart>
-                            </ResponsiveContainer>
-                        </div>
-                    )}
+
                 </div>
 
-                {/* ── Recent Activity & Payment Breakdown ───────────────── */}
+                {/* ── Recent Activity  Breakdown ───────────────── */}
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
 
                     {/* Recent Assignments */}
@@ -373,50 +355,7 @@ const Dashboard = () => {
                         </div>
                     </div>
 
-                    {/* Payment Mode Distribution */}
-                    {performance.paymentBreakdown?.length > 0 && (
-                        <div className="card p-6">
-                            <h3 className="text-base font-bold text-[#2e4d1b] mb-5">Payment Mode Distribution</h3>
-                            <div className="space-y-4">
-                                {performance.paymentBreakdown.map((payment, idx) => {
-                                    const rate = payment.totalAmount > 0
-                                        ? ((payment.collectedAmount / payment.totalAmount) * 100).toFixed(1)
-                                        : 0;
-                                    return (
-                                        <div key={idx} className="p-3 bg-[#f6faf1] rounded-xl hover:bg-[#edf7e4] transition-colors duration-200">
-                                            <div className="flex items-center justify-between mb-1">
-                                                <span className="text-sm font-semibold text-[#1a2e0e] capitalize">
-                                                    {payment._id || 'Unknown Method'}
-                                                </span>
-                                                <span className="text-xs text-[#7aac52]">
-                                                    {payment.count} transactions
-                                                </span>
-                                            </div>
-                                            <div className="flex items-center justify-between mb-2">
-                                                <span className="text-xs text-[#7aac52]">
-                                                    Total: {formatCurrency(payment.totalAmount)}
-                                                </span>
-                                                <span className="text-xs font-semibold text-[#4e8230]">
-                                                    Collected: {formatCurrency(payment.collectedAmount)}
-                                                </span>
-                                            </div>
-                                            {/* Progress bar */}
-                                            <div className="w-full bg-[#d4edbe] rounded-full h-2">
-                                                <div
-                                                    className="h-2 rounded-full transition-all duration-500"
-                                                    style={{
-                                                        width: `${rate}%`,
-                                                        background: 'linear-gradient(90deg, #79bd4b, #4e8230)',
-                                                    }}
-                                                />
-                                            </div>
-                                            <div className="text-xs text-right text-[#7aac52] mt-1">{rate}% collected</div>
-                                        </div>
-                                    );
-                                })}
-                            </div>
-                        </div>
-                    )}
+                    
                 </div>
 
             </div>{/* end max-w */}

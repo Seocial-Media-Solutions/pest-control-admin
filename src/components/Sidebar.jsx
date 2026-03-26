@@ -16,7 +16,6 @@ import {
 import { useTheme } from '../context/ThemeContext';
 
 const Sidebar = ({ isOpen, toggleSidebar }) => {
-    const { isDark } = useTheme();
     const menuItems = [
         { icon: LayoutDashboard, label: 'Dashboard', path: '/' },
         { icon: Users, label: 'Customers', path: '/customers' },

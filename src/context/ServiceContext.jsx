@@ -13,15 +13,15 @@ import {
 
 const ServiceContext = createContext();
 
-export const useServices = () => {
+export function useServices() {
     const context = useContext(ServiceContext);
     if (!context) {
         throw new Error('useServices must be used within a ServiceProvider');
     }
     return context;
-};
+}
 
-export const ServiceProvider = ({ children }) => {
+export function ServiceProvider({ children }) {
     const [services, setServices] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);

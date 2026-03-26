@@ -2,7 +2,6 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, Bug, Upload, X } from 'lucide-react';
 import { useServices } from '../context/ServiceContext';
-import { toast } from 'react-hot-toast';
 
 const AddService = () => {
     const navigate = useNavigate();

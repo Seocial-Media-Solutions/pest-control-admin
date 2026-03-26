@@ -1,10 +1,13 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
     ClipboardList, Plus, Search, Edit, Trash2, Eye, Loader2,
     User, DollarSign, Calendar, MapPin, Phone, Mail,
-    Beaker, Camera, CheckCircle2, XCircle, Clock,
+    Beaker, Camera, CheckCircle2, XCircle, Clock, Download,
 } from 'lucide-react';
+import html2pdf from 'html2pdf.js/dist/html2pdf.bundle.min.js';
+import AssignmentInvoice from '../components/AssignmentInvoice';
+import { useRef } from 'react';
 import {
     getAllAssignments, deleteAssignment, assignTechnician,
     addTreatmentPreparation, deleteTreatmentPreparation,
@@ -18,34 +21,39 @@ import toast from 'react-hot-toast';
 const Assignments = () => {
     const navigate = useNavigate();
     const { searchQuery, setSearchQuery } = useSearch();
-    const [assignments, setAssignments]   = useState([]);
-    const [technicians, setTechnicians]   = useState([]);
-    const [loading, setLoading]           = useState(true);
-    const [showDetailsModal, setShowDetailsModal]   = useState(false);
+    const [assignments, setAssignments] = useState([]);
+    const [technicians, setTechnicians] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [showDetailsModal, setShowDetailsModal] = useState(false);
     const [selectedAssignment, setSelectedAssignment] = useState(null);
     const [showTreatmentModal, setShowTreatmentModal] = useState(false);
-    const [showPictureModal, setShowPictureModal]     = useState(false);
-    const [showPaymentModal, setShowPaymentModal]     = useState(false);
+    const [showPictureModal, setShowPictureModal] = useState(false);
+    const [showPaymentModal, setShowPaymentModal] = useState(false);
+    const [printingAssignment, setPrintingAssignment] = useState(null);
+    const invoiceRef = useRef(null);
 
     const [treatmentForm, setTreatmentForm] = useState({ chemicals: '', quantity: '', instructions: '' });
-    const [pictureForm, setPictureForm]     = useState({ file: null });
-    const [paymentForm, setPaymentForm]     = useState({
+    const [pictureForm, setPictureForm] = useState({ file: null });
+    const [paymentForm, setPaymentForm] = useState({
         amount: 0, paymentMethod: 'cash',
         paymentDate: new Date().toISOString().split('T')[0],
         paymentStatus: 'pending',
     });
 
-    useEffect(() => { fetchAssignments(); fetchTechnicians(); }, []);
-
-    const fetchAssignments = async () => {
+    const fetchAssignments = useCallback(async () => {
         try { setLoading(true); const data = await getAllAssignments(); setAssignments(data.data || []); }
         catch { toast.error('Failed to fetch assignments'); }
         finally { setLoading(false); }
-    };
+    }, []);
 
-    const fetchTechnicians = async () => {
-        try { const data = await getAllTechnicians(); setTechnicians(data.data || []); } catch {}
-    };
+    const fetchTechnicians = useCallback(async () => {
+        try { const data = await getAllTechnicians(); setTechnicians(data.data || []); } catch { /* Ignore */ }
+    }, []);
+
+    useEffect(() => {
+        fetchAssignments();
+        fetchTechnicians();
+    }, [fetchAssignments, fetchTechnicians]);
 
     const handleDeleteAssignment = async (id) => {
         if (window.confirm('Are you sure you want to delete this assignment?')) {
@@ -105,6 +113,45 @@ const Assignments = () => {
         }
     };
 
+    const handleDownloadInvoice = (assignment) => {
+        if (!assignment) return;
+        setPrintingAssignment(assignment);
+
+        // Wait for state update to reflect in template
+        setTimeout(() => {
+            const element = invoiceRef.current;
+            if (!element) {
+                toast.error('Template not ready. Please try again.');
+                return;
+            }
+
+            const opt = {
+                margin: 0,
+                filename: `Invoice-${assignment._id.slice(-6).toUpperCase()}.pdf`,
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: {
+                    scale: 1,
+                    useCORS: true,
+                    logging: false,
+                    letterRendering: true,
+                    windowWidth: 794 // Exact A4 width
+                },
+                jsPDF: { unit: 'pt', format: 'a4', orientation: 'portrait' }
+            };
+
+            const worker = html2pdf().from(element).set(opt);
+
+            toast.promise(
+                worker.save().then(() => setPrintingAssignment(null)),
+                {
+                    loading: 'Preparing invoice...',
+                    success: 'Invoice downloaded!',
+                    error: (err) => `PDF Error: ${err.message || 'Generation failed'}`
+                }
+            );
+        }, 300); // Increased delay for stability
+    };
+
     const filteredAssignments = assignments.filter((a) => {
         const customer = a.bookingId?.customerId;
         return (
@@ -113,7 +160,99 @@ const Assignments = () => {
             (customer?.mobileNumber || '').includes(searchQuery)
         );
     });
+    const getCardTheme = (status, createdAt) => {
+        const diffDays = Math.floor((Date.now() - new Date(createdAt)) / 86_400_000);
 
+        switch (status?.toLowerCase()) {
+            case 'completed':
+                return {
+                    cardBg: 'linear-gradient(145deg, #f0fdf4 0%, #dcfce7 100%)',
+                    cardBorder: '#86efac',
+                    cardShadow: '0 4px 20px rgba(34,197,94,0.12)',
+                    headerAccent: '#15803d',
+                    badgeBg: 'rgba(21,128,61,0.12)',
+                    badgeText: '#15803d',
+                    badgeBorder: '#86efac',
+                    sectionBg: 'rgba(255,255,255,0.65)',
+                    sectionBorder: '#bbf7d0',
+                    techBg: 'rgba(187,247,208,0.6)',
+                    techText: '#14532d',
+                    iconColor: '#16a34a',
+                    labelColor: '#166534',
+                    valueColor: '#15803d',
+                    metaColor: '#4ade80',
+                    idColor: '#14532d',
+                    btnBg: 'rgba(255,255,255,0.7)',
+                    btnBorder: '#86efac',
+                    btnHoverBorder: '#4ade80',
+                    btnText: '#14532d',
+                    dot: '#22c55e',
+                    label: 'Completed',
+                };
+            case 'in_progress':
+                return {
+                    cardBg: 'linear-gradient(145deg, #fffbeb 0%, #fef3c7 100%)',
+                    cardBorder: '#fcd34d',
+                    cardShadow: '0 4px 20px rgba(234,179,8,0.14)',
+                    headerAccent: '#92400e',
+                    badgeBg: 'rgba(146,64,14,0.1)',
+                    badgeText: '#92400e',
+                    badgeBorder: '#fcd34d',
+                    sectionBg: 'rgba(255,255,255,0.65)',
+                    sectionBorder: '#fde68a',
+                    techBg: 'rgba(253,230,138,0.6)',
+                    techText: '#78350f',
+                    iconColor: '#d97706',
+                    labelColor: '#92400e',
+                    valueColor: '#b45309',
+                    metaColor: '#fbbf24',
+                    idColor: '#78350f',
+                    btnBg: 'rgba(255,255,255,0.7)',
+                    btnBorder: '#fcd34d',
+                    btnHoverBorder: '#f59e0b',
+                    btnText: '#78350f',
+                    dot: '#f59e0b',
+                    label: 'In Progress',
+                };
+            case 'pending': {
+                // Escalating red urgency
+                const urg = diffDays <= 1 ? 0 : diffDays <= 3 ? 1 : diffDays <= 5 ? 2 : diffDays <= 7 ? 3 : 4;
+                const urgMap = [
+                    { cardBg: 'linear-gradient(145deg,#fef2f2 0%,#fee2e2 100%)', cardBorder: '#fca5a5', cardShadow: '0 4px 20px rgba(239,68,68,0.08)', headerAccent: '#9f1239', badgeBg: 'rgba(159,18,57,0.08)', badgeText: '#ff0048ff', badgeBorder: '#fca5a5', sectionBg: 'rgba(255,255,255,0.65)', sectionBorder: '#fecdd3', techBg: 'rgba(254,205,211,0.6)', techText: '#881337', iconColor: '#ef4444', labelColor: '#9f1239', valueColor: '#dc2626', metaColor: '#f87171', idColor: '#881337', btnBg: 'rgba(255,255,255,0.7)', btnBorder: '#fca5a5', btnHoverBorder: '#f87171', btnText: '#881337', dot: '#ef4444', label: 'Pending' },
+                    { cardBg: 'linear-gradient(145deg,#fff1f2 0%,#ffdde0 100%)', cardBorder: '#f87171', cardShadow: '0 4px 20px rgba(239,68,68,0.13)', headerAccent: '#9f1239', badgeBg: 'rgba(239,68,68,0.12)', badgeText: '#991b1b', badgeBorder: '#f87171', sectionBg: 'rgba(255,255,255,0.6)', sectionBorder: '#fca5a5', techBg: 'rgba(252,165,165,0.5)', techText: '#7f1d1d', iconColor: '#dc2626', labelColor: '#991b1b', valueColor: '#dc2626', metaColor: '#f87171', idColor: '#7f1d1d', btnBg: 'rgba(255,255,255,0.65)', btnBorder: '#f87171', btnHoverBorder: '#ef4444', btnText: '#7f1d1d', dot: '#dc2626', label: 'Pending · 1d+' },
+                    { cardBg: 'linear-gradient(145deg,#ffe8ea 0%,#ffd2d6 100%)', cardBorder: '#ef4444', cardShadow: '0 4px 20px rgba(220,38,38,0.18)', headerAccent: '#7f1d1d', badgeBg: 'rgba(220,38,38,0.15)', badgeText: '#7f1d1d', badgeBorder: '#ef4444', sectionBg: 'rgba(255,255,255,0.55)', sectionBorder: '#f87171', techBg: 'rgba(248,113,113,0.35)', techText: '#7f1d1d', iconColor: '#b91c1c', labelColor: '#7f1d1d', valueColor: '#b91c1c', metaColor: '#ef4444', idColor: '#7f1d1d', btnBg: 'rgba(255,255,255,0.6)', btnBorder: '#ef4444', btnHoverBorder: '#dc2626', btnText: '#7f1d1d', dot: '#b91c1c', label: 'Overdue · 3d+' },
+                    { cardBg: 'linear-gradient(145deg,#ffd6d9 0%,#ffc0c5 100%)', cardBorder: '#dc2626', cardShadow: '0 4px 20px rgba(185,28,28,0.22)', headerAccent: '#7f1d1d', badgeBg: 'rgba(185,28,28,0.18)', badgeText: '#fff', badgeBorder: '#dc2626', sectionBg: 'rgba(255,255,255,0.5)', sectionBorder: '#ef4444', techBg: 'rgba(239,68,68,0.3)', techText: '#fff', iconColor: '#b91c1c', labelColor: '#fff', valueColor: '#fff', metaColor: 'rgba(255,255,255,0.7)', idColor: '#fff', btnBg: 'rgba(255,255,255,0.55)', btnBorder: '#dc2626', btnHoverBorder: '#b91c1c', btnText: '#7f1d1d', dot: '#ef4444', label: 'Overdue · 5d+' },
+                    { cardBg: 'linear-gradient(145deg,#7f1d1d 0%,#991b1b 100%)', cardBorder: '#b91c1c', cardShadow: '0 4px 24px rgba(127,29,29,0.40)', headerAccent: '#fca5a5', badgeBg: 'rgba(255,255,255,0.15)', badgeText: '#fff', badgeBorder: 'rgba(255,255,255,0.3)', sectionBg: 'rgba(0,0,0,0.12)', sectionBorder: 'rgba(255,255,255,0.15)', techBg: 'rgba(255,255,255,0.12)', techText: '#fff', iconColor: '#fca5a5', labelColor: 'rgba(255,255,255,0.7)', valueColor: '#fca5a5', metaColor: 'rgba(255,255,255,0.5)', idColor: '#fff', btnBg: 'rgba(255,255,255,0.12)', btnBorder: 'rgba(255,255,255,0.25)', btnHoverBorder: 'rgba(255,255,255,0.5)', btnText: '#fff', dot: '#fca5a5', label: 'CRITICAL · 7d+' },
+                ];
+                return urgMap[urg];
+            }
+            default:
+                return {
+                    cardBg: 'linear-gradient(145deg, #f8fafc 0%, #f1f5f9 100%)',
+                    cardBorder: '#cbd5e1',
+                    cardShadow: '0 4px 16px rgba(0,0,0,0.06)',
+                    headerAccent: '#475569',
+                    badgeBg: 'rgba(71,85,105,0.1)',
+                    badgeText: '#475569',
+                    badgeBorder: '#cbd5e1',
+                    sectionBg: 'rgba(255,255,255,0.7)',
+                    sectionBorder: '#e2e8f0',
+                    techBg: 'rgba(226,232,240,0.6)',
+                    techText: '#334155',
+                    iconColor: '#64748b',
+                    labelColor: '#475569',
+                    valueColor: '#334155',
+                    metaColor: '#94a3b8',
+                    idColor: '#334155',
+                    btnBg: 'rgba(255,255,255,0.7)',
+                    btnBorder: '#cbd5e1',
+                    btnHoverBorder: '#94a3b8',
+                    btnText: '#334155',
+                    dot: '#94a3b8',
+                    label: status || 'Unknown',
+                };
+        }
+    };
     if (loading) return (
         <div className="flex items-center justify-center min-h-[60vh]">
             <div className="w-12 h-12 rounded-full border-4 border-[#d4edbe] border-t-[#79bd4b] animate-spin" />
@@ -144,97 +283,275 @@ const Assignments = () => {
                 </button>
             </div>
 
-            {/* Search */}
-            <div className="ac p-5">
-                <div className="relative">
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-[#a0d073]" />
-                    <input
-                        type="text" placeholder="Search by customer name, email, or phone…"
-                        value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)}
-                        className="w-full pl-10 pr-4 py-2.5 bg-[#f6faf1] border border-[#d4edbe] rounded-lg text-sm text-[#1a2e0e] placeholder:text-[#a0d073] focus:outline-none focus:border-[#79bd4b] focus:ring-2 focus:ring-[#79bd4b]/20 transition-all"
-                    />
-                </div>
-            </div>
 
-            {/* Grid */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-5">
-                {filteredAssignments.map((assignment) => (
-                    <div key={assignment._id} className="ac overflow-hidden">
-                        <div className="p-5">
-                            {/* Card header */}
-                            <div className="flex items-start justify-between mb-4">
-                                <div>
-                                    <h3 className="text-base font-bold text-[#1a2e0e]">Assignment #{assignment._id.slice(-6)}</h3>
-                                    <p className="text-xs text-[#7aac52]">{new Date(assignment.createdAt).toLocaleDateString()}</p>
-                                </div>
-                                <div className="flex gap-1.5">
-                                    <button onClick={() => { setSelectedAssignment(assignment); setShowDetailsModal(true); }}
-                                        className="p-2 bg-[#d4edbe] text-[#4e8230] rounded-lg hover:bg-[#c5e4a3] transition-colors">
-                                        <Eye className="w-4 h-4" />
-                                    </button>
-                                    <button onClick={() => handleDeleteAssignment(assignment._id)}
-                                        className="p-2 bg-red-50 text-red-500 rounded-lg hover:bg-red-100 transition-colors">
-                                        <Trash2 className="w-4 h-4" />
-                                    </button>
-                                </div>
-                            </div>
+            <>
+                <style>{`
+    @keyframes acFadeUp { from{opacity:0;transform:translateY(14px)} to{opacity:1;transform:translateY(0)} }
+    @keyframes acPulse   { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.55;transform:scale(.8)} }
+    @keyframes acShimmer { 0%{transform:translateX(-100%)} 100%{transform:translateX(200%)} }
+    .ac-card { animation: acFadeUp .3s ease both; }
+    .ac-card:hover { transform: translateY(-3px) !important; }
+    .ac-workflow-btn:hover { transform: translateY(-1px); }
+`}</style>
 
-                            {/* Customer */}
-                            {assignment.bookingId?.customerId && (
-                                <div className="bg-[#f6faf1] rounded-lg p-3 mb-3 border border-[#d4edbe]">
-                                    <h4 className="text-[10px] font-bold text-[#7aac52] uppercase tracking-wider mb-2">Customer</h4>
-                                    <div className="space-y-1.5">
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: 20 }}>
+                    {filteredAssignments.map((assignment, idx) => {
+                        const th = getCardTheme(assignment.status, assignment.createdAt);
+                        const isCritical = assignment.status?.toLowerCase() === 'pending' &&
+                            Math.floor((Date.now() - new Date(assignment.createdAt)) / 86_400_000) > 7;
+
+                        return (
+                            <div
+                                key={assignment._id}
+                                className="ac-card"
+                                style={{
+                                    animationDelay: `${idx * 50}ms`,
+                                    background: th.cardBg,
+                                    border: `1.5px solid ${th.cardBorder}`,
+                                    borderRadius: 18,
+                                    boxShadow: th.cardShadow,
+                                    overflow: 'hidden',
+                                    transition: 'transform .2s ease, box-shadow .2s ease',
+                                    position: 'relative',
+                                }}
+                            >
+                                {/* Critical shimmer effect */}
+                                {isCritical && (
+                                    <div style={{
+                                        position: 'absolute', inset: 0, overflow: 'hidden',
+                                        borderRadius: 18, pointerEvents: 'none', zIndex: 0
+                                    }}>
+                                        <div style={{
+                                            position: 'absolute', top: 0, left: 0, right: 0, height: 2,
+                                            background: 'linear-gradient(90deg,transparent,rgba(252,165,165,0.8),transparent)',
+                                            animation: 'acShimmer 2.5s ease-in-out infinite'
+                                        }} />
+                                    </div>
+                                )}
+
+                                <div style={{ padding: '18px 18px 16px', position: 'relative', zIndex: 1 }}>
+
+                                    {/* ── Card header ── */}
+                                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 14 }}>
+                                        <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+                                            {/* Status badge */}
+                                            <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                                                <span style={{
+                                                    width: 7, height: 7, borderRadius: '50%',
+                                                    background: th.dot, display: 'inline-block',
+                                                    animation: assignment.status === 'in_progress' ? 'acPulse 1.8s infinite' : 'none',
+                                                    boxShadow: `0 0 0 3px ${th.dot}30`
+                                                }} />
+                                                <span style={{
+                                                    fontSize: 10, fontWeight: 800, letterSpacing: '0.08em',
+                                                    textTransform: 'uppercase', padding: '2px 9px', borderRadius: 20,
+                                                    background: th.badgeBg, color: th.badgeText,
+                                                    border: `1px solid ${th.badgeBorder}`,
+                                                }}>
+                                                    {th.label}
+                                                </span>
+                                            </div>
+
+                                            <h3 style={{
+                                                fontSize: 15, fontWeight: 800, color: th.idColor,
+                                                margin: 0, letterSpacing: '-0.01em', lineHeight: 1.2
+                                            }}>
+                                                Assignment <span style={{ fontFamily: 'monospace', fontSize: 13 }}>
+                                                    #{assignment._id.slice(-6).toUpperCase()}
+                                                </span>
+                                            </h3>
+                                            <p style={{ fontSize: 11, color: th.metaColor, margin: 0 }}>
+                                                {new Date(assignment.createdAt).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })}
+                                            </p>
+                                        </div>
+
+                                        <button
+                                            onClick={() => handleDeleteAssignment(assignment._id)}
+                                            style={{
+                                                padding: '7px', borderRadius: 10, border: 'none', cursor: 'pointer',
+                                                background: 'rgba(239,68,68,0.1)', color: '#ef4444',
+                                                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                                transition: 'all .15s ease', flexShrink: 0
+                                            }}
+                                            onMouseEnter={e => { e.currentTarget.style.background = 'rgba(239,68,68,0.2)'; e.currentTarget.style.transform = 'scale(1.08)'; }}
+                                            onMouseLeave={e => { e.currentTarget.style.background = 'rgba(239,68,68,0.1)'; e.currentTarget.style.transform = 'scale(1)'; }}
+                                            title="Delete assignment"
+                                        >
+                                            <Trash2 style={{ width: 15, height: 15 }} />
+                                        </button>
+                                    </div>
+
+                                    {/* ── Customer section ── */}
+                                    {assignment.bookingId?.customerId && (
+                                        <div style={{
+                                            background: th.sectionBg, borderRadius: 12,
+                                            border: `1px solid ${th.sectionBorder}`,
+                                            padding: '10px 12px', marginBottom: 10,
+                                            backdropFilter: 'blur(4px)'
+                                        }}>
+                                            <p style={{
+                                                fontSize: 9, fontWeight: 800, color: th.labelColor,
+                                                textTransform: 'uppercase', letterSpacing: '0.1em', margin: '0 0 7px'
+                                            }}>Customer</p>
+                                            <div style={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
+                                                {[
+                                                    { Icon: User, val: assignment.bookingId.customerId.fullName },
+                                                    { Icon: Phone, val: assignment.bookingId.customerId.mobileNo || 'N/A' },
+                                                    { Icon: Mail, val: assignment.bookingId.customerId.email },
+                                                ].map((item) => (
+                                                    <div key={item.val} style={{ display: 'flex', alignItems: 'center', gap: 7 }}>
+                                                        <item.Icon style={{ width: 13, height: 13, color: th.iconColor, flexShrink: 0 }} />
+                                                        <span style={{ fontSize: 12, color: th.idColor, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                                                            {item.val}
+                                                        </span>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    )}
+
+                                    {/* ── Technician / assign ── */}
+                                    {assignment.technicianId ? (
+                                        <div style={{
+                                            background: th.techBg, borderRadius: 10,
+                                            padding: '8px 12px', marginBottom: 10,
+                                            display: 'flex', alignItems: 'center', gap: 8,
+                                            border: `1px solid ${th.sectionBorder}`
+                                        }}>
+                                            <div style={{
+                                                width: 26, height: 26, borderRadius: '50%',
+                                                background: th.iconColor,
+                                                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                                fontSize: 11, fontWeight: 900, color: '#fff', flexShrink: 0
+                                            }}>
+                                                {(assignment.technicianId.fullName || '?')[0].toUpperCase()}
+                                            </div>
+                                            <div>
+                                                <p style={{ margin: 0, fontSize: 9, fontWeight: 700, color: th.labelColor, textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+                                                    Assigned Technician
+                                                </p>
+                                                <p style={{ margin: 0, fontSize: 12, fontWeight: 700, color: th.techText }}>
+                                                    {assignment.technicianId.fullName}
+                                                </p>
+                                            </div>
+                                        </div>
+                                    ) : (
+                                        <div style={{ marginBottom: 10, position: 'relative' }}>
+                                            <select
+                                                onChange={(e) => handleAssignTechnician(assignment._id, e.target.value)}
+                                                defaultValue=""
+                                                style={{
+                                                    width: '100%', padding: '8px 32px 8px 12px',
+                                                    background: th.sectionBg, border: `1.5px dashed ${th.cardBorder}`,
+                                                    borderRadius: 10, fontSize: 12, color: th.idColor,
+                                                    cursor: 'pointer', appearance: 'none',
+                                                    outline: 'none', fontWeight: 600,
+                                                }}
+                                            >
+                                                <option value="" disabled>⚡ Assign Technician</option>
+                                                {technicians.map((t) => (
+                                                    <option key={t._id} value={t._id}>{t.fullName}</option>
+                                                ))}
+                                            </select>
+                                            <div style={{
+                                                position: 'absolute', right: 10, top: '50%', transform: 'translateY(-50%)',
+                                                pointerEvents: 'none', color: th.iconColor, fontSize: 12
+                                            }}>▾</div>
+                                        </div>
+                                    )}
+
+                                    {/* ── Workflow progress ── */}
+                                    <div style={{
+                                        background: th.sectionBg, borderRadius: 12,
+                                        border: `1px solid ${th.sectionBorder}`,
+                                        padding: '10px 12px', marginBottom: 12,
+                                        display: 'flex', flexDirection: 'column', gap: 7,
+                                        backdropFilter: 'blur(4px)'
+                                    }}>
+                                        <p style={{
+                                            fontSize: 9, fontWeight: 800, color: th.labelColor,
+                                            textTransform: 'uppercase', letterSpacing: '0.1em', margin: '0 0 2px'
+                                        }}>Progress</p>
                                         {[
-                                            { icon: User,  val: assignment.bookingId.customerId.fullName },
-                                            { icon: Phone, val: assignment.bookingId.customerId.mobileNo || 'N/A' },
-                                            { icon: Mail,  val: assignment.bookingId.customerId.email },
-                                        ].map(({ icon: Icon, val }) => (
-                                            <div key={val} className="flex items-center gap-2 text-sm text-[#1a2e0e]">
-                                                <Icon className="w-3.5 h-3.5 text-[#79bd4b]" />{val}
+                                            { Icon: Beaker, label: 'Treatment Prep', val: `${assignment.treatmentPreparation?.length || 0} items` },
+                                            { Icon: Camera, label: 'Site Pictures', val: `${assignment.applyTreatment?.sitePictures?.length || 0} photos` },
+                                            { Icon: DollarSign, label: 'Payments', val: `₹${assignment.paymentCollection?.amount || 0}` },
+                                        ].map(({ Icon, label, val }) => (
+                                            <div key={label} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                                                <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                                                    <Icon style={{ width: 12, height: 12, color: th.iconColor }} />
+                                                    <span style={{ fontSize: 11, color: th.labelColor, fontWeight: 600 }}>{label}</span>
+                                                </div>
+                                                <span style={{
+                                                    fontSize: 11, fontWeight: 800, color: th.valueColor,
+                                                    background: th.badgeBg, padding: '1px 8px',
+                                                    borderRadius: 20, border: `1px solid ${th.sectionBorder}`
+                                                }}>{val}</span>
                                             </div>
                                         ))}
                                     </div>
-                                </div>
-                            )}
 
-                            {/* Technician / assign */}
-                            {assignment.technicianId ? (
-                                <div className="bg-[#d4edbe] rounded-lg p-3 mb-3">
-                                    <div className="flex items-center gap-2 text-sm text-[#2e4d1b] font-semibold">
-                                        <User className="w-4 h-4 text-[#79bd4b]" />
-                                        Assigned to: {assignment.technicianId.fullName}
+                                    {/* ── Open workflow button ── */}
+                                    <div style={{ display: 'flex', gap: 8 }}>
+                                        <button
+                                            className="ac-workflow-btn"
+                                            onClick={() => navigate(`/assignments/${assignment._id}/workflow`)}
+                                            style={{
+                                                flex: 1, display: 'flex', alignItems: 'center',
+                                                justifyContent: 'center', gap: 7,
+                                                padding: '9px 12px',
+                                                background: th.btnBg,
+                                                border: `1.5px solid ${th.btnBorder}`,
+                                                borderRadius: 12, cursor: 'pointer',
+                                                fontSize: 12, fontWeight: 800, color: th.btnText,
+                                                transition: 'all .15s ease',
+                                                backdropFilter: 'blur(4px)',
+                                            }}
+                                            onMouseEnter={e => {
+                                                e.currentTarget.style.borderColor = th.btnHoverBorder;
+                                                e.currentTarget.style.boxShadow = `0 4px 14px ${th.dot}30`;
+                                            }}
+                                            onMouseLeave={e => {
+                                                e.currentTarget.style.borderColor = th.btnBorder;
+                                                e.currentTarget.style.boxShadow = 'none';
+                                            }}
+                                        >
+                                            <ClipboardList style={{ width: 14, height: 14 }} />
+                                            Workflow
+                                        </button>
+
+                                        {assignment.status === 'completed' && (
+                                            <button
+                                                onClick={() => handleDownloadInvoice(assignment)}
+                                                style={{
+                                                    padding: '9px 12px',
+                                                    background: 'rgba(34,197,94,0.1)',
+                                                    border: '1.5px solid #22c55e',
+                                                    borderRadius: 12, cursor: 'pointer',
+                                                    color: '#15803d',
+                                                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                                    transition: 'all .15s ease'
+                                                }}
+                                                onMouseEnter={e => {
+                                                    e.currentTarget.style.background = 'rgba(34,197,94,0.2)';
+                                                    e.currentTarget.style.transform = 'scale(1.05)';
+                                                }}
+                                                onMouseLeave={e => {
+                                                    e.currentTarget.style.background = 'rgba(34,197,94,0.1)';
+                                                    e.currentTarget.style.transform = 'scale(1)';
+                                                }}
+                                                title="Download Invoice"
+                                            >
+                                                <Download style={{ width: 14, height: 14 }} />
+                                            </button>
+                                        )}
                                     </div>
                                 </div>
-                            ) : (
-                                <select onChange={(e) => handleAssignTechnician(assignment._id, e.target.value)} defaultValue=""
-                                    className="w-full px-3 py-2 mb-3 bg-[#f6faf1] border border-[#d4edbe] rounded-lg text-xs text-[#1a2e0e] focus:outline-none focus:border-[#79bd4b] transition-all">
-                                    <option value="" disabled>Assign Technician</option>
-                                    {technicians.map((t) => <option key={t._id} value={t._id}>{t.fullName}</option>)}
-                                </select>
-                            )}
-
-                            {/* Workflow progress */}
-                            <div className="space-y-1.5 mb-4">
-                                {[
-                                    { icon: Beaker,    label: 'Treatment Prep', val: `${assignment.treatmentPreparation?.length || 0} items` },
-                                    { icon: Camera,    label: 'Site Pictures',  val: `${assignment.applyTreatment?.sitePictures?.length || 0} photos` },
-                                    { icon: DollarSign,label: 'Payments',       val: `${assignment.paymentCollection?.amount || 0} records`, green: true },
-                                ].map(({ icon: Icon, label, val, green }) => (
-                                    <div key={label} className="flex items-center justify-between text-xs">
-                                        <span className="flex items-center gap-1 text-[#4e8230]"><Icon className="w-3 h-3" />{label}</span>
-                                        <span className={`font-semibold ${green ? 'text-[#4e8230]' : 'text-[#79bd4b]'}`}>{val}</span>
-                                    </div>
-                                ))}
                             </div>
-
-                            <button onClick={() => navigate(`/assignments/${assignment._id}/workflow`)}
-                                className="w-full flex items-center justify-center gap-2 px-3 py-2 bg-[#f6faf1] border border-[#d4edbe] hover:border-[#79bd4b] rounded-lg text-xs font-semibold text-[#2e4d1b] transition-all">
-                                <ClipboardList className="w-3 h-3" /> Open Workflow
-                            </button>
-                        </div>
-                    </div>
-                ))}
-            </div>
+                        );
+                    })}
+                </div>
+            </>
 
             {/* Empty */}
             {filteredAssignments.length === 0 && (
@@ -396,8 +713,8 @@ const Assignments = () => {
                                 <input type="number" min="0" value={paymentForm.amount} onChange={(e) => setPaymentForm({ ...paymentForm, amount: Number(e.target.value) })} className={modalInput} required />
                             </div>
                             {[
-                                { label: 'Payment Method *', key: 'paymentMethod', options: ['cash','card','upi','bank_transfer','other'] },
-                                { label: 'Payment Status *', key: 'paymentStatus', options: ['pending','completed','failed'] },
+                                { label: 'Payment Method *', key: 'paymentMethod', options: ['cash', 'card', 'upi', 'bank_transfer', 'other'] },
+                                { label: 'Payment Status *', key: 'paymentStatus', options: ['pending', 'completed', 'failed'] },
                             ].map(({ label, key, options }) => (
                                 <div key={key}>
                                     <label className="block text-sm font-semibold text-[#2e4d1b] mb-2">{label}</label>
@@ -418,6 +735,10 @@ const Assignments = () => {
                     </div>
                 </div>
             )}
+            <AssignmentInvoice
+                assignment={printingAssignment}
+                invoiceRef={invoiceRef}
+            />
         </div>
     );
 };

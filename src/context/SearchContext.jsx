@@ -3,21 +3,21 @@ import { useLocation } from 'react-router-dom';
 
 const SearchContext = createContext();
 
-export const useSearch = () => {
+export function useSearch() {
     const context = useContext(SearchContext);
     if (!context) {
         throw new Error('useSearch must be used within a SearchProvider');
     }
     return context;
-};
+}
 
-export const SearchProvider = ({ children }) => {
+export function SearchProvider({ children }) {
     const [searchQuery, setSearchQuery] = useState('');
     const location = useLocation();
 
     // Reset search query on route change to prevent stale searches on new pages
     useEffect(() => {
-        setSearchQuery('');
+        setSearchQuery(prev => prev === '' ? prev : '');
     }, [location.pathname]);
 
     const value = {

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { ArrowLeft, Save, Eye, EyeOff, User, Mail, Phone, MapPin, Lock, FileText, AlertCircle, X } from 'lucide-react';
 import customerService from '../services/customerService';
@@ -21,14 +21,7 @@ const CreateCustomer = () => {
         notes: '',
     });
 
-    // Fetch customer data if editing
-    useEffect(() => {
-        if (isEditMode) {
-            fetchCustomer();
-        }
-    }, [id]);
-
-    const fetchCustomer = async () => {
+    const fetchCustomer = useCallback(async () => {
         try {
             setLoading(true);
             const response = await customerService.getCustomerById(id);
@@ -48,7 +41,14 @@ const CreateCustomer = () => {
         } finally {
             setLoading(false);
         }
-    };
+    }, [id, navigate]);
+
+    // Fetch customer data if editing
+    useEffect(() => {
+        if (isEditMode) {
+            fetchCustomer();
+        }
+    }, [isEditMode, fetchCustomer]);
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;

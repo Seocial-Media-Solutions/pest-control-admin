@@ -260,16 +260,7 @@ const Services = () => {
           </div>
         )}
 
-        {/* Search */}
-        <div className="bg-white border border-gray-100 rounded-2xl px-5 py-4"
-          style={{ boxShadow: "0 1px 3px rgba(0,0,0,0.06)" }}>
-          <div className="relative">
-            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-300" />
-            <input type="text" placeholder="Search services..." value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-10 pr-4 py-2.5 bg-gray-50 border-2 border-gray-100 rounded-xl text-sm text-gray-700 outline-none placeholder:text-gray-300 transition-all search-input" />
-          </div>
-        </div>
+       
 
         {/* Services List */}
         <div className="space-y-4">

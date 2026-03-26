@@ -1,29 +1,33 @@
-import { createContext, useContext, useState, useEffect } from 'react';
+import { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useQueryClient } from '@tanstack/react-query';
 import api from '../services/api';
 import { toast } from 'react-hot-toast';
 
 const AuthContext = createContext();
 
-export const useAuth = () => {
+export function useAuth() {
     const context = useContext(AuthContext);
     if (!context) {
         throw new Error('useAuth must be used within an AuthProvider');
     }
     return context;
-};
+}
 
-export const AuthProvider = ({ children }) => {
+export function AuthProvider({ children }) {
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
     const navigate = useNavigate();
 
-    useEffect(() => {
-        checkAuth();
-    }, []);
+    const logout = useCallback(() => {
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        setUser(null);
+        toast.success('Logged out successfully');
 
-    const checkAuth = async () => {
+        navigate('/login');
+    }, [navigate]);
+
+    const checkAuth = useCallback(async () => {
         const token = localStorage.getItem('token');
         const storedUser = localStorage.getItem('user');
 
@@ -38,7 +42,19 @@ export const AuthProvider = ({ children }) => {
             }
         }
         setLoading(false);
-    };
+    }, [logout]);
+
+    useEffect(() => {
+        checkAuth();
+    }, [checkAuth]);
+
+    const setUserSession = useCallback((data) => {
+        const { token, user } = data;
+        localStorage.setItem('token', token);
+        localStorage.setItem('user', JSON.stringify(user));
+        setUser(user);
+        toast.success(`Welcome back, ${user.name || 'Admin'}!`);
+    }, []);
 
     const login = async (credentials) => {
         try {
@@ -67,23 +83,6 @@ export const AuthProvider = ({ children }) => {
             console.error('OTP Verification error:', error);
             throw error;
         }
-    };
-
-    const setUserSession = (data) => {
-        const { token, user } = data;
-        localStorage.setItem('token', token);
-        localStorage.setItem('user', JSON.stringify(user));
-        setUser(user);
-        toast.success(`Welcome back, ${user.name || 'Admin'}!`);
-    };
-
-    const logout = () => {
-        localStorage.removeItem('token');
-        localStorage.removeItem('user');
-        setUser(null);
-        toast.success('Logged out successfully');
-
-        navigate('/login');
     };
 
     return (

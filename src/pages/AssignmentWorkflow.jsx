@@ -1,9 +1,12 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import {
     ClipboardList, ArrowLeft, Loader2, Beaker, Camera, DollarSign,
-    Trash2, Plus, XCircle, CheckCircle2, User, MapPin,
+    Trash2, Plus, XCircle, CheckCircle2, User, MapPin, Download,
 } from 'lucide-react';
+import html2pdf from 'html2pdf.js/dist/html2pdf.bundle.min.js';
+import AssignmentInvoice from '../components/AssignmentInvoice';
+import { useRef } from 'react';
 import { toast } from 'react-hot-toast';
 import {
     getAssignmentById,
@@ -22,21 +25,55 @@ const AssignmentWorkflow = () => {
     const [prepForm, setPrepForm]     = useState({ chemicals: '', quantity: '' });
     const [pictureFile, setPictureFile] = useState(null);
     const [paymentForm, setPaymentForm] = useState({ amount: '', paymentMethod: 'cash' });
+    const invoiceRef = useRef(null);
 
-    useEffect(() => { fetchAssignment(); }, [id]);
+    const handleDownloadInvoice = () => {
+        const element = invoiceRef.current;
+        if (!element) {
+            toast.error('Invoice template not ready');
+            return;
+        }
 
-    const fetchAssignment = async () => {
+        const opt = {
+            margin:       0,
+            filename:     `Invoice-${assignment._id.slice(-6).toUpperCase()}.pdf`,
+            image:        { type: 'jpeg', quality: 0.98 },
+            html2canvas:  { 
+                scale: 2, 
+                useCORS: true,
+                logging: false,
+                letterRendering: true,
+                windowWidth: 794
+            },
+            jsPDF:        { unit: 'pt', format: 'a4', orientation: 'portrait' }
+        };
+
+        const worker = html2pdf().from(element).set(opt);
+        
+        toast.promise(
+            worker.save(),
+            {
+                loading: 'Preparing invoice...',
+                success: 'Invoice downloaded!',
+                error: (err) => `PDF Error: ${err.message || 'Generation failed'}`
+            }
+        );
+    };
+
+    const fetchAssignment = useCallback(async () => {
         try {
             setLoading(true);
             const response = await getAssignmentById(id);
             setAssignment(response.data);
-        } catch (error) {
+        } catch {
             toast.error('Failed to load assignment details');
             navigate('/assignments');
         } finally {
             setLoading(false);
         }
-    };
+    }, [id, navigate]);
+
+    useEffect(() => { fetchAssignment(); }, [fetchAssignment]);
 
     useEffect(() => {
         if (assignment?.paymentCollection?.amount > 0) {
@@ -152,10 +189,25 @@ const AssignmentWorkflow = () => {
                         <p className="text-sm text-[#4e8230]">Assignment #{id.slice(-6).toUpperCase()}</p>
                     </div>
                 </div>
-                <button onClick={handleDeleteAssignment} className="px-4 py-2 bg-red-50 border border-red-200 text-red-500 hover:bg-red-100 rounded-lg flex items-center gap-2 text-sm font-semibold transition-colors">
-                    <Trash2 className="w-4 h-4" /> Delete
-                </button>
+                <div className="flex items-center gap-3">
+                    {assignment.status === 'completed' && (
+                        <button 
+                            onClick={handleDownloadInvoice}
+                            className="px-4 py-2 bg-green-500 text-white hover:bg-green-600 rounded-lg flex items-center gap-2 text-sm font-semibold transition-all shadow-md shadow-green-500/20"
+                        >
+                            <Download className="w-4 h-4" /> Download Invoice
+                        </button>
+                    )}
+                    <button onClick={handleDeleteAssignment} className="px-4 py-2 bg-red-50 border border-red-200 text-red-500 hover:bg-red-100 rounded-lg flex items-center gap-2 text-sm font-semibold transition-colors">
+                        <Trash2 className="w-4 h-4" /> Delete
+                    </button>
+                </div>
             </div>
+
+            <AssignmentInvoice 
+                assignment={assignment} 
+                invoiceRef={invoiceRef} 
+            />
 
             {/* Info Card */}
             <div className="wf-card p-6 grid grid-cols-1 md:grid-cols-3 gap-6">

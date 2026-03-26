@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { ArrowLeft, Save, User, Wrench, MapPin, Phone, AlertCircle, X } from 'lucide-react';
 import bookingService from '../services/bookingService';
@@ -26,16 +26,7 @@ const CreateBooking = () => {
         plan: 'single',
     });
 
-    // Fetch customers and services on mount
-    useEffect(() => {
-        fetchCustomers();
-        fetchServices();
-        if (isEditMode) {
-            fetchBooking();
-        }
-    }, [id]);
-
-    const fetchCustomers = async () => {
+    const fetchCustomers = useCallback(async () => {
         try {
             const response = await customerService.getAllCustomers();
             setCustomers(response.data.customers || []);
@@ -43,9 +34,9 @@ const CreateBooking = () => {
             console.error('Error fetching customers:', error);
             toast.error('Failed to load customers');
         }
-    };
+    }, []);
 
-    const fetchServices = async () => {
+    const fetchServices = useCallback(async () => {
         try {
             const [servicesRes, subServicesRes] = await Promise.all([
                 serviceService.getAllServices(),
@@ -57,9 +48,9 @@ const CreateBooking = () => {
             console.error('Error fetching services:', error);
             toast.error('Failed to load services');
         }
-    };
+    }, []);
 
-    const fetchBooking = async () => {
+    const fetchBooking = useCallback(async () => {
         try {
             setLoading(true);
             const response = await bookingService.getBookingById(id);
@@ -80,7 +71,16 @@ const CreateBooking = () => {
         } finally {
             setLoading(false);
         }
-    };
+    }, [id, navigate]);
+
+    // Fetch customers and services on mount
+    useEffect(() => {
+        fetchCustomers();
+        fetchServices();
+        if (isEditMode) {
+            fetchBooking();
+        }
+    }, [isEditMode, fetchCustomers, fetchServices, fetchBooking]);
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;

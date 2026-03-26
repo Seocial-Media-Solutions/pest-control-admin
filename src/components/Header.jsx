@@ -1,14 +1,11 @@
-import { Menu, Search, Bell, Moon, Sun, LogOut } from 'lucide-react';
+import { Menu, Search, Bell, LogOut } from 'lucide-react';
 import { useState } from 'react';
-import { useTheme } from '../context/ThemeContext';
 import { useSearch } from '../context/SearchContext';
 import { useAuth } from '../context/AuthContext';
 
 const Header = ({ toggleSidebar }) => {
-    const { isDark, toggleTheme } = useTheme();
     const { searchQuery, setSearchQuery } = useSearch();
     const { user, logout } = useAuth();
-    const [notifications] = useState(3);
 
     const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
 
@@ -53,12 +50,7 @@ const Header = ({ toggleSidebar }) => {
 
                     {/* Notifications */}
                     <button className={`hidden lg:block relative flex items-center justify-center w-10 h-10 rounded-lg transition-all duration-200 hover:bg-light-surface-hover hover:text-primary-600 text-light-text`}>
-                        <Bell className="w-5 h-5" />
-                        {notifications > 0 && (
-                            <span className="absolute top-1.5 right-1.5 min-w-[18px] h-[18px] px-1 bg-red-500 rounded-full text-white text-[10px] font-bold flex items-center justify-center animate-pulse">
-                                {notifications}
-                            </span>
-                        )}
+
                     </button>
 
                     {/* Divider */}

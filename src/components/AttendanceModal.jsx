@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import {
     Calendar,
     CheckCircle,
@@ -26,13 +26,7 @@ const AttendanceModal = ({ technician, onClose }) => {
         'July', 'August', 'September', 'October', 'November', 'December'
     ];
 
-    useEffect(() => {
-        if (technician) {
-            fetchAttendance();
-        }
-    }, [technician, selectedMonth]);
-
-    const fetchAttendance = async () => {
+    const fetchAttendance = useCallback(async () => {
         try {
             setLoading(true);
             setError(null);
@@ -44,7 +38,13 @@ const AttendanceModal = ({ technician, onClose }) => {
         } finally {
             setLoading(false);
         }
-    };
+    }, [technician?._id, selectedMonth]);
+
+    useEffect(() => {
+        if (technician) {
+            fetchAttendance();
+        }
+    }, [technician, fetchAttendance]);
 
     const handleMarkAttendance = async (status) => {
         try {

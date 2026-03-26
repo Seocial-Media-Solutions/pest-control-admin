@@ -37,7 +37,7 @@ export default function EditTechnician() {
     try {
       await promise;
       navigate("/technicians");
-    } catch (err) { }
+    } catch { /* Ignore */ }
   };
 
   if (!initialData) return <p className="text-center mt-20">Loading...</p>;

@@ -59,13 +59,19 @@ const CreateAssignment = () => {
 
     const fetchPendingBookings = async () => {
         try {
-            // Fetch pending and confirmed bookings that might need assignment
-            const response = await bookingService.getAllBookings({ status: 'pending' });
-            // We could also fetch 'confirmed' if needed, but 'pending' is main queue
-            setBookings(response.data.bookings || []);
+            // Fetch all bookings to ensure we have data to select
+            const response = await bookingService.getAllBookings();
+            console.log('Fetched Bookings:', response);
+            
+            const fetchedBookings = response.data?.bookings || [];
+            setBookings(fetchedBookings);
+            
+            if (fetchedBookings.length === 0) {
+                console.warn('No bookings found in the database');
+            }
         } catch (err) {
             console.error('Error fetching bookings:', err);
-            toast.error('Failed to load bookings');
+            toast.error('Failed to load bookings from server');
         }
     };
 
@@ -133,29 +139,54 @@ const CreateAssignment = () => {
                     </div>
 
                     <div className="space-y-4">
-                       
+                        <div>
+                            <label className="block text-sm font-medium text-light-text mb-2">
+                                Select A Pending Booking
+                            </label>
+                            <select
+                                value={formData.bookingId}
+                                onChange={(e) => setFormData({ ...formData, bookingId: e.target.value })}
+                                className="w-full px-4 py-3 bg-light-bg border border-light-border rounded-lg text-light-text focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all duration-200"
+                                required
+                            >
+                                <option value="">Select a booking to allocate</option>
+                                {bookings.map((booking) => (
+                                    <option key={booking._id} value={booking._id}>
+                                        {booking.customerId?.fullName || 'Untitled Booking'} - {new Date(booking.bookingDate).toLocaleDateString()} (₹{booking.totalAmount || 0}) [{booking.status.toUpperCase()}]
+                                    </option>
+                                ))}
+                            </select>
+                            {bookings.length === 0 && !loading && (
+                                <p className="text-xs text-amber-500 mt-2">No pending bookings found. All current bookings are already assigned or completed.</p>
+                            )}
+                        </div>
 
                         {/* Show selected booking details */}
                         {selectedBooking && (
-                            <div className="bg-light-bg/50 rounded-lg p-4 border border-light-border">
-                                <h4 className="text-xs font-semibold text-light-text-tertiary mb-3">BOOKING SUMMARY</h4>
+                            <div className="bg-light-bg/50 rounded-lg p-4 border border-light-border animate-fade-in">
+                                <h4 className="text-xs font-semibold text-light-text-tertiary mb-3 uppercase tracking-wider">BOOKING SUMMARY</h4>
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                     <div className="space-y-2">
                                         <div className="flex items-center gap-2 text-sm text-light-text">
-                                            <User className="w-4 h-4 text-light-text-tertiary" />
-                                            <span className="text-light-text-secondary">Customer:</span> {selectedBooking.customerId?.fullName}
+                                            <User className="w-4 h-4 text-primary-500" />
+                                            <span className="text-light-text-secondary font-medium">Customer:</span> {selectedBooking.customerId?.fullName}
                                         </div>
                                         <div className="flex items-center gap-2 text-sm text-light-text">
-                                            <Phone className="w-4 h-4 text-light-text-tertiary" />
-                                            <span className="text-light-text-secondary">Mobile:</span> {selectedBooking.customerId?.mobileNo || selectedBooking.additionalMobileNo}
+                                            <Phone className="w-4 h-4 text-primary-500" />
+                                            <span className="text-light-text-secondary font-medium">Mobile:</span> {selectedBooking.customerId?.mobileNo || selectedBooking.additionalMobileNo}
                                         </div>
                                     </div>
                                     <div className="space-y-2">
                                         <div className="flex items-center gap-2 text-sm text-light-text">
-                                            <MapPin className="w-4 h-4 text-light-text-tertiary" />
-                                            <span className="text-light-text-secondary">Address:</span> <span className="line-clamp-1">{selectedBooking.additionalAddress || selectedBooking.customerId?.address}</span>
+                                            <MapPin className="w-4 h-4 text-primary-500" />
+                                            <span className="text-light-text-secondary font-medium">Address:</span> 
+                                            <span className="line-clamp-1">{selectedBooking.additionalAddress || selectedBooking.customerId?.address || 'N/A'}</span>
                                         </div>
-                                      
+                                        <div className="flex items-center gap-2 text-sm text-light-text">
+                                            <Calendar className="w-4 h-4 text-primary-500" />
+                                            <span className="text-light-text-secondary font-medium">Date:</span> 
+                                            {new Date(selectedBooking.bookingDate).toLocaleDateString()}
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -175,7 +206,7 @@ const CreateAssignment = () => {
                     <div className="space-y-4">
                         <div>
                             <label className="block text-sm font-medium text-light-text mb-2">
-                                Select Technician (Optional)
+                                Select Technician 
                             </label>
                             <select
                                 value={formData.technicianId}

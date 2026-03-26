@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
     Users,
@@ -20,7 +20,7 @@ import { useSearch } from '../context/SearchContext';
 
 const Customers = () => {
     const navigate = useNavigate();
-    const { searchQuery, setSearchQuery } = useSearch();
+    const { searchQuery } = useSearch();
     const [customers, setCustomers] = useState([]);
     const [loading, setLoading] = useState(true);
     // Removed local searchTerm
@@ -28,7 +28,7 @@ const Customers = () => {
     const [showFilters, setShowFilters] = useState(false);
 
     // Fetch customers
-    const fetchCustomers = async () => {
+    const fetchCustomers = useCallback(async () => {
         try {
             setLoading(true);
             const params = {};
@@ -43,11 +43,11 @@ const Customers = () => {
         } finally {
             setLoading(false);
         }
-    };
+    }, [searchQuery, statusFilter]);
 
     useEffect(() => {
         fetchCustomers();
-    }, [searchQuery, statusFilter]);
+    }, [fetchCustomers]);
 
     // Delete customer
     const handleDeleteCustomer = async (id, name) => {

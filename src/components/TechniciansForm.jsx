@@ -30,7 +30,7 @@ export default function TechnicianForm({ initialData, onSubmit, mode }) {
 
   useEffect(() => {
     if (initialData) {
-      const { password, ...rest } = initialData;
+      const { password: _, ...rest } = initialData;
       reset(rest);
     }
   }, [initialData, reset]);
@@ -59,7 +59,7 @@ export default function TechnicianForm({ initialData, onSubmit, mode }) {
     email: {
       required: "Email is required",
       pattern: {
-        value: /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/,
+        value: /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/,
         message: "Invalid email"
       }
     },
@@ -82,7 +82,7 @@ export default function TechnicianForm({ initialData, onSubmit, mode }) {
   };
 
   // Helper component for input fields
-  const InputField = ({ label, name, type = "text", icon: Icon, placeholder, registerProps, error }) => (
+  const InputField = ({ label, type = "text", icon: Icon, placeholder, registerProps, error }) => (
     <div className="space-y-1.5">
       <label className="text-sm font-medium text-light-text dark:text-light-text flex items-center gap-2">
         {label}

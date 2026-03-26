@@ -26,7 +26,7 @@ export default function AddTechnician() {
     try {
       await promise;
       navigate("/");
-    } catch (err) { }
+    } catch { /* Ignore */ }
   };
 
   return (

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
     Calendar, Plus, Edit2, Trash2, RefreshCw,
@@ -14,7 +14,7 @@ const Bookings = () => {
     const [bookings, setBookings] = useState([]);
     const [loading, setLoading] = useState(true);
 
-    const fetchBookings = async () => {
+    const fetchBookings = useCallback(async () => {
         try {
             setLoading(true);
             const params = {};
@@ -26,9 +26,9 @@ const Bookings = () => {
         } finally {
             setLoading(false);
         }
-    };
+    }, [searchQuery]);
 
-    useEffect(() => { fetchBookings(); }, [searchQuery]);
+    useEffect(() => { fetchBookings(); }, [fetchBookings]);
 
     const handleRejectBooking = async (id) => {
         if (window.confirm('Reject this booking? Status will be set to cancelled.')) {
@@ -191,30 +191,38 @@ const Bookings = () => {
                                         </div>
                                     </div>
 
-                                    <div className="grid grid-cols-2 gap-3">
-                                        {booking.status === 'pending' ? (
-                                            <>
-                                                <button onClick={() => handleRejectBooking(booking._id)}
-                                                    className="px-4 py-2 rounded-lg bg-red-50 border border-red-200 text-red-500 hover:bg-red-100 text-xs font-semibold transition-colors flex items-center justify-center gap-2">
-                                                    <XCircle className="w-4 h-4" /> Reject
-                                                </button>
-                                                <button onClick={() => handleAssignToTechnician(booking)}
-                                                    className="btn-g px-4 py-2 text-xs flex items-center justify-center gap-2">
-                                                    <CheckCircle2 className="w-4 h-4" /> Assign Tech
-                                                </button>
-                                            </>
-                                        ) : (
-                                            <>
-                                                <button onClick={() => navigate('/assignments')}
-                                                    className="col-span-1 px-4 py-2 rounded-lg bg-[#f6faf1] border border-[#d4edbe] hover:border-[#79bd4b] text-[#2e4d1b] text-xs font-semibold transition-colors flex items-center justify-center">
-                                                    View
-                                                </button>
-                                                <button onClick={() => handleAssignToTechnician(booking)}
-                                                    className="col-span-1 btn-g px-4 py-2 text-xs flex items-center justify-center gap-1.5">
-                                                    <RefreshCw className="w-3.5 h-3.5" /> Reassign
-                                                </button>
-                                            </>
-                                        )}
+                                    <div className="flex flex-col gap-2">
+                                        <div className="grid grid-cols-2 gap-3">
+                                            {booking.status === 'pending' ? (
+                                                <>
+                                                    <button onClick={() => handleRejectBooking(booking._id)}
+                                                        className="px-4 py-2 rounded-lg bg-red-50 border border-red-200 text-red-500 hover:bg-red-100 text-xs font-semibold transition-colors flex items-center justify-center gap-2">
+                                                        <XCircle className="w-4 h-4" /> Reject
+                                                    </button>
+                                                    <button onClick={() => handleAssignToTechnician(booking)}
+                                                        className="btn-g px-4 py-2 text-xs flex items-center justify-center gap-2">
+                                                        <CheckCircle2 className="w-4 h-4" /> Assign Tech
+                                                    </button>
+                                                </>
+                                            ) : (
+                                                <>
+                                                    <button onClick={() => navigate('/assignments')}
+                                                        className="col-span-1 px-4 py-2 rounded-lg bg-[#f6faf1] border border-[#d4edbe] hover:border-[#79bd4b] text-[#2e4d1b] text-xs font-semibold transition-colors flex items-center justify-center">
+                                                        View
+                                                    </button>
+                                                    <button onClick={() => handleAssignToTechnician(booking)}
+                                                        className="col-span-1 btn-g px-4 py-2 text-xs flex items-center justify-center gap-1.5">
+                                                        <RefreshCw className="w-3.5 h-3.5" /> Reassign
+                                                    </button>
+                                                </>
+                                            )}
+                                        </div>
+                                        <button 
+                                            onClick={() => handleDeleteBooking(booking._id)}
+                                            className="w-full py-2 rounded-lg bg-red-50 border border-red-100 text-red-600 hover:bg-red-100 hover:border-red-200 text-xs font-bold transition-all flex items-center justify-center gap-2"
+                                        >
+                                            <Trash2 className="w-3.5 h-3.5" /> Delete Booking Record
+                                        </button>
                                     </div>
                                 </div>
 

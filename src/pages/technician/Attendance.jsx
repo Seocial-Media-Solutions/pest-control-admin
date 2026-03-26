@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import {
@@ -13,7 +13,6 @@ import {
     User,
 } from 'lucide-react';
 import { getAttendanceByMonth, getTechnicianById } from '../../services/technicianService';
-import toast from 'react-hot-toast';
 
 export default function Attendance() {
     const { id } = useParams();
@@ -44,7 +43,6 @@ export default function Attendance() {
     const {
         data: attendanceResponse,
         isLoading: attendanceLoading,
-        error: attendanceError,
     } = useQuery({
         queryKey: ['attendance', id, formatMonthForAPI(selectedMonth)],
         queryFn: async () => {

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import {
-  Users, UserPlus, Trash2, Search, CheckCircle, XCircle,
+  Users, UserPlus, Trash2, CheckCircle, XCircle,
   ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight,
   Loader2, Calendar, Clock, AlertTriangle,
 } from "lucide-react";
@@ -10,6 +10,7 @@ import toast from "react-hot-toast";
 import { getAllTechnicians, markAttendance } from '../../services/technicianService';
 import Toggle from '../../components/Toggle';
 import { API_URL } from "../../utils";
+import { useSearch } from "../../context/SearchContext";
 
 const PRIMARY = "#74bc4c";
 
@@ -77,11 +78,37 @@ function confirmDelete(name, onConfirm) {
 
 export default function TechnicianList() {
   const queryClient = useQueryClient();
-  const [search, setSearch] = useState("");
+  const { searchQuery } = useSearch();
   const [currentPage, setCurrentPage] = useState(1);
   const [markingAttendanceFor, setMarkingAttendanceFor] = useState(null);
+  const [isBulkMarking, setIsBulkMarking] = useState(false);
   const pageSize = 10;
   const navigate = useNavigate();
+
+  const handleMarkAllPresent = async () => {
+    const activeTechs = technicians.filter(t => t.isActive && t.attendance?.status !== 'Present');
+    if (activeTechs.length === 0) {
+      return toast.success("All active technicians are already marked present", { style: toastStyle() });
+    }
+
+    if (!window.confirm(`Mark ${activeTechs.length} technicians as present for today?`)) return;
+
+    const toastId = richToast.loading("Bulk Marking", `Recording attendance for ${activeTechs.length} technicians...`);
+    setIsBulkMarking(true);
+
+    try {
+      await Promise.all(activeTechs.map(t => 
+        markAttendance(t._id, { status: 'Present', date: new Date().toISOString() })
+      ));
+      richToast.success(toastId, "Success", `All ${activeTechs.length} active technicians are present.`);
+      queryClient.invalidateQueries(['technicians']);
+    } catch (err) {
+      console.error(err);
+      richToast.error(toastId, "Bulk Action Failed", "Something went wrong during bulk marking.");
+    } finally {
+      setIsBulkMarking(false);
+    }
+  };
 
   const { data: technicians = [], isLoading: loading } = useQuery({
     queryKey: ['technicians'],
@@ -133,7 +160,7 @@ export default function TechnicianList() {
   };
 
   const filteredTechnicians = technicians.filter((e) => {
-    const q = search.toLowerCase();
+    const q = searchQuery.toLowerCase();
     return e.fullName?.toLowerCase().includes(q) || e.username?.toLowerCase().includes(q) || e.email?.toLowerCase().includes(q);
   });
 
@@ -141,7 +168,7 @@ export default function TechnicianList() {
   const startIndex = (currentPage - 1) * pageSize;
   const paginatedTechnicians = filteredTechnicians.slice(startIndex, startIndex + pageSize);
 
-  useEffect(() => { setCurrentPage(1); }, [search]);
+  useEffect(() => { setCurrentPage(1); }, [searchQuery]);
 
   return (
     <div className="min-h-screen max-w-full mx-auto space-y-5 animate-fade-in">
@@ -175,27 +202,25 @@ export default function TechnicianList() {
               </p>
             </div>
           </div>
-          <button
-            onClick={() => navigate("/technicians/addtechnician")}
-            className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-white text-sm font-semibold btn-primary-sm"
-          >
-            <UserPlus size={16} /> Add Technician
-          </button>
-        </div>
-
-        {/* ── Search ── */}
-        <div className="bg-white border border-gray-100 rounded-2xl px-5 py-4 card-shadow">
-          <div className="relative">
-            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-300" />
-            <input
-              type="text"
-              placeholder="Search by name, username, or email..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="w-full pl-10 pr-4 py-2.5 bg-gray-50 border-2 border-gray-100 rounded-xl text-sm text-gray-700 outline-none placeholder:text-gray-300 transition-all duration-200 search-focus"
-            />
+          <div className="flex items-center gap-3">
+            <button
+              onClick={handleMarkAllPresent}
+              disabled={isBulkMarking || loading || technicians.length === 0}
+              className="flex items-center gap-2 px-4 py-2.5 rounded-xl border border-[#74bc4c] text-[#74bc4c] text-sm font-semibold hover:bg-[#74bc4c08] transition-all disabled:opacity-50"
+            >
+              {isBulkMarking ? <Loader2 size={16} className="animate-spin" /> : <CheckCircle size={16} />} 
+              Mark All Present
+            </button>
+            <button
+              onClick={() => navigate("/technicians/addtechnician")}
+              className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-white text-sm font-semibold btn-primary-sm"
+            >
+              <UserPlus size={16} /> Add Technician
+            </button>
           </div>
         </div>
+
+      
 
         {/* ── Table ── */}
         <div className="bg-white border border-gray-100 rounded-2xl overflow-hidden card-shadow">
@@ -226,7 +251,7 @@ export default function TechnicianList() {
                   <tr><td colSpan="8" className="py-16 text-center">
                     <Users size={32} className="mx-auto mb-3 text-gray-200" />
                     <p className="text-sm text-gray-400 font-medium">No technicians found</p>
-                    {search && <p className="text-xs text-gray-300 mt-1">Try a different search term</p>}
+                    {searchQuery && <p className="text-xs text-gray-300 mt-1">Try a different search term</p>}
                   </td></tr>
                 ) : (
                   paginatedTechnicians.map((exec) => {
@@ -388,34 +413,34 @@ export default function TechnicianList() {
             )}
           </div>
 
-          {/* Pagination */}
-          <div className="px-5 py-3.5 border-t border-gray-50 flex items-center justify-between bg-white">
-            <p className="text-xs text-gray-400 font-medium">
-              {filteredTechnicians.length > 0
-                ? `Showing ${startIndex + 1}–${Math.min(startIndex + pageSize, filteredTechnicians.length)} of ${filteredTechnicians.length}`
-                : "No results"}
-            </p>
-            <div className="flex items-center gap-1.5">
-              {[
-                { icon: ChevronsLeft, action: () => setCurrentPage(1), disabled: currentPage === 1 },
-                { icon: ChevronLeft, action: () => setCurrentPage(p => Math.max(1, p - 1)), disabled: currentPage === 1 },
-                { icon: ChevronRight, action: () => setCurrentPage(p => Math.min(totalPages, p + 1)), disabled: currentPage === totalPages },
-                { icon: ChevronsRight, action: () => setCurrentPage(totalPages), disabled: currentPage === totalPages },
-              ].map(({ icon: Icon, action, disabled }, i) => (
-                <button
-                  key={i}
-                  onClick={action}
-                  disabled={disabled}
-                  className="p-1.5 rounded-lg border border-gray-100 text-gray-400 disabled:opacity-30 page-btn"
-                >
-                  <Icon size={15} />
-                </button>
-              ))}
-              <span className="px-3 py-1.5 text-xs font-semibold text-gray-500">
-                {currentPage} / {totalPages || 1}
-              </span>
-            </div>
-          </div>
+              {/* Pagination */}
+              <div className="px-5 py-3.5 border-t border-gray-50 flex items-center justify-between bg-white">
+                <p className="text-xs text-gray-400 font-medium">
+                  {filteredTechnicians.length > 0
+                    ? `Showing ${startIndex + 1}–${Math.min(startIndex + pageSize, filteredTechnicians.length)} of ${filteredTechnicians.length}`
+                    : "No results"}
+                </p>
+                <div className="flex items-center gap-1.5">
+                  {[
+                    { icon: ChevronsLeft, action: () => setCurrentPage(1), disabled: currentPage === 1 },
+                    { icon: ChevronLeft, action: () => setCurrentPage(p => Math.max(1, p - 1)), disabled: currentPage === 1 },
+                    { icon: ChevronRight, action: () => setCurrentPage(p => Math.min(totalPages, p + 1)), disabled: currentPage === totalPages },
+                    { icon: ChevronsRight, action: () => setCurrentPage(totalPages), disabled: currentPage === totalPages },
+                  ].map((item, i) => (
+                    <button
+                      key={i}
+                      onClick={item.action}
+                      disabled={item.disabled}
+                      className="p-1.5 rounded-lg border border-gray-100 text-gray-400 disabled:opacity-30 page-btn"
+                    >
+                      <item.icon size={15} />
+                    </button>
+                  ))}
+                  <span className="px-3 py-1.5 text-xs font-semibold text-gray-500">
+                    {currentPage} / {totalPages || 1}
+                  </span>
+                </div>
+              </div>
         </div>
       </div>
     </div>

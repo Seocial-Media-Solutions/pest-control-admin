@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import {
-    ClipboardList, ArrowLeft, Loader2, Beaker, Camera, DollarSign,
+    ClipboardList, ArrowLeft, Loader2, Beaker, Camera, ReceiptIndianRupee,
     Trash2, Plus, XCircle, CheckCircle2, User, MapPin, Download,
 } from 'lucide-react';
 import html2pdf from 'html2pdf.js/dist/html2pdf.bundle.min.js';
@@ -20,44 +20,57 @@ const AssignmentWorkflow = () => {
     const { id } = useParams();
     const navigate = useNavigate();
     const [assignment, setAssignment] = useState(null);
-    const [loading, setLoading]       = useState(true);
+    const [loading, setLoading] = useState(true);
 
-    const [prepForm, setPrepForm]     = useState({ chemicals: '', quantity: '' });
+    const [prepForm, setPrepForm] = useState({ chemicals: '', quantity: '' });
     const [pictureFile, setPictureFile] = useState(null);
     const [paymentForm, setPaymentForm] = useState({ amount: '', paymentMethod: 'cash' });
+    const [showInvoicePreview, setShowInvoicePreview] = useState(false);
+    const [printingAssignment, setPrintingAssignment] = useState(null);
     const invoiceRef = useRef(null);
 
     const handleDownloadInvoice = () => {
-        const element = invoiceRef.current;
-        if (!element) {
-            toast.error('Invoice template not ready');
-            return;
-        }
+        setShowInvoicePreview(true);
+    };
 
-        const opt = {
-            margin:       0,
-            filename:     `Invoice-${assignment._id.slice(-6).toUpperCase()}.pdf`,
-            image:        { type: 'jpeg', quality: 0.98 },
-            html2canvas:  { 
-                scale: 2, 
-                useCORS: true,
-                logging: false,
-                letterRendering: true,
-                windowWidth: 794
-            },
-            jsPDF:        { unit: 'pt', format: 'a4', orientation: 'portrait' }
-        };
+    const handleActualDownload = () => {
+        setPrintingAssignment(assignment);
 
-        const worker = html2pdf().from(element).set(opt);
-        
-        toast.promise(
-            worker.save(),
-            {
-                loading: 'Preparing invoice...',
-                success: 'Invoice downloaded!',
-                error: (err) => `PDF Error: ${err.message || 'Generation failed'}`
+        setTimeout(() => {
+            const element = invoiceRef.current;
+            if (!element) {
+                toast.error('Invoice template not ready');
+                return;
             }
-        );
+
+            const opt = {
+                margin: 0,
+                filename: `Invoice-${assignment._id.slice(-6).toUpperCase()}.pdf`,
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: {
+                    scale: 2,
+                    useCORS: true,
+                    logging: false,
+                    letterRendering: true,
+                    windowWidth: 794
+                },
+                jsPDF: { unit: 'pt', format: 'a4', orientation: 'portrait' }
+            };
+
+            const worker = html2pdf().from(element).set(opt);
+
+            toast.promise(
+                worker.save().then(() => {
+                    setPrintingAssignment(null);
+                    setShowInvoicePreview(false);
+                }),
+                {
+                    loading: 'Preparing invoice...',
+                    success: 'Invoice downloaded!',
+                    error: (err) => `PDF Error: ${err.message || 'Generation failed'}`
+                }
+            );
+        }, 300);
     };
 
     const fetchAssignment = useCallback(async () => {
@@ -157,9 +170,9 @@ const AssignmentWorkflow = () => {
     );
     if (!assignment) return <div className="text-[#4e8230] p-8">Assignment not found</div>;
 
-    const customer   = assignment.bookingId?.customerId || assignment.customer || {};
+    const customer = assignment.bookingId?.customerId || assignment.customer || {};
     const technician = assignment.technicianId || {};
-    const booking    = assignment.bookingId || {};
+    const booking = assignment.bookingId || {};
 
     const inputCls = "bg-[#f6faf1] border border-[#d4edbe] rounded-lg p-2.5 text-[#1a2e0e] text-sm focus:outline-none focus:border-[#79bd4b] focus:ring-2 focus:ring-[#79bd4b]/15 transition-all";
 
@@ -191,7 +204,7 @@ const AssignmentWorkflow = () => {
                 </div>
                 <div className="flex items-center gap-3">
                     {assignment.status === 'completed' && (
-                        <button 
+                        <button
                             onClick={handleDownloadInvoice}
                             className="px-4 py-2 bg-green-500 text-white hover:bg-green-600 rounded-lg flex items-center gap-2 text-sm font-semibold transition-all shadow-md shadow-green-500/20"
                         >
@@ -204,10 +217,58 @@ const AssignmentWorkflow = () => {
                 </div>
             </div>
 
-            <AssignmentInvoice 
-                assignment={assignment} 
-                invoiceRef={invoiceRef} 
-            />
+            {/* ── Invoice Preview Modal ── */}
+            {showInvoicePreview && assignment && (
+                <div className="fixed inset-0 bg-black/60 backdrop-blur-md z-[60] flex items-center justify-center p-4 overflow-y-auto">
+                    <div className="bg-[#f1f5f9] rounded-2xl max-w-[850px] w-full my-8 relative shadow-2xl animate-in fade-in zoom-in duration-300">
+                        {/* Modal Header */}
+                        <div className="sticky top-0 z-20 bg-white/80 backdrop-blur-md px-6 py-4 border-b border-slate-200 flex items-center justify-between rounded-t-2xl">
+                            <div>
+                                <h2 className="text-xl font-bold text-slate-800">Invoice Preview</h2>
+                                <p className="text-xs text-slate-500 font-medium">Review the invoice details before downloading</p>
+                            </div>
+                            <div className="flex items-center gap-3">
+                                <button
+                                    onClick={handleActualDownload}
+                                    className="flex items-center gap-2 px-5 py-2.5 bg-green-600 hover:bg-green-700 text-white rounded-xl font-bold text-sm transition-all shadow-lg shadow-green-600/20 active:scale-95"
+                                >
+                                    <Download className="w-4 h-4" /> Download PDF
+                                </button>
+                                <button
+                                    onClick={() => setShowInvoicePreview(false)}
+                                    className="p-2.5 hover:bg-slate-100 text-slate-400 hover:text-slate-600 rounded-xl transition-all border border-transparent hover:border-slate-200"
+                                >
+                                    <XCircle className="w-6 h-6" />
+                                </button>
+                            </div>
+                        </div>
+
+                        {/* Modal Body - Scrollable Area for Invoice */}
+                        <div className="p-8 flex justify-center bg-slate-100 overflow-y-auto max-h-[70vh]">
+                            <div className="transform scale-[0.85] origin-top shadow-2xl">
+                                <AssignmentInvoice
+                                    assignment={assignment}
+                                />
+                            </div>
+                        </div>
+
+                        {/* Modal Footer */}
+                        <div className="p-4 bg-white border-t border-slate-200 flex justify-center rounded-b-2xl">
+                            <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest text-center">
+                                All information shown is based on current assignment records
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Hidden component for printing */}
+            <div style={{ position: "absolute", left: "-9999px", top: "-9999px" }}>
+                <AssignmentInvoice
+                    assignment={printingAssignment}
+                    invoiceRef={invoiceRef}
+                />
+            </div>
 
             {/* Info Card */}
             <div className="wf-card p-6 grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -335,7 +396,7 @@ const AssignmentWorkflow = () => {
                     <form onSubmit={handleAddPayment} className="grid grid-cols-1 md:grid-cols-3 gap-3 bg-[#f6faf1] p-4 rounded-xl border border-[#d4edbe]">
                         <input type="number" placeholder="Amount (₹)" className={inputCls} value={paymentForm.amount} onChange={(e) => setPaymentForm({ ...paymentForm, amount: e.target.value })} required />
                         <select className={inputCls} value={paymentForm.paymentMethod} onChange={(e) => setPaymentForm({ ...paymentForm, paymentMethod: e.target.value })}>
-                            {['cash','card','online','upi'].map((o) => <option key={o} value={o}>{o.toUpperCase()}</option>)}
+                            {['cash', 'card', 'online', 'upi'].map((o) => <option key={o} value={o}>{o.toUpperCase()}</option>)}
                         </select>
                         <button type="submit" className="btn-green">
                             {assignment.paymentCollection?.amount > 0 ? 'Update Payment' : 'Record Payment'}

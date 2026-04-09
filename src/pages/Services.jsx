@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   Bug, Plus, Search, Edit, Trash2, Loader2,
-  DollarSign, Image as ImageIcon, AlertTriangle,
+  ReceiptIndianRupee, Image as ImageIcon, AlertTriangle,
   CheckCircle, XCircle, Layers, Sparkles, X
 } from 'lucide-react';
 import { useServices } from '../context/ServiceContext';
@@ -260,7 +260,7 @@ const Services = () => {
           </div>
         )}
 
-       
+
 
         {/* Services List */}
         <div className="space-y-4">
@@ -428,7 +428,7 @@ const Services = () => {
               <div className="grid grid-cols-2 gap-4">
                 <Field label="Starting Price (₹)" required>
                   <div className="relative">
-                    <DollarSign size={15} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-300" />
+                    <ReceiptIndianRupee size={15} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-300" />
                     <input type="number" min="0" value={subForm.startingPrice} required
                       onChange={e => setSubForm({ ...subForm, startingPrice: e.target.value })}
                       className={inputCls + " pl-9"} placeholder="999" />

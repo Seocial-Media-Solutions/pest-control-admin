@@ -12,7 +12,7 @@ import {
     Mail,
     MapPin,
     Calendar,
-    DollarSign,
+    ReceiptIndianRupee,
 } from 'lucide-react';
 import customerService from '../services/customerService';
 import { toast } from 'react-hot-toast';
@@ -287,7 +287,7 @@ const Customers = () => {
                                                         {customer.totalAssignments} assignments
                                                     </div>
                                                     <div className="flex items-center gap-2 text-light-text dark:text-light-text">
-                                                        <DollarSign className="w-3 h-3 text-light-text-tertiary dark:text-light-text-tertiary" />
+                                                        <ReceiptIndianRupee className="w-3 h-3 text-light-text-tertiary dark:text-light-text-tertiary" />
                                                         ₹{customer.totalSpent.toLocaleString()}
                                                     </div>
                                                 </div>
@@ -400,7 +400,7 @@ const Customers = () => {
                                             {customer.totalAssignments} jobs
                                         </div>
                                         <div className="flex items-center gap-1.5 text-xs font-semibold text-accent-600 dark:text-accent-400">
-                                            <DollarSign className="w-3.5 h-3.5" />
+                                            <ReceiptIndianRupee className="w-3.5 h-3.5" />
                                             ₹{customer.totalSpent.toLocaleString()}
                                         </div>
                                         <button

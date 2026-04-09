@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
     ClipboardList, Plus, Search, Edit, Trash2, Eye, Loader2,
-    User, DollarSign, Calendar, MapPin, Phone, Mail,
+    User, ReceiptIndianRupee, Calendar, MapPin, Phone, Mail,
     Beaker, Camera, CheckCircle2, XCircle, Clock, Download,
 } from 'lucide-react';
 import html2pdf from 'html2pdf.js/dist/html2pdf.bundle.min.js';
@@ -30,6 +30,8 @@ const Assignments = () => {
     const [showPictureModal, setShowPictureModal] = useState(false);
     const [showPaymentModal, setShowPaymentModal] = useState(false);
     const [printingAssignment, setPrintingAssignment] = useState(null);
+    const [showInvoicePreview, setShowInvoicePreview] = useState(false);
+    const [selectedInvoiceAssignment, setSelectedInvoiceAssignment] = useState(null);
     const invoiceRef = useRef(null);
 
     const [treatmentForm, setTreatmentForm] = useState({ chemicals: '', quantity: '', instructions: '' });
@@ -115,6 +117,12 @@ const Assignments = () => {
 
     const handleDownloadInvoice = (assignment) => {
         if (!assignment) return;
+        setSelectedInvoiceAssignment(assignment);
+        setShowInvoicePreview(true);
+    };
+
+    const handleActualDownload = (assignment) => {
+        if (!assignment) return;
         setPrintingAssignment(assignment);
 
         // Wait for state update to reflect in template
@@ -142,7 +150,10 @@ const Assignments = () => {
             const worker = html2pdf().from(element).set(opt);
 
             toast.promise(
-                worker.save().then(() => setPrintingAssignment(null)),
+                worker.save().then(() => {
+                    setPrintingAssignment(null);
+                    setShowInvoicePreview(false);
+                }),
                 {
                     loading: 'Preparing invoice...',
                     success: 'Invoice downloaded!',
@@ -475,7 +486,7 @@ const Assignments = () => {
                                         {[
                                             { Icon: Beaker, label: 'Treatment Prep', val: `${assignment.treatmentPreparation?.length || 0} items` },
                                             { Icon: Camera, label: 'Site Pictures', val: `${assignment.applyTreatment?.sitePictures?.length || 0} photos` },
-                                            { Icon: DollarSign, label: 'Payments', val: `₹${assignment.paymentCollection?.amount || 0}` },
+                                            { Icon: ReceiptIndianRupee, label: 'Payments', val: `₹${assignment.paymentCollection?.amount || 0}` },
                                         ].map(({ Icon, label, val }) => (
                                             <div key={label} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                                                 <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
@@ -623,7 +634,7 @@ const Assignments = () => {
                             {/* Step 3 */}
                             <div>
                                 <div className="flex items-center justify-between mb-3">
-                                    <h3 className="text-base font-bold text-[#2e4d1b] flex items-center gap-2"><DollarSign className="w-4 h-4 text-[#79bd4b]" />Step 3: Payment Collection</h3>
+                                    <h3 className="text-base font-bold text-[#2e4d1b] flex items-center gap-2"><ReceiptIndianRupee className="w-4 h-4 text-[#79bd4b]" />Step 3: Payment Collection</h3>
                                     <button onClick={() => { setShowPaymentModal(true); setShowDetailsModal(false); }}
                                         className="px-3 py-1.5 bg-[#d4edbe] text-[#2e4d1b] rounded-lg text-xs font-semibold hover:bg-[#c5e4a3] transition-colors">
                                         <Plus className="w-3 h-3 inline mr-1" />Add
@@ -735,10 +746,58 @@ const Assignments = () => {
                     </div>
                 </div>
             )}
-            <AssignmentInvoice
-                assignment={printingAssignment}
-                invoiceRef={invoiceRef}
-            />
+            {/* ── Invoice Preview Modal ── */}
+            {showInvoicePreview && selectedInvoiceAssignment && (
+                <div className="fixed inset-0 bg-black/60 backdrop-blur-md z-[60] flex items-center justify-center p-4 overflow-y-auto">
+                    <div className="bg-[#f1f5f9] rounded-2xl max-w-[850px] w-full my-8 relative shadow-2xl animate-in fade-in zoom-in duration-300">
+                        {/* Modal Header */}
+                        <div className="sticky top-0 z-20 bg-white/80 backdrop-blur-md px-6 py-4 border-b border-slate-200 flex items-center justify-between rounded-t-2xl">
+                            <div>
+                                <h2 className="text-xl font-bold text-slate-800">Invoice Preview</h2>
+                                <p className="text-xs text-slate-500 font-medium">Review the invoice details before downloading</p>
+                            </div>
+                            <div className="flex items-center gap-3">
+                                <button
+                                    onClick={() => handleActualDownload(selectedInvoiceAssignment)}
+                                    className="flex items-center gap-2 px-5 py-2.5 bg-green-600 hover:bg-green-700 text-white rounded-xl font-bold text-sm transition-all shadow-lg shadow-green-600/20 active:scale-95"
+                                >
+                                    <Download className="w-4 h-4" /> Download PDF
+                                </button>
+                                <button
+                                    onClick={() => setShowInvoicePreview(false)}
+                                    className="p-2.5 hover:bg-slate-100 text-slate-400 hover:text-slate-600 rounded-xl transition-all border border-transparent hover:border-slate-200"
+                                >
+                                    <XCircle className="w-6 h-6" />
+                                </button>
+                            </div>
+                        </div>
+
+                        {/* Modal Body - Scrollable Area for Invoice */}
+                        <div className="p-8 flex justify-center bg-slate-100 overflow-y-auto max-h-[70vh]">
+                            <div className="transform scale-[0.85] origin-top shadow-2xl">
+                                <AssignmentInvoice
+                                    assignment={selectedInvoiceAssignment}
+                                />
+                            </div>
+                        </div>
+
+                        {/* Modal Footer */}
+                        <div className="p-4 bg-white border-t border-slate-200 flex justify-center rounded-b-2xl">
+                            <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest text-center">
+                                All information shown is based on current assignment records
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Hidden component for printing */}
+            <div style={{ position: "absolute", left: "-9999px", top: "-9999px" }}>
+                <AssignmentInvoice
+                    assignment={printingAssignment}
+                    invoiceRef={invoiceRef}
+                />
+            </div>
         </div>
     );
 };

@@ -3,7 +3,7 @@ import {
     TrendingUp,
     Users,
     Calendar,
-    DollarSign,
+    ReceiptIndianRupee,
     Bug,
     CheckCircle,
     Clock,
@@ -44,10 +44,10 @@ import { useSearch } from '../context/SearchContext';
 
 const Dashboard = () => {
     const { searchQuery } = useSearch();
-    const [loading, setLoading]       = useState(true);
+    const [loading, setLoading] = useState(true);
     const [refreshing, setRefreshing] = useState(false);
     const [dashboardData, setDashboardData] = useState(null);
-    const [error, setError]           = useState(null);
+    const [error, setError] = useState(null);
 
     const fetchDashboardData = async (isRefresh = false) => {
         try {
@@ -73,18 +73,18 @@ const Dashboard = () => {
         new Date(dateString).toLocaleDateString('en-IN', { year: 'numeric', month: 'short', day: 'numeric' });
 
     const getStatusBadge = (status) => ({
-        completed:   'bg-[#d4edbe] text-[#2e4d1b]',
+        completed: 'bg-[#d4edbe] text-[#2e4d1b]',
         in_progress: 'bg-[#dbeafe] text-[#1d4ed8]',
-        pending:     'bg-[#fef3c7] text-[#92400e]',
-        assigned:    'bg-[#ede9fe] text-[#5b21b6]',
-        cancelled:   'bg-[#fee2e2] text-[#991b1b]',
+        pending: 'bg-[#fef3c7] text-[#92400e]',
+        assigned: 'bg-[#ede9fe] text-[#5b21b6]',
+        cancelled: 'bg-[#fee2e2] text-[#991b1b]',
     }[status] || 'bg-gray-100 text-gray-500');
 
     const getPaymentStatusBadge = (status) => ({
-        paid:             'bg-[#d4edbe] text-[#2e4d1b]',
+        paid: 'bg-[#d4edbe] text-[#2e4d1b]',
         'partially paid': 'bg-[#fef3c7] text-[#92400e]',
-        pending:          'bg-[#ffedd5] text-[#9a3412]',
-        cancelled:        'bg-[#fee2e2] text-[#991b1b]',
+        pending: 'bg-[#ffedd5] text-[#9a3412]',
+        cancelled: 'bg-[#fee2e2] text-[#991b1b]',
     }[status] || 'bg-gray-100 text-gray-500');
 
     /* ── Loading ── */
@@ -119,43 +119,43 @@ const Dashboard = () => {
 
     const stats = [
         {
-            label:    'Total Revenue',
-            value:    formatCurrency(revenue.total),
-            change:   revenue.collectionRate,
-            trend:    parseFloat(revenue.collectionRate) >= 80 ? 'up' : 'down',
-            icon:     DollarSign,
-            from:     '#79bd4b',
-            to:       '#4e8230',
+            label: 'Total Revenue',
+            value: formatCurrency(revenue.total),
+            change: revenue.collectionRate,
+            trend: parseFloat(revenue.collectionRate) >= 80 ? 'up' : 'down',
+            icon: ReceiptIndianRupee,
+            from: '#79bd4b',
+            to: '#4e8230',
             subtitle: `Collected: ${formatCurrency(revenue.collected)}`,
         },
         {
-            label:    'Total Assignments',
-            value:    assignments.total,
-            change:   assignments.completionRate,
-            trend:    parseFloat(assignments.completionRate) >= 60 ? 'up' : 'down',
-            icon:     Calendar,
-            from:     '#a0d073',
-            to:       '#79bd4b',
+            label: 'Total Assignments',
+            value: assignments.total,
+            change: assignments.completionRate,
+            trend: parseFloat(assignments.completionRate) >= 60 ? 'up' : 'down',
+            icon: Calendar,
+            from: '#a0d073',
+            to: '#79bd4b',
             subtitle: `Completed: ${assignments.completed}`,
         },
         {
-            label:    'Active Technicians',
-            value:    technicians.active,
-            change:   technicians.activePercentage,
-            trend:    parseFloat(technicians.activePercentage) >= 80 ? 'up' : 'down',
-            icon:     Users,
-            from:     '#38b2d4',
-            to:       '#0e7490',
+            label: 'Active Technicians',
+            value: technicians.active,
+            change: technicians.activePercentage,
+            trend: parseFloat(technicians.activePercentage) >= 80 ? 'up' : 'down',
+            icon: Users,
+            from: '#38b2d4',
+            to: '#0e7490',
             subtitle: `Total: ${technicians.total}`,
         },
         {
-            label:    'Pending Revenue',
-            value:    formatCurrency(revenue.pending),
-            change:   `${assignments.pending} pending`,
-            trend:    assignments.pending > 10 ? 'down' : 'up',
-            icon:     Clock,
-            from:     '#f0a830',
-            to:       '#c27d10',
+            label: 'Pending Revenue',
+            value: formatCurrency(revenue.pending),
+            change: `${assignments.pending} pending`,
+            trend: assignments.pending > 10 ? 'down' : 'up',
+            icon: Clock,
+            from: '#f0a830',
+            to: '#c27d10',
             subtitle: `In Progress: ${assignments.inProgress}`,
         },
     ];
@@ -163,17 +163,17 @@ const Dashboard = () => {
     const PIE_COLORS = ['#79bd4b', '#4e8230', '#a0d073', '#2e4d1b', '#c5e4a3'];
 
     const serviceDistribution = performance.popularServices?.slice(0, 5).map((svc, i) => ({
-        name:    svc._id || 'Unknown',
-        value:   svc.count,
+        name: svc._id || 'Unknown',
+        value: svc.count,
         revenue: svc.totalRevenue,
-        color:   PIE_COLORS[i] || '#6b7280',
+        color: PIE_COLORS[i] || '#6b7280',
     })) || [];
 
     const technicianPerformanceData = performance.topTechnicians?.slice(0, 4).map((t) => ({
-        name:      t.technicianName || t.username,
+        name: t.technicianName || t.username,
         completed: t.completedAssignments,
-        total:     t.totalAssignments,
-        pending:   t.totalAssignments - t.completedAssignments,
+        total: t.totalAssignments,
+        pending: t.totalAssignments - t.completedAssignments,
     })) || [];
 
     /* ════════════════════════════════════════════════════════════════════ */
@@ -235,7 +235,7 @@ const Dashboard = () => {
                                 </div>
                                 <div className={`flex items-center gap-1 text-xs font-bold ${stat.trend === 'up' ? 'stat-badge-up' : 'stat-badge-down'}`}>
                                     {stat.trend === 'up'
-                                        ? <TrendingUp  className="w-3.5 h-3.5" />
+                                        ? <TrendingUp className="w-3.5 h-3.5" />
                                         : <TrendingDown className="w-3.5 h-3.5" />
                                     }
                                     {stat.change}
@@ -251,10 +251,10 @@ const Dashboard = () => {
                 {/* ── Quick Stats Row ───────────────────────────────────── */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                     {[
-                        { label: "Today's Assignments", value: assignments.today,              icon: <Calendar   className="w-7 h-7 text-[#79bd4b]" /> },
-                        { label: 'This Month',          value: assignments.thisMonth,          icon: <TrendingUp className="w-7 h-7 text-[#4e8230]" /> },
-                        { label: "Today's Revenue",     value: formatCurrency(revenue.today),  icon: <DollarSign className="w-7 h-7 text-[#f0a830]" /> },
-                        { label: 'Month Revenue',       value: formatCurrency(revenue.thisMonth), icon: <DollarSign className="w-7 h-7 text-[#38b2d4]" /> },
+                        { label: "Today's Assignments", value: assignments.today, icon: <Calendar className="w-7 h-7 text-[#79bd4b]" /> },
+                        { label: 'This Month', value: assignments.thisMonth, icon: <TrendingUp className="w-7 h-7 text-[#4e8230]" /> },
+                        { label: "Today's Revenue", value: formatCurrency(revenue.today), icon: <ReceiptIndianRupee className="w-7 h-7 text-[#f0a830]" /> },
+                        { label: 'Month Revenue', value: formatCurrency(revenue.thisMonth), icon: <ReceiptIndianRupee className="w-7 h-7 text-[#38b2d4]" /> },
                     ].map((q, i) => (
                         <div key={i} className="card p-4">
                             <div className="flex items-center justify-between">
@@ -355,7 +355,7 @@ const Dashboard = () => {
                         </div>
                     </div>
 
-                    
+
                 </div>
 
             </div>{/* end max-w */}
